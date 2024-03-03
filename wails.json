@@ -1,0 +1,14 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "desktop-manager",
+  "outputfilename": "desktop-manager",
+  "frontend:install": "yarn",
+  "frontend:build": "yarn build",
+  "frontend:dev:watcher": "yarn dev",
+  "frontend:dev:serverUrl": "auto",
+  "author": {
+    "name": "Bedirhan Yenilmez",
+    "email": "yenilmezbedirhan@gmail.com",
+    "github" : "https://github.com/beyenilmez"
+  }
+}
