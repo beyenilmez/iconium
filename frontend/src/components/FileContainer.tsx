@@ -27,7 +27,7 @@ export const FileContainer = (props: FileContainerProps) => {
     useEffect(() => {
         if (props.fileInfo.iconName !== "") {
             GetIconF();
-        }else{
+        } else {
             iconRef.current!.src = unknown
         }
     }, [props.fileInfo.iconName])
@@ -42,6 +42,11 @@ export const FileContainer = (props: FileContainerProps) => {
         GetIconByName(profile.name, props.fileInfo.iconName).then((res) => {
             if (res) iconRef.current!.src = res
         });
+    }
+
+    function DeleteRow() {
+        setEditing(true)
+        setProfile({ ...profile, value: profile.value.filter((_, i) => i !== props.index) })
     }
 
     return (
@@ -71,10 +76,10 @@ export const FileContainer = (props: FileContainerProps) => {
                 }} />
             </div>
             <div className="flex items-center space-x-2">
-                <Button variant="outline" size={"icon"}>
+                <Button variant="outline" size={"icon"} onClick={DeleteRow}>
                     <XOctagon />
                 </Button>
-                <Button variant="outline" size={"icon"}>
+                <Button variant="outline" size={"icon"} className="hidden">
                     <Settings2 />
                 </Button>
             </div>
