@@ -408,6 +408,20 @@ func (a *App) SaveIcon(profile string, fileInfo fileInfo) string {
 	if len(result) == 0 {
 		return ""
 	} else {
+		if fileInfo.IconName != "" {
+			// Delete existing icon
+			err := os.Remove(filepath.Join(getIconDir(profile), fileInfo.IconName+".ico"))
+			if err != nil {
+				fmt.Println(err)
+			}
+
+			// Delete base64 version
+			err = os.Remove(filepath.Join(getBase64Dir(profile), fileInfo.IconName+".ico"))
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
+
 		uuid := uuid.New().String()
 		savePath := filepath.Join(getIconDir(profile), uuid+".ico")
 

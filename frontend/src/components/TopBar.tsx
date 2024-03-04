@@ -36,7 +36,7 @@ const TopBar = () => {
                     elements={profiles}
                     onChange={(value) => onProfileChange(value)}
                     onExpand={() => GetProfilesF()}
-                    onElementContextMenu={(value) => console.log(value)}
+                    onElementContextMenu={(value) => console.log("Context: " + value)}
                 />
                 <Popover>
                     <PopoverTrigger>
