@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { GetIconByName, SaveIcon, SaveProfile } from "wailsjs/go/main/App"
+import { GetIcon, SaveIcon, SaveProfile } from "wailsjs/go/main/App"
 import { Input } from "@/components/ui/input"
 import { Pencil, Settings2, XOctagon } from "lucide-react"
 import { Button } from "./ui/button"
@@ -39,9 +39,11 @@ export const FileContainer = (props: FileContainerProps) => {
     }, [profile])
 
     function GetIconF() {
-        GetIconByName(profile.name, props.fileInfo.iconName).then((res) => {
-            if (res) iconRef.current!.src = res
-        });
+        if (props.fileInfo.iconName !== "") {
+            GetIcon(profile.name, props.fileInfo.iconName).then((res) => {
+                if (res) iconRef.current!.src = res
+            });
+        }
     }
 
     function DeleteRow() {

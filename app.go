@@ -74,11 +74,20 @@ type profile struct {
 	Value []fileInfo `json:"value"`
 }
 
+func CheckErr(err error, msg string, fatal bool) {
+	if err != nil {
+		fmt.Printf("%s - %v\n", msg, err)
+		if fatal {
+			panic(msg)
+		}
+	}
+}
+
 // Copy copies the contents of the file at srcpath to a regular file
 // at dstpath. If the file named by dstpath already exists, it is
 // truncated. The function does not copy the file mode, file
 // permission bits, or file attributes.
-// https://stackoverflow.com/a/74107689
+// Source: https://stackoverflow.com/a/74107689
 func Copy(srcpath, dstpath string) (err error) {
 	r, err := os.Open(srcpath)
 	if err != nil {
@@ -106,10 +115,7 @@ func Copy(srcpath, dstpath string) (err error) {
 func getSaveDir() string {
 	userConfigDir, err := os.UserConfigDir()
 
-	if err != nil {
-		println("User config dir not found")
-		println(err)
-	}
+	CheckErr(err, "Failed to get user config dir", true)
 
 	return filepath.Join(userConfigDir, "desktop-manager")
 }
@@ -311,36 +317,19 @@ func toBase64(b []byte) string {
 	return base64.StdEncoding.EncodeToString(b)
 }
 
-func (a *App) GetIcon(profile string, fileInfo fileInfo) string {
-	saveDir := filepath.Join(getBase64Dir(profile), fileInfo.IconName+".ico")
-
-	// Read the entire file into a byte slice
-	bytes, err := os.ReadFile(saveDir)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	return string(bytes)
-}
-
-func (a *App) GetIconByName(profile string, iconName string) string {
+func (a *App) GetIcon(profile string, iconName string) string {
 	saveDir := filepath.Join(getBase64Dir(profile), iconName+".ico")
 
-	// Read the entire file into a byte slice
 	bytes, err := os.ReadFile(saveDir)
-	if err != nil {
-		fmt.Println(err)
-	}
+	CheckErr(err, "Failed to read icon file", false)
 
 	return string(bytes)
 }
 
 func GenerateIcon(profile string, filePath string, fileName string) {
 	// Create folder
-	noFolderErr := os.MkdirAll(filepath.Join(getBase64Dir(profile)), os.ModePerm)
-	if noFolderErr != nil {
-		fmt.Println(noFolderErr)
-	}
+	err := os.MkdirAll(getBase64Dir(profile), os.ModePerm)
+	CheckErr(err, "Failed to create base64 image folder", false)
 
 	destination := filepath.Join(getBase64Dir(profile), fileName)
 
