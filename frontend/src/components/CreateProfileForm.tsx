@@ -28,7 +28,13 @@ const AddProfileF = (name: string) => {
 const formSchema = z.object({
   profileName: z.string()
     .min(1, { message: "Profile name is required" })
-    .max(50, { message: "Profile name can not exceed 50 characters" }),
+    .max(50, { message: "Profile name can not exceed 50 characters" })
+    // Check for windows file name compatibility
+    .regex(/^(?!\.)/, { message: "Profile name can not start with a period" })
+    .regex(/^(?!.*\.$)/, { message: "Profile name can not end with a period" })
+    .regex(/^[^<>:"/\\|?*]*$/, { message: "Profile name can not contain any of the following characters: < > : \" / \\ | ? *" })
+    .regex(/^(?!con$)(?!prn$)(?!aux$)(?!nul$)(?!com[0-9]$)(?!lpt[0-9]$)(?!com[¹²³])(?!lpt[¹²³])/i, { message: "Profile name can not be any of the following: con, prn, aux, nul, com[0-9], lpt[0-9], com⁽¹⁻³⁾, lpt⁽¹⁻³⁾" })
+  ,
 })
 
 export function CreateProfileForm() {
@@ -45,7 +51,7 @@ export function CreateProfileForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6" autoComplete="off">
         <FormField
           control={form.control}
           name="profileName"

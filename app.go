@@ -78,6 +78,7 @@ type profile struct {
 // at dstpath. If the file named by dstpath already exists, it is
 // truncated. The function does not copy the file mode, file
 // permission bits, or file attributes.
+// https://stackoverflow.com/a/74107689
 func Copy(srcpath, dstpath string) (err error) {
 	r, err := os.Open(srcpath)
 	if err != nil {
