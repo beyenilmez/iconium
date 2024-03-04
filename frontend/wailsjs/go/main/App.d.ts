@@ -8,8 +8,12 @@ export function GetDesktopIcons():Promise<Array<main.fileInfo>>;
 
 export function GetIcon(arg1:string,arg2:main.fileInfo):Promise<string>;
 
+export function GetIconByName(arg1:string,arg2:string):Promise<string>;
+
 export function GetProfile(arg1:string):Promise<main.profile>;
 
 export function GetProfiles():Promise<Array<main.profileInfo>>;
+
+export function SaveIcon(arg1:string,arg2:main.fileInfo):Promise<string>;
 
 export function SaveProfile(arg1:string,arg2:string):Promise<void>;

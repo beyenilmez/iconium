@@ -8,6 +8,7 @@ export interface fileInfo {
     extension: string
     isFolder: boolean
     iconId: string
+    iconName: string
 }
 
 export interface profileInfo {

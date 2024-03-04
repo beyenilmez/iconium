@@ -14,12 +14,20 @@ export function GetIcon(arg1, arg2) {
   return window['go']['main']['App']['GetIcon'](arg1, arg2);
 }
 
+export function GetIconByName(arg1, arg2) {
+  return window['go']['main']['App']['GetIconByName'](arg1, arg2);
+}
+
 export function GetProfile(arg1) {
   return window['go']['main']['App']['GetProfile'](arg1);
 }
 
 export function GetProfiles() {
   return window['go']['main']['App']['GetProfiles']();
+}
+
+export function SaveIcon(arg1, arg2) {
+  return window['go']['main']['App']['SaveIcon'](arg1, arg2);
 }
 
 export function SaveProfile(arg1, arg2) {

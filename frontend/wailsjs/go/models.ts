@@ -10,6 +10,7 @@ export namespace main {
 	    extension: string;
 	    isFolder: boolean;
 	    iconId: string;
+	    iconName: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new fileInfo(source);
@@ -26,6 +27,7 @@ export namespace main {
 	        this.extension = source["extension"];
 	        this.isFolder = source["isFolder"];
 	        this.iconId = source["iconId"];
+	        this.iconName = source["iconName"];
 	    }
 	}
 	export class profile {

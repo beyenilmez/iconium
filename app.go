@@ -14,6 +14,7 @@ import (
 
 	"github.com/google/uuid"
 	lnk "github.com/parsiya/golnk"
+	runtime "github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 // App struct
@@ -59,6 +60,7 @@ type fileInfo struct {
 	Extension       string `json:"extension"`
 	IsFolder        bool   `json:"isFolder"`
 	IconId          string `json:"iconId"`
+	IconName        string `json:"iconName"`
 }
 
 type profileInfo struct {
@@ -113,6 +115,14 @@ func getSaveDir() string {
 
 func getProfileDir() string {
 	return filepath.Join(getSaveDir(), "profiles")
+}
+
+func getIconDir(profileName string) string {
+	return filepath.Join(getSaveDir(), "icon", profileName)
+}
+
+func getBase64Dir(profileName string) string {
+	return filepath.Join(getIconDir(profileName), "base64")
 }
 
 func getDesktopPaths() []string {
@@ -284,49 +294,6 @@ func (a *App) GetProfile(profileName string) profile {
 		Value: fileInfoSlice,
 	}
 
-	for _, file := range fileInfoSlice {
-
-		if filepath.Ext(file.IconDestination) == ".ico" {
-			// Create folder
-			noFolderErr := os.MkdirAll(filepath.Join(getSaveDir(), "icon", profileName), os.ModePerm)
-			if noFolderErr != nil {
-				fmt.Println(noFolderErr)
-			}
-
-			destination := filepath.Join(getSaveDir(), "icon", profileName, file.Name+file.Extension+".ico")
-
-			// Read the entire file into a byte slice
-			bytes, err := os.ReadFile(file.IconDestination)
-			if err != nil {
-				fmt.Println(err)
-			}
-
-			var base64Encoding string
-
-			// Determine the content type of the image file
-			mimeType := http.DetectContentType(bytes)
-
-			// Prepend the appropriate URI scheme header depending
-			// on the MIME type
-			switch mimeType {
-			case "image/x-icon":
-				base64Encoding += "data:image/x-icon;base64,"
-			default:
-				fmt.Println("Unknown MIME type: ", mimeType)
-			}
-
-			// Append the base64 encoded output
-			base64Encoding += toBase64(bytes)
-
-			// Write the full base64 representation of the image to file
-			wErr := os.WriteFile(destination, []byte(base64Encoding), 0644)
-
-			if wErr != nil {
-				fmt.Println(wErr)
-			}
-		}
-	}
-
 	return profile
 }
 
@@ -344,7 +311,7 @@ func toBase64(b []byte) string {
 }
 
 func (a *App) GetIcon(profile string, fileInfo fileInfo) string {
-	saveDir := filepath.Join(getSaveDir(), "icon", profile, fileInfo.Name+fileInfo.Extension+".ico")
+	saveDir := filepath.Join(getBase64Dir(profile), fileInfo.IconName+".ico")
 
 	// Read the entire file into a byte slice
 	bytes, err := os.ReadFile(saveDir)
@@ -353,4 +320,112 @@ func (a *App) GetIcon(profile string, fileInfo fileInfo) string {
 	}
 
 	return string(bytes)
+}
+
+func (a *App) GetIconByName(profile string, iconName string) string {
+	saveDir := filepath.Join(getBase64Dir(profile), iconName+".ico")
+
+	// Read the entire file into a byte slice
+	bytes, err := os.ReadFile(saveDir)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return string(bytes)
+}
+
+func GenerateIcon(profile string, filePath string, fileName string) {
+	// Create folder
+	noFolderErr := os.MkdirAll(filepath.Join(getBase64Dir(profile)), os.ModePerm)
+	if noFolderErr != nil {
+		fmt.Println(noFolderErr)
+	}
+
+	destination := filepath.Join(getBase64Dir(profile), fileName)
+
+	// Read the entire file into a byte slice
+	bytes, err := os.ReadFile(filePath)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var base64Encoding string
+
+	// Determine the content type of the image file
+	mimeType := http.DetectContentType(bytes)
+
+	// Prepend the appropriate URI scheme header depending
+	// on the MIME type
+	switch mimeType {
+	case "image/x-icon":
+		base64Encoding += "data:image/x-icon;base64,"
+	default:
+		fmt.Println("Unknown MIME type: ", mimeType)
+	}
+
+	// Append the base64 encoded output
+	base64Encoding += toBase64(bytes)
+
+	// Write the full base64 representation of the image to file
+	wErr := os.WriteFile(destination, []byte(base64Encoding), 0644)
+
+	if wErr != nil {
+		fmt.Println(wErr)
+	}
+
+}
+
+func (a *App) SaveIcon(profile string, fileInfo fileInfo) string {
+	var defaultDirectory string
+
+	if fileInfo.IconDestination != "" {
+		defaultDirectory = filepath.Dir(fileInfo.IconDestination)
+	} else if fileInfo.Destination != "" {
+		defaultDirectory = filepath.Dir(fileInfo.Destination)
+	} else {
+		defaultDirectory = getDesktopPaths()[0]
+	}
+
+	println("Default directory: ", defaultDirectory)
+
+	result, err := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
+		DefaultDirectory: defaultDirectory,
+		Title:            "Select Icon",
+		Filters: []runtime.FileFilter{
+			{
+				DisplayName: "*.ico",
+				Pattern:     "*.ico",
+			},
+		},
+	})
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	println("Selected file: ", result)
+
+	if len(result) == 0 {
+		return ""
+	} else {
+		uuid := uuid.New().String()
+		savePath := filepath.Join(getIconDir(profile), uuid+".ico")
+
+		// Create dir
+		noFolderErr := os.MkdirAll(filepath.Dir(savePath), os.ModePerm)
+		if noFolderErr != nil {
+			fmt.Println(noFolderErr)
+		}
+
+		// Copy icon
+		err := Copy(result, savePath)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		// Generate base64 version
+		GenerateIcon(profile, result, uuid+".ico")
+
+		return uuid
+	}
 }
