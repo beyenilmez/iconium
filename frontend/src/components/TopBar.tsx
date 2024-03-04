@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useProfile } from "@/contexts/profile-provider";
-import { GetProfiles, AddProfile, GetProfile } from "wailsjs/go/main/App";
+import { GetProfiles, GetProfile } from "wailsjs/go/main/App";
 import { Button } from "./ui/button";
 import { Combobox } from "./ui/combobox"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { RefreshCw, Play, Plus } from 'lucide-react';
 import { ModeToggle } from "./mode-toggle"
+import { CreateProfileForm } from "./CreateProfileForm"
 
 import { /* profile as profStruct, */ profileInfo } from "@/structs";
 
@@ -21,10 +23,6 @@ const TopBar = () => {
         GetProfiles().then((res) => setProfiles(res));
     }
 
-    const AddProfileF = (name: string) => {
-        AddProfile(name).then((res) => console.log(res))
-    }
-
     const onProfileChange = (profileName: string) => {
         GetProfile(profileName).then((res) => {
             setProfile(res);
@@ -38,10 +36,18 @@ const TopBar = () => {
                     elements={profiles}
                     onChange={(value) => onProfileChange(value)}
                     onExpand={() => GetProfilesF()}
+                    onElementContextMenu={(value) => console.log(value)}
                 />
-                <Button variant="outline" size={"icon"} onClick={() => { AddProfileF("default") }}>
-                    <Plus />
-                </Button>
+                <Popover>
+                    <PopoverTrigger>
+                        <Button variant="outline" size={"icon"}>
+                            <Plus />
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                        <CreateProfileForm />
+                    </PopoverContent>
+                </Popover>
             </div>
             <div className="flex items-center space-x-2">
                 <Button variant="outline" size={"icon"}>

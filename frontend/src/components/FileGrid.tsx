@@ -21,7 +21,6 @@ export const FileGrid = () => {
     }, []) */
 
     useEffect(() => {
-        console.log(profile?.value)
         setFileInfos(profile?.value);
     }, [profile])
 

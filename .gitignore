@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# wales
+build/bin/desktop-manager-dev.exe

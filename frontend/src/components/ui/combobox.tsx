@@ -26,6 +26,7 @@ interface ComboboxProps {
     searchBar?: boolean;
     onChange: (value: any) => void;
     onExpand?: () => void;
+    onElementContextMenu?: (value: any) => void;
 }
 
 export function Combobox(props: ComboboxProps) {
@@ -63,6 +64,9 @@ export function Combobox(props: ComboboxProps) {
                                     setValue(currentValue === value ? "" : currentValue)
                                     props.onChange(currentValue === value ? "" : currentValue)
                                     setOpen(false)
+                                }}
+                                onContextMenu={(value) => {
+                                    props.onElementContextMenu?.(value.currentTarget.getAttribute("data-value"))
                                 }}
                             >
                                 <Check

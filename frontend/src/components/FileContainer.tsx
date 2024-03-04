@@ -25,13 +25,21 @@ export const FileContainer = (props: FileContainerProps) => {
     }, [])
 
     useEffect(() => {
+        if (props.fileInfo.iconName !== "") {
+            GetIconF();
+        }else{
+            iconRef.current!.src = unknown
+        }
+    }, [props.fileInfo.iconName])
+
+    useEffect(() => {
         if (editing) {
             SaveProfile(profile.name, JSON.stringify(profile)).then(() => setEditing(false))
         }
     }, [profile])
 
     function GetIconF() {
-        GetIconByName("default", props.fileInfo.iconName).then((res) => {
+        GetIconByName(profile.name, props.fileInfo.iconName).then((res) => {
             if (res) iconRef.current!.src = res
         });
     }
@@ -40,13 +48,10 @@ export const FileContainer = (props: FileContainerProps) => {
         <div className="flex justify-between space-x-2 p-2 border-b">
             <div className="flex items-center space-x-2 w-full">
                 <Button variant={"ghost"} size={"icon"} className="static group shrink-0" onClick={() => {
-                    SaveIcon("default", props.fileInfo).then((uuid) => {
+                    SaveIcon(profile.name, props.fileInfo).then((uuid) => {
                         if (uuid !== "") {
                             setEditing(true)
                             setProfile({ ...profile, value: profile.value.map((f, i) => i === props.index ? { ...f, iconName: uuid } : f) })
-                            GetIconByName("default", uuid).then((res) => {
-                                if (res) iconRef.current!.src = res
-                            });
                         }
                     })
                 }}>
