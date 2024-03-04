@@ -50,8 +50,11 @@ const TopBar = () => {
                 </Popover>
             </div>
             <div className="flex items-center space-x-2">
-                <Button variant="outline" size={"icon"}>
+                <Button variant="outline" size={"lg"} className="space-x-2">
                     <RefreshCw />
+                    <div>
+                        Get Desktop
+                    </div>
                 </Button>
                 <Button variant="outline" size={"icon"}>
                     <Play />
