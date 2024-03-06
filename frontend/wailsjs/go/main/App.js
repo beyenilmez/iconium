@@ -10,6 +10,10 @@ export function GetDesktopIcons() {
   return window['go']['main']['App']['GetDesktopIcons']();
 }
 
+export function GetFileInfo(arg1) {
+  return window['go']['main']['App']['GetFileInfo'](arg1);
+}
+
 export function GetIcon(arg1, arg2) {
   return window['go']['main']['App']['GetIcon'](arg1, arg2);
 }

@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/fs"
 	"net/http"
 	"os"
 	"os/user"
@@ -145,6 +146,62 @@ func getDesktopPaths() []string {
 	return []string{desktop, public}
 }
 
+func GetFileInfo(path string, file fs.DirEntry) fileInfo {
+	fileName := file.Name()
+	extension := filepath.Ext(fileName)
+	noExtFileName := strings.TrimSuffix(fileName, extension)
+
+	if extension == ".lnk" {
+		filePath := filepath.Join(path, fileName)
+
+		lnkInfo := fileInfo{
+			Name:            noExtFileName,
+			Description:     "",
+			Path:            filePath,
+			Destination:     "",
+			IconDestination: "",
+			IconIndex:       0,
+			Extension:       extension,
+			IsFolder:        false,
+		}
+
+		f, lnkError := lnk.File(filePath)
+		if lnkError != nil {
+			println(lnkError)
+		}
+
+		if f.StringData.NameString != "" {
+			lnkInfo.Description = f.StringData.NameString
+		}
+
+		if f.LinkInfo.LocalBasePath != "" {
+			lnkInfo.Destination = f.LinkInfo.LocalBasePath
+		}
+		if f.LinkInfo.LocalBasePathUnicode != "" {
+			lnkInfo.Destination = f.LinkInfo.LocalBasePathUnicode
+		}
+
+		if f.StringData.IconLocation != "" {
+			lnkInfo.IconDestination = f.StringData.IconLocation
+		}
+
+		if f.Header.IconIndex != 0 {
+			lnkInfo.IconIndex = int(f.Header.IconIndex)
+		}
+
+		return lnkInfo
+	} else if fileName != "desktop.ini" {
+		return fileInfo{
+			Name:      noExtFileName,
+			Path:      filepath.Join(path, fileName),
+			Extension: extension,
+			IsFolder:  file.IsDir(),
+		}
+	} else {
+		return fileInfo{}
+	}
+}
+
 func GetIcons(paths []string) []fileInfo {
 	icons := []fileInfo{}
 
@@ -156,56 +213,10 @@ func GetIcons(paths []string) []fileInfo {
 		}
 
 		for _, file := range currentFiles {
-			fileName := file.Name()
-			extension := filepath.Ext(fileName)
-			noExtFileName := strings.TrimSuffix(fileName, extension)
+			fileInfo := GetFileInfo(path, file)
 
-			if extension == ".lnk" {
-				filePath := filepath.Join(path, fileName)
-
-				lnkInfo := fileInfo{
-					Name:            noExtFileName,
-					Description:     "",
-					Path:            filePath,
-					Destination:     "",
-					IconDestination: "",
-					IconIndex:       0,
-					Extension:       extension,
-					IsFolder:        false,
-				}
-
-				f, lnkError := lnk.File(filePath)
-				if lnkError != nil {
-					println(lnkError)
-				}
-
-				if f.StringData.NameString != "" {
-					lnkInfo.Description = f.StringData.NameString
-				}
-
-				if f.LinkInfo.LocalBasePath != "" {
-					lnkInfo.Destination = f.LinkInfo.LocalBasePath
-				}
-				if f.LinkInfo.LocalBasePathUnicode != "" {
-					lnkInfo.Destination = f.LinkInfo.LocalBasePathUnicode
-				}
-
-				if f.StringData.IconLocation != "" {
-					lnkInfo.IconDestination = f.StringData.IconLocation
-				}
-
-				if f.Header.IconIndex != 0 {
-					lnkInfo.IconIndex = int(f.Header.IconIndex)
-				}
-
-				icons = append(icons, lnkInfo)
-			} else if fileName != "desktop.ini" {
-				icons = append(icons, fileInfo{
-					Name:      noExtFileName,
-					Path:      filepath.Join(path, fileName),
-					Extension: extension,
-					IsFolder:  file.IsDir(),
-				})
+			if fileInfo.Path != "" {
+				icons = append(icons, fileInfo)
 			}
 		}
 	}
@@ -243,6 +254,48 @@ func (a *App) AddProfile(name string) {
 	err := os.WriteFile(filepath.Join(profileDir, name), profileJSON, 0644)
 	if err != nil {
 		fmt.Println(err)
+	}
+}
+
+func (a *App) GetFileInfo(profileName string) fileInfo {
+	defaultDirectory := getDesktopPaths()[0]
+
+	println("Default directory: ", defaultDirectory)
+
+	result, err := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
+		DefaultDirectory: defaultDirectory,
+		Title:            "Select Icon",
+		Filters: []runtime.FileFilter{
+			{
+				DisplayName: "Shortcuts (*.lnk)",
+				Pattern:     "*.lnk",
+			},
+		},
+	})
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	println("Selected file: ", result)
+
+	if len(result) == 0 {
+		return fileInfo{}
+	} else {
+		var file fs.DirEntry
+
+		files, err := os.ReadDir(filepath.Dir(result))
+		CheckErr(err, "Failed to read directory", false)
+		for _, f := range files {
+			if f.Name() == filepath.Base(result) {
+				file = f
+				break
+			}
+		}
+
+		fileInfo := GetFileInfo(filepath.Dir(result), file)
+
+		return fileInfo
 	}
 }
 

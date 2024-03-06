@@ -6,6 +6,8 @@ export function AddProfile(arg1:string):Promise<void>;
 
 export function GetDesktopIcons():Promise<Array<main.fileInfo>>;
 
+export function GetFileInfo(arg1:string):Promise<main.fileInfo>;
+
 export function GetIcon(arg1:string,arg2:string):Promise<string>;
 
 export function GetProfile(arg1:string):Promise<main.profile>;
