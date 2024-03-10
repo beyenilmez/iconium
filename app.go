@@ -113,6 +113,7 @@ func Copy(srcpath, dstpath string) (err error) {
 	return err
 }
 
+// Returns the save directory
 func getSaveDir() string {
 	userConfigDir, err := os.UserConfigDir()
 
@@ -121,18 +122,22 @@ func getSaveDir() string {
 	return filepath.Join(userConfigDir, "desktop-manager")
 }
 
+// Returns the profile directory
 func getProfileDir() string {
 	return filepath.Join(getSaveDir(), "profiles")
 }
 
+// Returns the icon directory
 func getIconDir(profileName string) string {
 	return filepath.Join(getSaveDir(), "icon", profileName)
 }
 
+// Returns the base64 icon directory
 func getBase64Dir(profileName string) string {
 	return filepath.Join(getIconDir(profileName), "base64")
 }
 
+// Returns the desktop paths
 func getDesktopPaths() []string {
 	myself, err := user.Current()
 	if err != nil {
@@ -225,14 +230,11 @@ func GetIcons(paths []string) []fileInfo {
 }
 
 func (a *App) AddProfile(name string) {
-	// Get desktop icons
-	fileInfos := GetIcons(getDesktopPaths())
-
 	// Create profile
 	profile := profile{
 		Name:  name,
 		Id:    uuid.New().String(),
-		Value: fileInfos,
+		Value: []fileInfo{},
 	}
 
 	// Convert to JSON
@@ -255,6 +257,58 @@ func (a *App) AddProfile(name string) {
 	if err != nil {
 		fmt.Println(err)
 	}
+}
+
+func (a *App) RemoveProfile(profileName string) {
+	profileDir := getProfileDir()
+	err := os.Remove(filepath.Join(profileDir, profileName))
+	CheckErr(err, "Failed to remove profile file", false)
+
+	iconDir := getIconDir(profileName)
+	err = os.RemoveAll(iconDir)
+	CheckErr(err, "Failed to remove icon folder", false)
+}
+
+func (a *App) CopyIcons(profile *profile) {
+	for i, fileInfo := range profile.Value {
+		if filepath.Ext(fileInfo.IconDestination) == ".ico" {
+			uuid := uuid.New().String()
+			savePath := filepath.Join(getIconDir(profile.Name), uuid+".ico")
+
+			// Create dir
+			err := os.MkdirAll(filepath.Dir(savePath), os.ModePerm)
+			CheckErr(err, "Failed to create icon folder", false)
+
+			// Copy icon
+			err = Copy(fileInfo.IconDestination, savePath)
+			CheckErr(err, "Failed to copy icon", false)
+
+			// Generate base64 version
+			GenerateIcon(profile.Name, fileInfo.IconDestination, uuid+".ico")
+
+			// Icon name
+			fileInfo.IconName = uuid
+
+			profile.Value[i] = fileInfo
+		}
+	}
+
+}
+
+func (a *App) SyncDesktop(profileName string, includeIcons bool) profile {
+	profile := a.GetProfile(profileName)
+	profile.Value = GetIcons(getDesktopPaths())
+	if includeIcons {
+		a.CopyIcons(&profile)
+	}
+
+	profileJSON, err := json.Marshal(profile)
+	CheckErr(err, "Failed to marshal profile", false)
+	profileJSONStr := string(profileJSON)
+
+	a.SaveProfile(profile.Name, profileJSONStr)
+
+	return profile
 }
 
 func (a *App) GetFileInfo(profileName string) fileInfo {
@@ -370,8 +424,8 @@ func toBase64(b []byte) string {
 	return base64.StdEncoding.EncodeToString(b)
 }
 
-func (a *App) GetIcon(profile string, iconName string) string {
-	saveDir := filepath.Join(getBase64Dir(profile), iconName+".ico")
+func (a *App) GetIcon(profileName string, iconName string) string {
+	saveDir := filepath.Join(getBase64Dir(profileName), iconName+".ico")
 
 	bytes, err := os.ReadFile(saveDir)
 	CheckErr(err, "Failed to read icon file", false)
@@ -379,12 +433,12 @@ func (a *App) GetIcon(profile string, iconName string) string {
 	return string(bytes)
 }
 
-func GenerateIcon(profile string, filePath string, fileName string) {
+func GenerateIcon(profileName string, filePath string, fileName string) {
 	// Create folder
-	err := os.MkdirAll(getBase64Dir(profile), os.ModePerm)
+	err := os.MkdirAll(getBase64Dir(profileName), os.ModePerm)
 	CheckErr(err, "Failed to create base64 image folder", false)
 
-	destination := filepath.Join(getBase64Dir(profile), fileName)
+	destination := filepath.Join(getBase64Dir(profileName), fileName)
 
 	// Read the entire file into a byte slice
 	bytes, err := os.ReadFile(filePath)
@@ -418,7 +472,7 @@ func GenerateIcon(profile string, filePath string, fileName string) {
 
 }
 
-func (a *App) SaveIcon(profile string, fileInfo fileInfo) string {
+func (a *App) SaveIcon(profileName string, fileInfo fileInfo) string {
 	var defaultDirectory string
 
 	if fileInfo.IconDestination != "" {
@@ -453,20 +507,20 @@ func (a *App) SaveIcon(profile string, fileInfo fileInfo) string {
 	} else {
 		if fileInfo.IconName != "" {
 			// Delete existing icon
-			err := os.Remove(filepath.Join(getIconDir(profile), fileInfo.IconName+".ico"))
+			err := os.Remove(filepath.Join(getIconDir(profileName), fileInfo.IconName+".ico"))
 			if err != nil {
 				fmt.Println(err)
 			}
 
 			// Delete base64 version
-			err = os.Remove(filepath.Join(getBase64Dir(profile), fileInfo.IconName+".ico"))
+			err = os.Remove(filepath.Join(getBase64Dir(profileName), fileInfo.IconName+".ico"))
 			if err != nil {
 				fmt.Println(err)
 			}
 		}
 
 		uuid := uuid.New().String()
-		savePath := filepath.Join(getIconDir(profile), uuid+".ico")
+		savePath := filepath.Join(getIconDir(profileName), uuid+".ico")
 
 		// Create dir
 		noFolderErr := os.MkdirAll(filepath.Dir(savePath), os.ModePerm)
@@ -481,8 +535,16 @@ func (a *App) SaveIcon(profile string, fileInfo fileInfo) string {
 		}
 
 		// Generate base64 version
-		GenerateIcon(profile, result, uuid+".ico")
+		GenerateIcon(profileName, result, uuid+".ico")
 
 		return uuid
 	}
+}
+
+func SetIcon(path string, iconPath string, iconIndex int) {
+	println("Setting icon: ", path, " to: ", iconPath, " at: ", iconIndex)
+}
+
+func (a *App) Test() {
+
 }

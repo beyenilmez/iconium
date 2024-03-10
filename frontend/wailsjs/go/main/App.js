@@ -6,6 +6,10 @@ export function AddProfile(arg1) {
   return window['go']['main']['App']['AddProfile'](arg1);
 }
 
+export function CopyIcons(arg1) {
+  return window['go']['main']['App']['CopyIcons'](arg1);
+}
+
 export function GetDesktopIcons() {
   return window['go']['main']['App']['GetDesktopIcons']();
 }
@@ -26,10 +30,22 @@ export function GetProfiles() {
   return window['go']['main']['App']['GetProfiles']();
 }
 
+export function RemoveProfile(arg1) {
+  return window['go']['main']['App']['RemoveProfile'](arg1);
+}
+
 export function SaveIcon(arg1, arg2) {
   return window['go']['main']['App']['SaveIcon'](arg1, arg2);
 }
 
 export function SaveProfile(arg1, arg2) {
   return window['go']['main']['App']['SaveProfile'](arg1, arg2);
+}
+
+export function SyncDesktop(arg1, arg2) {
+  return window['go']['main']['App']['SyncDesktop'](arg1, arg2);
+}
+
+export function Test() {
+  return window['go']['main']['App']['Test']();
 }

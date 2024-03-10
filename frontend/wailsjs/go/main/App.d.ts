@@ -4,6 +4,8 @@ import {main} from '../models';
 
 export function AddProfile(arg1:string):Promise<void>;
 
+export function CopyIcons(arg1:main.profile):Promise<void>;
+
 export function GetDesktopIcons():Promise<Array<main.fileInfo>>;
 
 export function GetFileInfo(arg1:string):Promise<main.fileInfo>;
@@ -14,6 +16,12 @@ export function GetProfile(arg1:string):Promise<main.profile>;
 
 export function GetProfiles():Promise<Array<main.profileInfo>>;
 
+export function RemoveProfile(arg1:string):Promise<void>;
+
 export function SaveIcon(arg1:string,arg2:main.fileInfo):Promise<string>;
 
 export function SaveProfile(arg1:string,arg2:string):Promise<void>;
+
+export function SyncDesktop(arg1:string,arg2:boolean):Promise<main.profile>;
+
+export function Test():Promise<void>;

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useProfile } from "@/contexts/profile-provider";
-import { GetProfiles, GetProfile } from "wailsjs/go/main/App";
+import { GetProfiles, GetProfile, SyncDesktop, RemoveProfile, Test } from "wailsjs/go/main/App";
 import { Button } from "./ui/button";
 import { Combobox } from "./ui/combobox"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -11,7 +11,7 @@ import { CreateProfileForm } from "./CreateProfileForm"
 import { /* profile as profStruct, */ profileInfo } from "@/structs";
 
 const TopBar = () => {
-    const { setProfile } = useProfile();
+    const { profile, setProfile } = useProfile();
 
     const [profiles, setProfiles] = useState<profileInfo[]>([]);
 
@@ -50,7 +50,17 @@ const TopBar = () => {
                 </Popover>
             </div>
             <div className="flex items-center space-x-2">
-                <Button variant="outline" size={"lg"} className="space-x-2">
+                {profile.name && (
+                    <Button variant="destructive" size={"lg"} className="space-x-2" onClick={() => {
+                        RemoveProfile(profile.name);
+                        setProfile({ name: "", id: "", value: [] })
+                    }}>
+                        Remove Profile
+                    </Button>
+                )}
+                <Button variant="outline" size={"lg"} className="space-x-2" onClick={() => {
+                    SyncDesktop(profile.name, true).then((profile) => setProfile(profile));
+                }}>
                     <RefreshCw />
                     <div>
                         Get Desktop
@@ -60,6 +70,9 @@ const TopBar = () => {
                     <Play />
                 </Button>
                 <ModeToggle />
+                <Button variant={"secondary" } onClick={Test}>
+                    Test
+                </Button>
             </div>
         </div>
     )
