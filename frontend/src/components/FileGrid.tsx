@@ -28,6 +28,7 @@ export const FileGrid = () => {
 
     const AddRow = () => {
         GetFileInfo(profile.name).then((fileInfo) => {
+            if (fileInfo.extension !== ".lnk") return
             setProfile({ ...profile, value: [...profile.value, fileInfo] })
             SaveProfile(profile.name, JSON.stringify({ ...profile, value: [...profile.value, fileInfo] }))
         })

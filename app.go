@@ -197,10 +197,10 @@ func GetFileInfo(path string, file fs.DirEntry) fileInfo {
 		return lnkInfo
 	} else if fileName != "desktop.ini" {
 		return fileInfo{
-			Name:      noExtFileName,
+			/* Name:      noExtFileName,
 			Path:      filepath.Join(path, fileName),
 			Extension: extension,
-			IsFolder:  file.IsDir(),
+			IsFolder:  file.IsDir(), */
 		}
 	} else {
 		return fileInfo{}
