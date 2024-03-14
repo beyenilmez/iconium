@@ -9,6 +9,7 @@ import (
 	"io/fs"
 	"net/http"
 	"os"
+	"os/exec"
 	"os/user"
 	"path/filepath"
 	"strings"
@@ -546,5 +547,10 @@ func SetIcon(path string, iconPath string, iconIndex int) {
 }
 
 func (a *App) Test() {
+	cmd := exec.Command("cscript.exe", ".\\vbs\\setlnkicon.vbs", "C:\\Users\\bedoy\\Desktop", "Quartus II Web Edition.lnk", "D:\\Personal\\Images\\Icon\\Custom r55\\Logi.ico", "0")
 
+	stdout, err := cmd.Output()
+	CheckErr(err, "Failed to execute command", false)
+
+	fmt.Print(string(stdout))
 }
