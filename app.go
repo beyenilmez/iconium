@@ -231,7 +231,8 @@ func GetIcons(paths []string) []fileInfo {
 		for _, file := range currentFiles {
 			fileInfo := GetFileInfo(path, file)
 
-			if fileInfo.Path != "" {
+			// Only lnk for now
+			if fileInfo.Path != "" && fileInfo.Extension == ".lnk" {
 				icons = append(icons, fileInfo)
 			}
 		}
