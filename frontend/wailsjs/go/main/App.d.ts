@@ -18,10 +18,12 @@ export function GetProfiles():Promise<Array<main.profileInfo>>;
 
 export function RemoveProfile(arg1:string):Promise<void>;
 
+export function RunProfile(arg1:string,arg2:Array<main.fileInfo>):Promise<void>;
+
 export function SaveIcon(arg1:string,arg2:main.fileInfo):Promise<string>;
 
 export function SaveProfile(arg1:string,arg2:string):Promise<void>;
 
-export function SyncDesktop(arg1:string,arg2:boolean):Promise<main.profile>;
+export function SetIcon(arg1:string,arg2:main.fileInfo):Promise<void>;
 
-export function Test(arg1:string,arg2:main.fileInfo):Promise<void>;
+export function SyncDesktop(arg1:string,arg2:boolean):Promise<main.profile>;

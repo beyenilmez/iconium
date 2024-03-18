@@ -274,10 +274,6 @@ func (a *App) RemoveProfile(profileName string) {
 	profileDir := getProfileDir()
 	err := os.Remove(filepath.Join(profileDir, profileName))
 	CheckErr(err, "Failed to remove profile file", false)
-
-	iconDir := getIconDir(profileName)
-	err = os.RemoveAll(iconDir)
-	CheckErr(err, "Failed to remove icon folder", false)
 }
 
 func (a *App) CopyIcons(profile *profile) {
@@ -486,9 +482,10 @@ func GenerateIcon(profileName string, filePath string, fileName string) {
 func (a *App) SaveIcon(profileName string, fileInfo fileInfo) string {
 	var defaultDirectory string
 
-	if fileInfo.IconDestination != "" {
+	// check if path exists
+	if _, err := os.Stat(fileInfo.IconDestination); err == nil {
 		defaultDirectory = filepath.Dir(fileInfo.IconDestination)
-	} else if fileInfo.Destination != "" {
+	} else if _, err := os.Stat(fileInfo.Destination); err == nil {
 		defaultDirectory = filepath.Dir(fileInfo.Destination)
 	} else {
 		defaultDirectory = getDesktopPaths()[0]
@@ -552,22 +549,25 @@ func (a *App) SaveIcon(profileName string, fileInfo fileInfo) string {
 	}
 }
 
-func SetIcon(path string, iconPath string, iconIndex int) {
-	println("Setting icon: ", path, " to: ", iconPath, " at: ", iconIndex)
+func (a *App) SetIcon(profileName string, fileInfo fileInfo) {
+	// Check if type is lnk
+	if fileInfo.Extension == ".lnk" && fileInfo.IconName != "" {
+		err := os.WriteFile(path.Join(getScriptDir(), "setlnkicon.vbs"), []byte(setlnkicon), 0644)
+		CheckErr(err, "Failed to write setlnkicon.vbs", false)
+
+		cmd := exec.Command("cscript.exe", getScriptDir()+"\\setlnkicon.vbs", filepath.Dir(fileInfo.Path), filepath.Base(fileInfo.Path), getIconDir(profileName)+"\\"+fileInfo.IconName+".ico", "0")
+
+		_, err = cmd.Output()
+		CheckErr(err, "Failed to execute command", false)
+	}
 }
 
-func (a *App) Test(profileName string, fileInfo fileInfo) {
+func (a *App) RunProfile(profileName string, fileInfos []fileInfo) {
 	// Create scripts directory
 	err := os.MkdirAll(getScriptDir(), os.ModePerm)
 	CheckErr(err, "Failed to create script folder", false)
 
-	err = os.WriteFile(path.Join(getScriptDir(), "setlnkicon.vbs"), []byte(setlnkicon), 0644)
-	CheckErr(err, "Failed to write setlnkicon.vbs", false)
-
-	cmd := exec.Command("cscript.exe", getScriptDir()+"\\setlnkicon.vbs", filepath.Dir(fileInfo.Path), filepath.Base(fileInfo.Path), getIconDir(profileName)+"\\"+fileInfo.IconName+".ico", "0")
-
-	stdout, err := cmd.Output()
-	CheckErr(err, "Failed to execute command", false)
-
-	fmt.Print(string(stdout))
+	for _, fileInfo := range fileInfos {
+		a.SetIcon(profileName, fileInfo)
+	}
 }

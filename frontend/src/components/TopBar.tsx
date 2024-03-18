@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useProfile } from "@/contexts/profile-provider";
-import { GetProfiles, GetProfile, SyncDesktop, RemoveProfile, Test } from "wailsjs/go/main/App";
+import { GetProfiles, GetProfile, SyncDesktop, RemoveProfile, SetIcon, RunProfile } from "wailsjs/go/main/App";
 import { Button } from "./ui/button";
 import { Combobox } from "./ui/combobox"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -66,14 +66,18 @@ const TopBar = () => {
                         Get Desktop
                     </div>
                 </Button>
-                <Button variant="outline" size={"icon"}>
+                <Button variant="outline" size={"icon"} onClick={() => {
+                    const fileInfos : fileInfo[] = profile.value;
+
+                    RunProfile(profile.name, fileInfos);
+                }}>
                     <Play />
                 </Button>
                 <ModeToggle />
                 <Button variant={"secondary" } onClick={() => {
                     const fileInfo : fileInfo[] = profile.value;
 
-                    Test(profile.name, fileInfo[2]);
+                    SetIcon(profile.name, fileInfo[2]);
                 }}>
                     Test
                 </Button>

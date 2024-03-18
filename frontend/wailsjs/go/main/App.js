@@ -34,6 +34,10 @@ export function RemoveProfile(arg1) {
   return window['go']['main']['App']['RemoveProfile'](arg1);
 }
 
+export function RunProfile(arg1, arg2) {
+  return window['go']['main']['App']['RunProfile'](arg1, arg2);
+}
+
 export function SaveIcon(arg1, arg2) {
   return window['go']['main']['App']['SaveIcon'](arg1, arg2);
 }
@@ -42,10 +46,10 @@ export function SaveProfile(arg1, arg2) {
   return window['go']['main']['App']['SaveProfile'](arg1, arg2);
 }
 
-export function SyncDesktop(arg1, arg2) {
-  return window['go']['main']['App']['SyncDesktop'](arg1, arg2);
+export function SetIcon(arg1, arg2) {
+  return window['go']['main']['App']['SetIcon'](arg1, arg2);
 }
 
-export function Test(arg1, arg2) {
-  return window['go']['main']['App']['Test'](arg1, arg2);
+export function SyncDesktop(arg1, arg2) {
+  return window['go']['main']['App']['SyncDesktop'](arg1, arg2);
 }
