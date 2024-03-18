@@ -46,6 +46,6 @@ export function SyncDesktop(arg1, arg2) {
   return window['go']['main']['App']['SyncDesktop'](arg1, arg2);
 }
 
-export function Test() {
-  return window['go']['main']['App']['Test']();
+export function Test(arg1, arg2) {
+  return window['go']['main']['App']['Test'](arg1, arg2);
 }

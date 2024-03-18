@@ -8,7 +8,7 @@ import { RefreshCw, Play, Plus } from 'lucide-react';
 import { ModeToggle } from "./mode-toggle"
 import { CreateProfileForm } from "./CreateProfileForm"
 
-import { /* profile as profStruct, */ profileInfo } from "@/structs";
+import { /* profile as profStruct, */ profileInfo, fileInfo } from "@/structs";
 
 const TopBar = () => {
     const { profile, setProfile } = useProfile();
@@ -70,7 +70,11 @@ const TopBar = () => {
                     <Play />
                 </Button>
                 <ModeToggle />
-                <Button variant={"secondary" } onClick={Test}>
+                <Button variant={"secondary" } onClick={() => {
+                    const fileInfo : fileInfo[] = profile.value;
+
+                    Test(profile.name, fileInfo[2]);
+                }}>
                     Test
                 </Button>
             </div>

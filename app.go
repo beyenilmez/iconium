@@ -556,7 +556,7 @@ func SetIcon(path string, iconPath string, iconIndex int) {
 	println("Setting icon: ", path, " to: ", iconPath, " at: ", iconIndex)
 }
 
-func (a *App) Test() {
+func (a *App) Test(profileName string, fileInfo fileInfo) {
 	// Create scripts directory
 	err := os.MkdirAll(getScriptDir(), os.ModePerm)
 	CheckErr(err, "Failed to create script folder", false)
@@ -564,7 +564,7 @@ func (a *App) Test() {
 	err = os.WriteFile(path.Join(getScriptDir(), "setlnkicon.vbs"), []byte(setlnkicon), 0644)
 	CheckErr(err, "Failed to write setlnkicon.vbs", false)
 
-	cmd := exec.Command("cscript.exe", getScriptDir()+"\\setlnkicon.vbs", "C:\\Users\\bedoy\\Desktop", "Quartus II Web Edition.lnk", "D:\\Personal\\Images\\Icon\\Custom r55\\Quartus.ico", "0")
+	cmd := exec.Command("cscript.exe", getScriptDir()+"\\setlnkicon.vbs", filepath.Dir(fileInfo.Path), filepath.Base(fileInfo.Path), getIconDir(profileName)+"\\"+fileInfo.IconName+".ico", "0")
 
 	stdout, err := cmd.Output()
 	CheckErr(err, "Failed to execute command", false)

@@ -24,4 +24,4 @@ export function SaveProfile(arg1:string,arg2:string):Promise<void>;
 
 export function SyncDesktop(arg1:string,arg2:boolean):Promise<main.profile>;
 
-export function Test():Promise<void>;
+export function Test(arg1:string,arg2:main.fileInfo):Promise<void>;
