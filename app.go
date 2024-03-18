@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	_ "embed"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -11,6 +12,7 @@ import (
 	"os"
 	"os/exec"
 	"os/user"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -18,6 +20,9 @@ import (
 	lnk "github.com/parsiya/golnk"
 	runtime "github.com/wailsapp/wails/v2/pkg/runtime"
 )
+
+//go:embed frontend/public/setlnkicon.vbs
+var setlnkicon string
 
 // App struct
 type App struct {
@@ -136,6 +141,11 @@ func getIconDir(profileName string) string {
 // Returns the base64 icon directory
 func getBase64Dir(profileName string) string {
 	return filepath.Join(getIconDir(profileName), "base64")
+}
+
+// Returns the script directory
+func getScriptDir() string {
+	return filepath.Join(getSaveDir(), "scripts")
 }
 
 // Returns the desktop paths
@@ -547,7 +557,14 @@ func SetIcon(path string, iconPath string, iconIndex int) {
 }
 
 func (a *App) Test() {
-	cmd := exec.Command("cscript.exe", ".\\vbs\\setlnkicon.vbs", "C:\\Users\\bedoy\\Desktop", "Quartus II Web Edition.lnk", "D:\\Personal\\Images\\Icon\\Custom r55\\Logi.ico", "0")
+	// Create scripts directory
+	err := os.MkdirAll(getScriptDir(), os.ModePerm)
+	CheckErr(err, "Failed to create script folder", false)
+
+	err = os.WriteFile(path.Join(getScriptDir(), "setlnkicon.vbs"), []byte(setlnkicon), 0644)
+	CheckErr(err, "Failed to write setlnkicon.vbs", false)
+
+	cmd := exec.Command("cscript.exe", getScriptDir()+"\\setlnkicon.vbs", "C:\\Users\\bedoy\\Desktop", "Quartus II Web Edition.lnk", "D:\\Personal\\Images\\Icon\\Custom r55\\Quartus.ico", "0")
 
 	stdout, err := cmd.Output()
 	CheckErr(err, "Failed to execute command", false)
