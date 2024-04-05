@@ -1,40 +1,32 @@
-# README
+# Desktop Manager
 
-## About
+Icon and description editor, profile creation tool for your desktop. (WIP)
 
-This template comes with Vite, React, TypeScript, TailwindCSS and shadcn/ui.
+## Screenshots
 
-Built with `Wails v2.5.1` and [shadcn's CLI](https://ui.shadcn.com/docs/cli)
+![Main](./assets/screenshot-1.png)
 
-### Using the Template
-```console
-wails init -n project-name -t https://github.com/Mahcks/wails-vite-react-tailwind-shadcnui-ts
-```
+## Features
 
-```console
-cd frontend
-```
+- Create desktop profiles
+- Edit icon and description
+- Shortcut (.lnk) support
 
-```console
-npm install
-```
+## Planned
 
-### Installing Components
-To install components, use shadcn's CLI tool to install
+- Save desktop layout to profile
+- Share profiles as files
+- Folder and .url support
+- Sync desktop with profile
 
-More info here: https://ui.shadcn.com/docs/cli#add
+## Built With
 
-Example:
-```console
-npx shadcn-ui@latest add [component]
-```
+- [Wails](https://wails.io/)
+- [React](https://react.dev/)
+- [tailwindcss](https://tailwindcss.com/)
+- [shadcn-ui](https://ui.shadcn.com/)
+- [lucide-react](https://lucide.dev/guide/packages/lucide-react)
 
-## Live Development
+## License
 
-To run in live development mode, run `wails dev` in the project directory. In another terminal, go into the `frontend`
-directory and run `npm run dev`. The frontend dev server will run on http://localhost:34115. Connect to this in your
-browser and connect to your application.
-
-## Building
-
-To build a redistributable, production mode package, use `wails build`.
+Distributed under the MIT License. See [LICENSE](https://github.com/beyenilmez/desktop-manager/blob/main/LICENSE) for more information.
