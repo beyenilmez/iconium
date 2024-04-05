@@ -24,6 +24,9 @@ import (
 //go:embed frontend/public/setlnkicon.vbs
 var setlnkicon string
 
+//go:embed frontend/public/setlnkdesc.vbs
+var setlnkdesc string
+
 // App struct
 type App struct {
 	ctx context.Context
@@ -550,7 +553,7 @@ func (a *App) SaveIcon(profileName string, fileInfo fileInfo) string {
 	}
 }
 
-func (a *App) SetIcon(profileName string, fileInfo fileInfo) {
+func SetIcon(profileName string, fileInfo fileInfo) {
 	// Check if type is lnk
 	if fileInfo.Extension == ".lnk" && fileInfo.IconName != "" {
 		err := os.WriteFile(path.Join(getScriptDir(), "setlnkicon.vbs"), []byte(setlnkicon), 0644)
@@ -563,12 +566,26 @@ func (a *App) SetIcon(profileName string, fileInfo fileInfo) {
 	}
 }
 
+func SetDesc(profileName string, fileInfo fileInfo) {
+	// Check if type is lnk
+	if fileInfo.Extension == ".lnk" && fileInfo.Description != "" {
+		err := os.WriteFile(path.Join(getScriptDir(), "setlnkdesc.vbs"), []byte(setlnkdesc), 0644)
+		CheckErr(err, "Failed to write setlnkdesc.vbs", false)
+
+		cmd := exec.Command("cscript.exe", getScriptDir()+"\\setlnkdesc.vbs", filepath.Dir(fileInfo.Path), filepath.Base(fileInfo.Path), fileInfo.Description)
+
+		_, err = cmd.Output()
+		CheckErr(err, "Failed to execute command", false)
+	}
+}
+
 func (a *App) RunProfile(profileName string, fileInfos []fileInfo) {
 	// Create scripts directory
 	err := os.MkdirAll(getScriptDir(), os.ModePerm)
 	CheckErr(err, "Failed to create script folder", false)
 
 	for _, fileInfo := range fileInfos {
-		a.SetIcon(profileName, fileInfo)
+		SetIcon(profileName, fileInfo)
+		SetDesc(profileName, fileInfo)
 	}
 }

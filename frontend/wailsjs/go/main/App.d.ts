@@ -24,6 +24,4 @@ export function SaveIcon(arg1:string,arg2:main.fileInfo):Promise<string>;
 
 export function SaveProfile(arg1:string,arg2:string):Promise<void>;
 
-export function SetIcon(arg1:string,arg2:main.fileInfo):Promise<void>;
-
 export function SyncDesktop(arg1:string,arg2:boolean):Promise<main.profile>;

@@ -42,7 +42,7 @@ const TopBar = () => {
                 />
                 <Popover>
                     <PopoverTrigger>
-                        <Button variant="outline" size={"icon"}>
+                        <Button variant="outline" size={"icon"} title="Create Profile">
                             <Plus />
                         </Button>
                     </PopoverTrigger>
@@ -60,7 +60,8 @@ const TopBar = () => {
                         }}>
                             Remove Profile
                         </Button>
-                        <Button variant="outline" size={"lg"} className="space-x-2" onClick={() => {
+                        <Button variant="outline" size={"lg"} className="space-x-2"
+                         onClick={() => {
                             SyncDesktop(profile.name, true).then((profile) => setProfile(profile));
                         }}>
                             <RefreshCw />
@@ -68,7 +69,7 @@ const TopBar = () => {
                                 Get Desktop
                             </div>
                         </Button>
-                        <Button variant="outline" size={"icon"} disabled={running}
+                        <Button variant="outline" size={"icon"} disabled={running} title="Run Profile"
                          onClick={() => {
                             const fileInfos: fileInfo[] = profile.value;
 

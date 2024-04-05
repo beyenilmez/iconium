@@ -46,10 +46,6 @@ export function SaveProfile(arg1, arg2) {
   return window['go']['main']['App']['SaveProfile'](arg1, arg2);
 }
 
-export function SetIcon(arg1, arg2) {
-  return window['go']['main']['App']['SetIcon'](arg1, arg2);
-}
-
 export function SyncDesktop(arg1, arg2) {
   return window['go']['main']['App']['SyncDesktop'](arg1, arg2);
 }
