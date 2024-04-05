@@ -5,6 +5,7 @@ Icon and description editor, profile creation tool for your desktop. (WIP)
 ## Screenshots
 
 ![Main](./assets/screenshot-1.png)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fbeyenilmez%2Fdesktop-manager.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fbeyenilmez%2Fdesktop-manager?ref=badge_shield)
 
 ## Features
 
@@ -30,3 +31,6 @@ Icon and description editor, profile creation tool for your desktop. (WIP)
 ## License
 
 Distributed under the MIT License. See [LICENSE](https://github.com/beyenilmez/desktop-manager/blob/main/LICENSE) for more information.
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fbeyenilmez%2Fdesktop-manager.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fbeyenilmez%2Fdesktop-manager?ref=badge_large)
