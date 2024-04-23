@@ -553,7 +553,34 @@ func (a *App) SaveIcon(profileName string, fileInfo fileInfo) string {
 	}
 }
 
+func MatchMissingFile(fileInfo *fileInfo) {
+	files, err := os.ReadDir(filepath.Dir(fileInfo.Path))
+	CheckErr(err, "Failed to read directory", false)
+
+	for _, f := range files {
+		currentFileInfo := GetFileInfo(filepath.Dir(fileInfo.Path), f)
+		// Match by destination
+		if currentFileInfo.Destination == fileInfo.Destination {
+			fmt.Println("Found matching file: ", currentFileInfo)
+			// Rename currentFile to fileInfo.name
+			fmt.Println("Attempting to rename: ", currentFileInfo.Path, " to ", filepath.Join(filepath.Dir(currentFileInfo.Path), fileInfo.Name)+".lnk")
+			err := os.Rename(currentFileInfo.Path, filepath.Join(filepath.Dir(currentFileInfo.Path), fileInfo.Name)+".lnk")
+			CheckErr(err, "Failed to rename file", false)
+			if err == nil {
+				fmt.Println("Successfully renamed: ", currentFileInfo.Path, " to ", filepath.Join(filepath.Dir(currentFileInfo.Path), fileInfo.Name)+".lnk")
+			}
+		}
+	}
+}
+
 func SetIcon(profileName string, fileInfo fileInfo) {
+	// Check if fileInfo.Path exists
+	if _, err := os.Stat(filepath.Join(filepath.Dir(fileInfo.Path), fileInfo.Name) + ".lnk"); err != nil {
+		fmt.Println("Failed to find file: ", fileInfo.Path)
+		fmt.Println("Attempting to match missing file: ", fileInfo)
+		MatchMissingFile(&fileInfo)
+	}
+
 	// Check if type is lnk
 	if fileInfo.Extension == ".lnk" && fileInfo.IconName != "" {
 		err := os.WriteFile(path.Join(getScriptDir(), "setlnkicon.vbs"), []byte(setlnkicon), 0644)
