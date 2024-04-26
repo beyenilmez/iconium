@@ -84,6 +84,9 @@ type profile struct {
 	Value []fileInfo `json:"value"`
 }
 
+// Allowed file types
+var allowedTypes = []string{".lnk"}
+
 func CheckErr(err error, msg string, fatal bool) {
 	if err != nil {
 		fmt.Printf("%s - %v\n", msg, err)
@@ -91,6 +94,16 @@ func CheckErr(err error, msg string, fatal bool) {
 			panic(msg)
 		}
 	}
+}
+
+// Check if an item is in a slice
+func contains(slice []string, item string) bool {
+	for _, value := range slice {
+		if value == item {
+			return true
+		}
+	}
+	return false
 }
 
 // Copy copies the contents of the file at srcpath to a regular file
@@ -153,11 +166,10 @@ func getScriptDir() string {
 
 // Returns the desktop paths
 func getDesktopPaths() []string {
-	myself, err := user.Current()
-	if err != nil {
-		panic(err)
-	}
-	homedir := myself.HomeDir
+	userDir, err := user.Current()
+	CheckErr(err, "Failed to get user dir", true)
+
+	homedir := userDir.HomeDir
 	desktop := filepath.Join(homedir, "Desktop")
 
 	public := "C:\\Users\\Public\\Desktop"
@@ -165,12 +177,23 @@ func getDesktopPaths() []string {
 	return []string{desktop, public}
 }
 
-func GetFileInfo(path string, file fs.DirEntry) fileInfo {
-	fileName := file.Name()
+// GetFileInfo retrieves information about a file.
+//
+// Parameters:
+// - path: the path of the directory containing the file.
+// - file: the file to retrieve information about.
+//
+// Returns:
+// - fileInfo: the information about the file.
+// - error: an error if the file type is not allowed or if there was a failure reading the file.
+func GetFileInfo(path string, file *fs.DirEntry) (fileInfo, error) {
+	fileName := (*file).Name()
 	extension := filepath.Ext(fileName)
 	noExtFileName := strings.TrimSuffix(fileName, extension)
 
-	if extension == ".lnk" {
+	if !contains(allowedTypes, extension) {
+		return fileInfo{}, fmt.Errorf("file type not allowed")
+	} else if extension == ".lnk" {
 		filePath := filepath.Join(path, fileName)
 
 		lnkInfo := fileInfo{
@@ -182,12 +205,12 @@ func GetFileInfo(path string, file fs.DirEntry) fileInfo {
 			IconIndex:       0,
 			Extension:       extension,
 			IsFolder:        false,
+			IconId:          "",
+			IconName:        "",
 		}
 
-		f, lnkError := lnk.File(filePath)
-		if lnkError != nil {
-			println(lnkError)
-		}
+		f, err := lnk.File(filePath)
+		CheckErr(err, "Failed to read lnk file", false)
 
 		if f.StringData.NameString != "" {
 			lnkInfo.Description = f.StringData.NameString
@@ -208,34 +231,28 @@ func GetFileInfo(path string, file fs.DirEntry) fileInfo {
 			lnkInfo.IconIndex = int(f.Header.IconIndex)
 		}
 
-		return lnkInfo
-	} else if fileName != "desktop.ini" {
-		return fileInfo{
-			/* Name:      noExtFileName,
-			Path:      filepath.Join(path, fileName),
-			Extension: extension,
-			IsFolder:  file.IsDir(), */
-		}
+		return lnkInfo, nil
 	} else {
-		return fileInfo{}
+		return fileInfo{}, nil
 	}
 }
 
-func GetIcons(paths []string) []fileInfo {
+// GetFileInfoSlice retrieves file information for the provided paths.
+//
+// paths: a slice of strings representing the directories to read files from.
+// []fileInfo: a slice of fileInfo structs containing information about the files.
+func GetFileInfoSlice(paths []string) []fileInfo {
 	icons := []fileInfo{}
 
 	for _, path := range paths {
 		currentFiles, pathError := os.ReadDir(path)
-
-		if pathError != nil {
-			println("Path not found:", path)
-		}
+		CheckErr(pathError, "Failed to read directory", false)
 
 		for _, file := range currentFiles {
-			fileInfo := GetFileInfo(path, file)
+			fileInfo, err := GetFileInfo(path, &file)
+			CheckErr(err, "Failed to get file info", false)
 
-			// Only lnk for now
-			if fileInfo.Path != "" && fileInfo.Extension == ".lnk" {
+			if fileInfo.Path != "" && contains(allowedTypes, fileInfo.Extension) {
 				icons = append(icons, fileInfo)
 			}
 		}
@@ -253,25 +270,19 @@ func (a *App) AddProfile(name string) {
 	}
 
 	// Convert to JSON
-	profileJSON, marshallErr := json.Marshal(profile)
-	if marshallErr != nil {
-		fmt.Println(marshallErr)
-	}
+	profileJSON, err := json.Marshal(profile)
+	CheckErr(err, "Failed to marshal profile", false)
 
 	// Get save directory
 	profileDir := getProfileDir()
 
 	// Create folder
-	noFolderErr := os.MkdirAll(profileDir, os.ModePerm)
-	if noFolderErr != nil {
-		fmt.Println(noFolderErr)
-	}
+	err = os.MkdirAll(profileDir, os.ModePerm)
+	CheckErr(err, "Failed to create profile folder", false)
 
 	// Write json
-	err := os.WriteFile(filepath.Join(profileDir, name), profileJSON, 0644)
-	if err != nil {
-		fmt.Println(err)
-	}
+	err = os.WriteFile(filepath.Join(profileDir, name), profileJSON, 0644)
+	CheckErr(err, "Failed to write profile file", false)
 }
 
 func (a *App) RemoveProfile(profileName string) {
@@ -280,11 +291,12 @@ func (a *App) RemoveProfile(profileName string) {
 	CheckErr(err, "Failed to remove profile file", false)
 }
 
-func (a *App) CopyIcons(profile *profile) {
-	for i, fileInfo := range profile.Value {
+func CopyIcons(profile *profile) {
+	for i, fileInfo := range (*profile).Value {
 		if filepath.Ext(fileInfo.IconDestination) == ".ico" {
+			// Generate UUID and save path
 			uuid := uuid.New().String()
-			savePath := filepath.Join(getIconDir(profile.Name), uuid+".ico")
+			savePath := filepath.Join(getIconDir((*profile).Name), uuid+".ico")
 
 			// Create dir
 			err := os.MkdirAll(filepath.Dir(savePath), os.ModePerm)
@@ -295,22 +307,57 @@ func (a *App) CopyIcons(profile *profile) {
 			CheckErr(err, "Failed to copy icon", false)
 
 			// Generate base64 version
-			GenerateIcon(profile.Name, fileInfo.IconDestination, uuid+".ico")
+			GenerateBase64Icon(&(*profile).Name, &fileInfo.IconDestination, &uuid)
 
 			// Icon name
 			fileInfo.IconName = uuid
 
-			profile.Value[i] = fileInfo
+			(*profile).Value[i] = fileInfo
 		}
 	}
+}
 
+func GenerateBase64Icon(profileName *string, filePath *string, fileName *string) {
+	// Create folder
+	err := os.MkdirAll(getBase64Dir(*profileName), os.ModePerm)
+	CheckErr(err, "Failed to create base64 image folder", false)
+
+	destination := filepath.Join(getBase64Dir(*profileName), *fileName)
+
+	// Read the entire file into a byte slice
+	bytes, err := os.ReadFile(*filePath)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var base64Encoding string
+
+	// Determine the content type of the image file
+	mimeType := http.DetectContentType(bytes)
+
+	// Prepend the appropriate URI scheme header depending
+	// on the MIME type
+	switch mimeType {
+	case "image/x-icon":
+		base64Encoding += "data:image/x-icon;base64,"
+		destination += ".ico"
+	default:
+		fmt.Println("Unknown MIME type: ", mimeType)
+	}
+
+	// Append the base64 encoded output
+	base64Encoding += base64.StdEncoding.EncodeToString(bytes)
+
+	// Write the full base64 representation of the image to file
+	err = os.WriteFile(destination, []byte(base64Encoding), 0644)
+	CheckErr(err, "Failed to write icon file", false)
 }
 
 func (a *App) SyncDesktop(profileName string, includeIcons bool) profile {
 	profile := a.GetProfile(profileName)
-	profile.Value = GetIcons(getDesktopPaths())
+	profile.Value = GetFileInfoSlice(getDesktopPaths())
 	if includeIcons {
-		a.CopyIcons(&profile)
+		CopyIcons(&profile)
 	}
 
 	profileJSON, err := json.Marshal(profile)
@@ -337,10 +384,7 @@ func (a *App) GetFileInfo(profileName string) fileInfo {
 			},
 		},
 	})
-
-	if err != nil {
-		fmt.Println(err)
-	}
+	CheckErr(err, "Failed to open file dialog", false)
 
 	println("Selected file: ", result)
 
@@ -358,14 +402,15 @@ func (a *App) GetFileInfo(profileName string) fileInfo {
 			}
 		}
 
-		fileInfo := GetFileInfo(filepath.Dir(result), file)
+		fileInfo, err := GetFileInfo(filepath.Dir(result), &file)
+		CheckErr(err, "Failed to get file info", false)
 
 		return fileInfo
 	}
 }
 
 func (a *App) GetDesktopIcons() []fileInfo {
-	return GetIcons(getDesktopPaths())
+	return GetFileInfoSlice(getDesktopPaths())
 }
 
 func (a *App) GetProfiles() []profileInfo {
@@ -423,16 +468,8 @@ func (a *App) GetProfile(profileName string) profile {
 }
 
 func (a *App) SaveProfile(profileName string, profile string) {
-	// Write directly
 	err := os.WriteFile(filepath.Join(getProfileDir(), profileName), []byte(profile), 0644)
-
-	if err != nil {
-		fmt.Println(err)
-	}
-}
-
-func toBase64(b []byte) string {
-	return base64.StdEncoding.EncodeToString(b)
+	CheckErr(err, "Failed to write profile file", false)
 }
 
 func (a *App) GetIcon(profileName string, iconName string) string {
@@ -442,45 +479,6 @@ func (a *App) GetIcon(profileName string, iconName string) string {
 	CheckErr(err, "Failed to read icon file", false)
 
 	return string(bytes)
-}
-
-func GenerateIcon(profileName string, filePath string, fileName string) {
-	// Create folder
-	err := os.MkdirAll(getBase64Dir(profileName), os.ModePerm)
-	CheckErr(err, "Failed to create base64 image folder", false)
-
-	destination := filepath.Join(getBase64Dir(profileName), fileName)
-
-	// Read the entire file into a byte slice
-	bytes, err := os.ReadFile(filePath)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	var base64Encoding string
-
-	// Determine the content type of the image file
-	mimeType := http.DetectContentType(bytes)
-
-	// Prepend the appropriate URI scheme header depending
-	// on the MIME type
-	switch mimeType {
-	case "image/x-icon":
-		base64Encoding += "data:image/x-icon;base64,"
-	default:
-		fmt.Println("Unknown MIME type: ", mimeType)
-	}
-
-	// Append the base64 encoded output
-	base64Encoding += toBase64(bytes)
-
-	// Write the full base64 representation of the image to file
-	wErr := os.WriteFile(destination, []byte(base64Encoding), 0644)
-
-	if wErr != nil {
-		fmt.Println(wErr)
-	}
-
 }
 
 func (a *App) SaveIcon(profileName string, fileInfo fileInfo) string {
@@ -547,7 +545,7 @@ func (a *App) SaveIcon(profileName string, fileInfo fileInfo) string {
 		}
 
 		// Generate base64 version
-		GenerateIcon(profileName, result, uuid+".ico")
+		GenerateBase64Icon(&profileName, &result, &uuid)
 
 		return uuid
 	}
@@ -558,48 +556,49 @@ func MatchMissingFile(fileInfo *fileInfo) {
 	CheckErr(err, "Failed to read directory", false)
 
 	for _, f := range files {
-		currentFileInfo := GetFileInfo(filepath.Dir(fileInfo.Path), f)
+		currentFileInfo, err := GetFileInfo(filepath.Dir((*fileInfo).Path), &f)
+		CheckErr(err, "Failed to get file info", false)
 		// Match by destination
-		if currentFileInfo.Destination == fileInfo.Destination {
+		if currentFileInfo.Destination == (*fileInfo).Destination {
 			fmt.Println("Found matching file: ", currentFileInfo)
 			// Rename currentFile to fileInfo.name
-			fmt.Println("Attempting to rename: ", currentFileInfo.Path, " to ", filepath.Join(filepath.Dir(currentFileInfo.Path), fileInfo.Name)+".lnk")
-			err := os.Rename(currentFileInfo.Path, filepath.Join(filepath.Dir(currentFileInfo.Path), fileInfo.Name)+".lnk")
+			fmt.Println("Attempting to rename: ", currentFileInfo.Path, " to ", filepath.Join(filepath.Dir(currentFileInfo.Path), (*fileInfo).Name)+(*fileInfo).Extension)
+			err := os.Rename(currentFileInfo.Path, filepath.Join(filepath.Dir(currentFileInfo.Path), (*fileInfo).Name)+(*fileInfo).Extension)
 			CheckErr(err, "Failed to rename file", false)
 			if err == nil {
-				fmt.Println("Successfully renamed: ", currentFileInfo.Path, " to ", filepath.Join(filepath.Dir(currentFileInfo.Path), fileInfo.Name)+".lnk")
+				fmt.Println("Successfully renamed: ", currentFileInfo.Path, " to ", filepath.Join(filepath.Dir(currentFileInfo.Path), (*fileInfo).Name)+(*fileInfo).Extension)
 			}
 		}
 	}
 }
 
-func SetIcon(profileName string, fileInfo fileInfo) {
+func SetIcon(profileName *string, fileInfo *fileInfo) {
 	// Check if fileInfo.Path exists
-	if _, err := os.Stat(filepath.Join(filepath.Dir(fileInfo.Path), fileInfo.Name) + ".lnk"); err != nil {
-		fmt.Println("Failed to find file: ", fileInfo.Path)
-		fmt.Println("Attempting to match missing file: ", fileInfo)
-		MatchMissingFile(&fileInfo)
+	if _, err := os.Stat(filepath.Join(filepath.Dir((*fileInfo).Path), (*fileInfo).Name) + (*fileInfo).Extension); err != nil {
+		fmt.Println("Failed to find file: ", (*fileInfo).Path)
+		fmt.Println("Attempting to match missing file: ", (*fileInfo))
+		MatchMissingFile(fileInfo)
 	}
 
-	// Check if type is lnk
-	if fileInfo.Extension == ".lnk" && fileInfo.IconName != "" {
+	// Check if type is allowed
+	if contains(allowedTypes, (*fileInfo).Extension) && (*fileInfo).IconName != "" {
 		err := os.WriteFile(path.Join(getScriptDir(), "setlnkicon.vbs"), []byte(setlnkicon), 0644)
 		CheckErr(err, "Failed to write setlnkicon.vbs", false)
 
-		cmd := exec.Command("cscript.exe", getScriptDir()+"\\setlnkicon.vbs", filepath.Dir(fileInfo.Path), filepath.Base(fileInfo.Path), getIconDir(profileName)+"\\"+fileInfo.IconName+".ico", "0")
+		cmd := exec.Command("cscript.exe", getScriptDir()+"\\setlnkicon.vbs", filepath.Dir((*fileInfo).Path), filepath.Base((*fileInfo).Path), getIconDir(*profileName)+"\\"+(*fileInfo).IconName+".ico", "0")
 
 		_, err = cmd.Output()
 		CheckErr(err, "Failed to execute command", false)
 	}
 }
 
-func SetDesc(profileName string, fileInfo fileInfo) {
-	// Check if type is lnk
-	if fileInfo.Extension == ".lnk" && fileInfo.Description != "" {
+func SetDesc(fileInfo *fileInfo) {
+	// Check if type is allowed
+	if contains(allowedTypes, (*fileInfo).Extension) && (*fileInfo).Description != "" {
 		err := os.WriteFile(path.Join(getScriptDir(), "setlnkdesc.vbs"), []byte(setlnkdesc), 0644)
 		CheckErr(err, "Failed to write setlnkdesc.vbs", false)
 
-		cmd := exec.Command("cscript.exe", getScriptDir()+"\\setlnkdesc.vbs", filepath.Dir(fileInfo.Path), filepath.Base(fileInfo.Path), fileInfo.Description)
+		cmd := exec.Command("cscript.exe", getScriptDir()+"\\setlnkdesc.vbs", filepath.Dir((*fileInfo).Path), filepath.Base((*fileInfo).Path), (*fileInfo).Description)
 
 		_, err = cmd.Output()
 		CheckErr(err, "Failed to execute command", false)
@@ -612,7 +611,7 @@ func (a *App) RunProfile(profileName string, fileInfos []fileInfo) {
 	CheckErr(err, "Failed to create script folder", false)
 
 	for _, fileInfo := range fileInfos {
-		SetIcon(profileName, fileInfo)
-		SetDesc(profileName, fileInfo)
+		SetIcon(&profileName, &fileInfo)
+		SetDesc(&fileInfo)
 	}
 }

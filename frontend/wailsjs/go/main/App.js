@@ -6,10 +6,6 @@ export function AddProfile(arg1) {
   return window['go']['main']['App']['AddProfile'](arg1);
 }
 
-export function CopyIcons(arg1) {
-  return window['go']['main']['App']['CopyIcons'](arg1);
-}
-
 export function GetDesktopIcons() {
   return window['go']['main']['App']['GetDesktopIcons']();
 }

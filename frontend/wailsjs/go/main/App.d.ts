@@ -4,8 +4,6 @@ import {main} from '../models';
 
 export function AddProfile(arg1:string):Promise<void>;
 
-export function CopyIcons(arg1:main.profile):Promise<void>;
-
 export function GetDesktopIcons():Promise<Array<main.fileInfo>>;
 
 export function GetFileInfo(arg1:string):Promise<main.fileInfo>;
