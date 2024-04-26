@@ -25,3 +25,4 @@ dist-ssr
 
 # wales
 build/bin/desktop-manager-dev.exe
+*.exe~
