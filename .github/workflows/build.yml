@@ -8,7 +8,7 @@ jobs:
       fail-fast: false
       matrix:
         build: [
-          {name: Desktop Manager, platform: windows/amd64, os: windows-latest},
+          {name: desktop-manager, platform: windows/amd64, os: windows-latest},
         ]
     runs-on: ${{ matrix.build.os }}
     steps:
