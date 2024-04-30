@@ -1,15 +1,28 @@
 name: Build
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+      - development
+  pull_request:
+    branches:
+      - main
+      - development
 
 jobs:
   build:
     strategy:
       fail-fast: false
       matrix:
-        build: [
-          {name: desktop-manager, platform: windows/amd64, os: windows-latest},
-        ]
+        build:
+          [
+            {
+              name: desktop-manager,
+              platform: windows/amd64,
+              os: windows-latest,
+            },
+          ]
     runs-on: ${{ matrix.build.os }}
     steps:
       - uses: actions/checkout@v4
