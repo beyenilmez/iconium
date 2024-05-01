@@ -1,0 +1,34 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+      - development
+  pull_request:
+    branches:
+      - main
+      - development
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        build:
+          [
+            {
+              name: desktop-manager,
+              platform: windows/amd64,
+              os: windows-latest,
+            },
+          ]
+    runs-on: ${{ matrix.build.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: dAppServer/wails-build-action@v2.2
+        with:
+          build-name: ${{ matrix.build.name }}
+          build-platform: ${{ matrix.build.platform }}
