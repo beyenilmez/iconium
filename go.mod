@@ -7,7 +7,7 @@ toolchain go1.22.0
 require (
 	github.com/google/uuid v1.6.0
 	github.com/parsiya/golnk v0.0.0-20221103095132-740a4c27c4ff
-	github.com/wailsapp/wails/v2 v2.8.0
+	github.com/wailsapp/wails/v2 v2.8.1
 )
 
 require (

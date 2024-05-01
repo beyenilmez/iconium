@@ -1,7 +1,7 @@
-import { ThemeProvider } from "./contexts/theme-provider"
-import { ProfileProvider } from "./contexts/profile-provider"
-import TopBar from "./components/TopBar"
-import { FileGrid } from "./components/FileGrid"
+import { ThemeProvider } from "./contexts/theme-provider";
+import { ProfileProvider } from "./contexts/profile-provider";
+import TopBar from "./components/TopBar";
+import { FileGrid } from "./components/FileGrid";
 
 function App() {
   return (
@@ -11,7 +11,7 @@ function App() {
         <FileGrid />
       </ProfileProvider>
     </ThemeProvider>
-  )
+  );
 }
 
-export default App
+export default App;

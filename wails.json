@@ -9,5 +9,9 @@
   "author": {
     "name": "Bedirhan Yenilmez",
     "email": "yenilmezbedirhan@gmail.com"
+  },
+  "info": {
+    "productName": "Desktop Manager",
+    "productVersion": "0.1.0"
   }
 }
