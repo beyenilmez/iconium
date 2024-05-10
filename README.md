@@ -1,6 +1,6 @@
 # Desktop Manager
 
-Icon and description editor, profile creation tool for your desktop. (WIP)
+Desktop icon and description manager, with a profile creation tool.
 
 ## Screenshots
 
@@ -18,6 +18,7 @@ Icon and description editor, profile creation tool for your desktop. (WIP)
 - Share profiles as files
 - Folder and .url support
 - Sync desktop with profile
+- .png and .jpg support for icon selection
 
 ## Built With
 
