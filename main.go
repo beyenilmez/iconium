@@ -23,11 +23,13 @@ func main() {
 
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title:             "Desktop Manager",
-		Width:             1024,
-		Height:            768,
+		Title:             "desktop-manager",
+		Width:             1200,
+		Height:            720,
 		MinWidth:          1024,
 		MinHeight:         768,
+		MaxWidth:          1280,
+		MaxHeight:         800,
 		DisableResize:     false,
 		Fullscreen:        false,
 		Frameless:         false,
@@ -54,7 +56,7 @@ func main() {
 			WindowIsTranslucent:  false,
 			DisableWindowIcon:    false,
 			// DisableFramelessWindowDecorations: false,
-			WebviewUserDataPath: "",
+			WebviewUserDataPath: "%APPDATA%\\desktop-manager",
 			ZoomFactor:          1.0,
 		},
 	})

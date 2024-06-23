@@ -4,16 +4,13 @@ go 1.21
 
 toolchain go1.22.0
 
-require (
-	github.com/google/uuid v1.6.0
-	github.com/parsiya/golnk v0.0.0-20221103095132-740a4c27c4ff
-	github.com/wailsapp/wails/v2 v2.9.1
-)
+require github.com/wailsapp/wails/v2 v2.9.1
 
 require (
 	github.com/bep/debounce v1.2.1 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/jchv/go-winloader v0.0.0-20210711035445-715c2860da7e // indirect
 	github.com/labstack/echo/v4 v4.10.2 // indirect
 	github.com/labstack/gommon v0.4.0 // indirect
@@ -23,8 +20,6 @@ require (
 	github.com/leaanthony/u v1.1.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
-	github.com/mattn/go-runewidth v0.0.13 // indirect
-	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/pkg/browser v0.0.0-20210911075715-681adbf594b8 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
@@ -41,4 +36,4 @@ require (
 	golang.org/x/text v0.15.0 // indirect
 )
 
-// replace github.com/wailsapp/wails/v2 v2.8.0 => C:\Users\bedoy\go\pkg\mod
+// replace github.com/wailsapp/wails/v2 v2.9.1 => C:\Users\bedoy\go\pkg\mod
