@@ -14,9 +14,6 @@ import (
 //go:embed all:frontend/dist
 var assets embed.FS
 
-//go:embed build/appicon.png
-var icon []byte
-
 func main() {
 	// Create an instance of the app structure
 	app := NewApp()
@@ -24,12 +21,10 @@ func main() {
 	// Create application with options
 	err := wails.Run(&options.App{
 		Title:             "desktop-manager",
-		Width:             1200,
-		Height:            720,
+		Width:             1280,
+		Height:            800,
 		MinWidth:          1024,
 		MinHeight:         768,
-		MaxWidth:          1280,
-		MaxHeight:         800,
 		DisableResize:     false,
 		Fullscreen:        false,
 		Frameless:         false,
