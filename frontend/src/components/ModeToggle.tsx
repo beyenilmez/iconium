@@ -13,7 +13,7 @@ export default function ModeToggle() {
       onClick={() => {
         const themeToSet = theme === "light" ? "dark" : "light";
         setTheme(themeToSet);
-        Log("Setted theme to " + themeToSet);
+        Log("Setted theme to " + themeToSet, 1);
       }}
     >
       <Sun className="w-5 h-5 transition-all scale-100 dark:scale-0" />

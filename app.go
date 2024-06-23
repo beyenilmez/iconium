@@ -40,6 +40,19 @@ func (a *App) shutdown(ctx context.Context) {
 }
 
 // Log logs a message
-func (a *App) Log(msg string) {
-	runtime.LogInfo(a.ctx, msg)
+func (a *App) Log(msg string, level int) {
+	switch level {
+	case 1:
+		runtime.LogTrace(a.ctx, msg)
+	case 2:
+		runtime.LogDebug(a.ctx, msg)
+	case 3:
+		runtime.LogInfo(a.ctx, msg)
+	case 4:
+		runtime.LogWarning(a.ctx, msg)
+	case 5:
+		runtime.LogError(a.ctx, msg)
+	default:
+		runtime.LogFatal(a.ctx, msg)
+	}
 }

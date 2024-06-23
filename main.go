@@ -3,6 +3,8 @@ package main
 import (
 	"embed"
 	"log"
+	"os"
+	"path"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/logger"
@@ -17,6 +19,9 @@ var assets embed.FS
 func main() {
 	// Create an instance of the app structure
 	app := NewApp()
+
+	logFile := path.Join(os.Getenv("APPDATA"), "desktop-manager", "desktop-manager.log")
+	fileLogger := NewLogger(logFile)
 
 	// Create application with options
 	err := wails.Run(&options.App{
@@ -35,7 +40,7 @@ func main() {
 			Assets: assets,
 		},
 		Menu:             nil,
-		Logger:           nil,
+		Logger:           fileLogger,
 		LogLevel:         logger.DEBUG,
 		OnStartup:        app.startup,
 		OnDomReady:       app.domReady,
