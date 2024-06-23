@@ -15,9 +15,10 @@ export default function ModeToggle() {
         setTheme(themeToSet);
         Log("Setted theme to " + themeToSet, 1);
       }}
+      className="bg-transparent hover:bg-transparent duration-0"
     >
-      <Sun className="w-5 h-5 transition-all scale-100 dark:scale-0" />
-      <Moon className="absolute w-5 h-5 transition-all scale-0 dark:scale-100" />
+      <Sun className="transition-all scale-100 dark:scale-0 duration-300 rotate-0 dark:rotate-90" />
+      <Moon className="absolute transition-all scale-0 dark:scale-100 duration-300 -rotate-90 dark:rotate-0" />
       <span className="sr-only">Toggle theme</span>
     </Button>
   );
