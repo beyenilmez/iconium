@@ -3,6 +3,7 @@ package main
 import (
 	"embed"
 	"log"
+	"os"
 	"path"
 	"time"
 
@@ -67,7 +68,7 @@ func main() {
 			WindowIsTranslucent:  false,
 			DisableWindowIcon:    false,
 			// DisableFramelessWindowDecorations: false,
-			WebviewUserDataPath: "%APPDATA%\\desktop-manager",
+			WebviewUserDataPath: path.Join(os.Getenv("APPDATA"), "desktop-manager"),
 			ZoomFactor:          1.0,
 		},
 	})
