@@ -12,14 +12,36 @@ import (
 type Config struct {
 	Theme             *string `json:"theme"`             // system, light, dark
 	UseSystemTitleBar *bool   `json:"useSystemTitleBar"` // true, false
+	EnableLogging     *bool   `json:"enableLogging"`     // true, false
+	EnableTrace       *bool   `json:"enableTrace"`       // true, false
+	EnableDebug       *bool   `json:"enableDebug"`       // true, false
+	EnableInfo        *bool   `json:"enableInfo"`        // true, false
+	EnableWarn        *bool   `json:"enableWarn"`        // true, false
+	EnableError       *bool   `json:"enableError"`       // true, false
+	EnableFatal       *bool   `json:"enableFatal"`       // true, false
 }
 
 func GetDefaultConfig() Config {
 	defaultTheme := "system"
 	defaultUseSystemTitleBar := false
+	defaultEnableLogging := true
+	defaultEnableTrace := false
+	defaultEnableDebug := false
+	defaultEnableInfo := true
+	defaultEnableWarn := true
+	defaultEnableError := true
+	defaultEnableFatal := true
+
 	return Config{
 		Theme:             &defaultTheme,
 		UseSystemTitleBar: &defaultUseSystemTitleBar,
+		EnableLogging:     &defaultEnableLogging,
+		EnableTrace:       &defaultEnableTrace,
+		EnableDebug:       &defaultEnableDebug,
+		EnableInfo:        &defaultEnableInfo,
+		EnableWarn:        &defaultEnableWarn,
+		EnableError:       &defaultEnableError,
+		EnableFatal:       &defaultEnableFatal,
 	}
 }
 
@@ -93,6 +115,35 @@ func merge_defaults() {
 	}
 	if config.UseSystemTitleBar == nil {
 		config.UseSystemTitleBar = defaultConfig.UseSystemTitleBar
+		merged = true
+	}
+
+	if config.EnableLogging == nil {
+		config.EnableLogging = defaultConfig.EnableLogging
+		merged = true
+	}
+	if config.EnableTrace == nil {
+		config.EnableTrace = defaultConfig.EnableTrace
+		merged = true
+	}
+	if config.EnableDebug == nil {
+		config.EnableDebug = defaultConfig.EnableDebug
+		merged = true
+	}
+	if config.EnableInfo == nil {
+		config.EnableInfo = defaultConfig.EnableInfo
+		merged = true
+	}
+	if config.EnableWarn == nil {
+		config.EnableWarn = defaultConfig.EnableWarn
+		merged = true
+	}
+	if config.EnableError == nil {
+		config.EnableError = defaultConfig.EnableError
+		merged = true
+	}
+	if config.EnableFatal == nil {
+		config.EnableFatal = defaultConfig.EnableFatal
 		merged = true
 	}
 

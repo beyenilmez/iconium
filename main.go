@@ -21,17 +21,21 @@ func main() {
 	// Create an instance of the app structure
 	app := NewApp()
 
-	logsFolder, err := get_logs_folder()
+	err := config_init()
 	if err != nil {
 		log.Println(err)
 	}
 
-	logFile := path.Join(logsFolder, time.Now().Format("2006-01-02_15-04-05")+".log")
-	fileLogger := NewLogger(logFile)
+	var fileLogger Logger
 
-	err = config_init()
-	if err != nil {
-		log.Println(err)
+	if *config.EnableLogging {
+		logsFolder, err = get_logs_folder()
+		if err != nil {
+			log.Println(err)
+		}
+
+		logFile := path.Join(logsFolder, time.Now().Format("2006-01-02_15-04-05")+".log")
+		fileLogger = NewLogger(logFile)
 	}
 
 	// Create application with options
@@ -52,8 +56,8 @@ func main() {
 		},
 		Menu:               nil,
 		Logger:             fileLogger,
-		LogLevel:           logger.DEBUG,
-		LogLevelProduction: logger.DEBUG,
+		LogLevel:           logger.TRACE,
+		LogLevelProduction: logger.TRACE,
 		OnStartup:          app.startup,
 		OnDomReady:         app.domReady,
 		OnBeforeClose:      app.beforeClose,

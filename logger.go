@@ -46,37 +46,49 @@ func (l *FileLogger) Println(message string) {
 
 // Trace level logging. Works like Sprintf.
 func (l *FileLogger) Trace(message string) {
-	println("TRACE | " + message)
-	l.Println("TRACE | " + message)
+	if *config.EnableTrace {
+		println("TRACE | " + message)
+		l.Println("TRACE | " + message)
+	}
 }
 
 // Debug level logging. Works like Sprintf.
 func (l *FileLogger) Debug(message string) {
-	println("DEBUG | " + message)
-	l.Println("DEBUG | " + message)
+	if *config.EnableDebug {
+		println("DEBUG | " + message)
+		l.Println("DEBUG | " + message)
+	}
 }
 
 // Info level logging. Works like Sprintf.
 func (l *FileLogger) Info(message string) {
-	println("INFO  | " + message)
-	l.Println("INFO  | " + message)
+	if *config.EnableInfo {
+		println("INFO  | " + message)
+		l.Println("INFO  | " + message)
+	}
 }
 
 // Warning level logging. Works like Sprintf.
 func (l *FileLogger) Warning(message string) {
-	println("WARN  | " + message)
-	l.Println("WARN  | " + message)
+	if *config.EnableWarn {
+		println("WARN  | " + message)
+		l.Println("WARN  | " + message)
+	}
 }
 
 // Error level logging. Works like Sprintf.
 func (l *FileLogger) Error(message string) {
-	println("ERROR | " + message)
-	l.Println("ERROR | " + message)
+	if *config.EnableError {
+		println("ERROR | " + message)
+		l.Println("ERROR | " + message)
+	}
 }
 
 // Fatal level logging. Works like Sprintf.
 func (l *FileLogger) Fatal(message string) {
-	println("FATAL | " + message)
-	l.Println("FATAL | " + message)
+	if *config.EnableFatal {
+		println("FATAL | " + message)
+		l.Println("FATAL | " + message)
+	}
 	os.Exit(1)
 }
