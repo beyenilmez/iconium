@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
+
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 type Config struct {
@@ -31,8 +33,16 @@ func (app *App) GetTheme() string {
 }
 
 func (app *App) SetTheme(theme string) {
+	runtime.LogDebug(app.ctx, fmt.Sprintf("Setting theme to %s", theme))
+
 	config.Theme = &theme
-	SetConfig(config)
+	err := SetConfig(config)
+
+	if err != nil {
+		runtime.LogError(app.ctx, err.Error())
+	}
+
+	runtime.LogInfo(app.ctx, fmt.Sprintf("Setted theme to %s", theme))
 }
 
 func (app *App) GetUseSystemTitleBar() bool {
@@ -43,8 +53,16 @@ func (app *App) GetUseSystemTitleBar() bool {
 }
 
 func (app *App) SetUseSystemTitleBar(useSystemTitleBar bool) {
+	runtime.LogDebug(app.ctx, fmt.Sprintf("Setting useSystemTitleBar to %t", useSystemTitleBar))
+
 	config.UseSystemTitleBar = &useSystemTitleBar
-	SetConfig(config)
+	err := SetConfig(config)
+
+	if err != nil {
+		runtime.LogError(app.ctx, err.Error())
+	}
+
+	runtime.LogInfo(app.ctx, fmt.Sprintf("Setted useSystemTitleBar to %t", useSystemTitleBar))
 }
 
 func config_init() error {
