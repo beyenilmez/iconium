@@ -1,0 +1,50 @@
+{
+  "nav": {
+    "my_packs": "My Packs",
+    "edit": "Edit",
+    "settings": "Settings"
+  },
+
+  "settings": {
+    "restart_the_app_for_changes_to_take_effect": "Restart the app for changes to take effect.",
+
+    "general": {
+      "label": "General",
+
+      "language": {
+        "label": "Language",
+        "description": "Select the language."
+      }
+    },
+
+    "application": {
+      "label": "Application",
+
+      "theme": {
+        "label": "Theme",
+        "description": "Select a color scheme for the interface."
+      },
+      "use_system_title_bar": {
+        "label": "Use System Title Bar",
+        "description": "Switch to the default system title bar instead of the custom one."
+      }
+    },
+
+    "system": {
+      "label": "System"
+    },
+
+    "advanced": {
+      "label": "Advanced",
+
+      "logging": {
+        "label": "Enable Logging",
+        "description": "Enable logging to files."
+      },
+      "log_levels": {
+        "label": "Selected Log Levels",
+        "description": "Choose the log levels to be recorded."
+      }
+    }
+  }
+}

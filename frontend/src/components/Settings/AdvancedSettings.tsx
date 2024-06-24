@@ -24,8 +24,11 @@ import {
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Switch } from "../ui/switch";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export function AdvancedSettings() {
+  const { t } = useTranslation();
+
   const [enableLogging, setEnableLogging] = useState(false);
   const [enableTrace, setEnableTrace] = useState(false);
   const [enableDebug, setEnableDebug] = useState(false);
@@ -68,10 +71,11 @@ export function AdvancedSettings() {
     <SettingsGroup className="flex flex-col items-start px-4 py-2 w-full h-full">
       <SettingsItem>
         <div>
-          <SettingLabel>Logging</SettingLabel>
+          <SettingLabel>{t("settings.advanced.logging.label")}</SettingLabel>
           <SettingDescription>
-            Enable logging to files. (Restart the app for the change to take
-            effect.)
+            {t("settings.advanced.logging.description") +
+              " (" +
+              t("settings.restart_the_app_for_changes_to_take_effect") + ")"}
           </SettingDescription>
         </div>
         <SettingContent>
@@ -88,13 +92,23 @@ export function AdvancedSettings() {
 
       <SettingsItem>
         <div>
-          <SettingLabel>Log levels</SettingLabel>
+          <SettingLabel>{t("settings.advanced.log_levels.label")}</SettingLabel>
           <SettingDescription>
-            Select the log levels that should be logged.
+            {t("settings.advanced.log_levels.description")}
           </SettingDescription>
         </div>
         <SettingContent>
-          <ToggleGroup type="multiple" value={[enableTrace ? "trace" : "", enableDebug ? "debug" : "", enableInfo ? "info" : "", enableWarn ? "warn" : "", enableError ? "error" : "", enableFatal ? "fatal" : ""]}>
+          <ToggleGroup
+            type="multiple"
+            value={[
+              enableTrace ? "trace" : "",
+              enableDebug ? "debug" : "",
+              enableInfo ? "info" : "",
+              enableWarn ? "warn" : "",
+              enableError ? "error" : "",
+              enableFatal ? "fatal" : "",
+            ]}
+          >
             <ToggleGroupItem
               value="trace"
               aria-label="Enable trace logging"

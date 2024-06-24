@@ -19,6 +19,7 @@ type Config struct {
 	EnableWarn        *bool   `json:"enableWarn"`        // true, false
 	EnableError       *bool   `json:"enableError"`       // true, false
 	EnableFatal       *bool   `json:"enableFatal"`       // true, false
+	Language          *string `json:"language"`          // en, tr
 }
 
 func GetDefaultConfig() Config {
@@ -31,6 +32,7 @@ func GetDefaultConfig() Config {
 	defaultEnableWarn := true
 	defaultEnableError := true
 	defaultEnableFatal := true
+	defaultLanguage := "en"
 
 	return Config{
 		Theme:             &defaultTheme,
@@ -42,6 +44,7 @@ func GetDefaultConfig() Config {
 		EnableWarn:        &defaultEnableWarn,
 		EnableError:       &defaultEnableError,
 		EnableFatal:       &defaultEnableFatal,
+		Language:          &defaultLanguage,
 	}
 }
 
@@ -104,6 +107,11 @@ func merge_defaults() {
 	}
 	if config.EnableFatal == nil {
 		config.EnableFatal = defaultConfig.EnableFatal
+		merged = true
+	}
+
+	if config.Language == nil {
+		config.Language = defaultConfig.Language
 		merged = true
 	}
 
@@ -290,6 +298,26 @@ func (app *App) SetEnableFatal(enableFatal bool) {
 	}
 
 	runtime.LogInfo(app.ctx, fmt.Sprintf("Setted enableFatal to %t", enableFatal))
+}
+
+func (app *App) GetLanguage() string {
+	if config.Language == nil {
+		return "en"
+	}
+	return *config.Language
+}
+
+func (app *App) SetLanguage(language string) {
+	runtime.LogDebug(app.ctx, fmt.Sprintf("Setting language to %s", language))
+
+	config.Language = &language
+	err := SetConfig(config)
+
+	if err != nil {
+		runtime.LogError(app.ctx, err.Error())
+	}
+
+	runtime.LogInfo(app.ctx, fmt.Sprintf("Setted language to %s", language))
 }
 
 // Set default config to configPath

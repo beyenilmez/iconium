@@ -1,0 +1,50 @@
+{
+  "nav": {
+    "my_packs": "Paketlerim",
+    "edit": "Düzenle",
+    "settings": "Ayarlar"
+  },
+
+  "settings": {
+    "restart_the_app_for_changes_to_take_effect": "Değişikliklerin etkili olması için uygulamayı yeniden başlatın.",
+
+    "general": {
+      "label": "Genel",
+
+      "language": {
+        "label": "Dil",
+        "description": "Uygulama dilini seçin."
+      }
+    },
+
+    "application": {
+      "label": "Uygulama",
+
+      "theme": {
+        "label": "Tema",
+        "description": "Arayüz için bir tema seçin."
+      },
+      "use_system_title_bar": {
+        "label": "Sistem Başlık Çubuğunu Kullan",
+        "description": "Özel başlık çubuğu yerine varsayılan sistem başlık çubuğuna geçin."
+      }
+    },
+
+    "system": {
+      "label": "Sistem"
+    },
+
+    "advanced": {
+      "label": "Gelişmiş",
+
+      "logging": {
+        "label": "Günlük Kaydını Etkinleştir",
+        "description": "Dosyalara günlük kaydını etkinleştirin."
+      },
+      "log_levels": {
+        "label": "Seçilen Günlük Seviyeleri",
+        "description": "Kaydedilecek günlük seviyelerini seçin."
+      }
+    }
+  }
+}

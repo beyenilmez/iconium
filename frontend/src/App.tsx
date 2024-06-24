@@ -3,8 +3,12 @@ import ModeToggle from "@/components/ModeToggle";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TitleBar from "./components/TitleBar";
 import Settings from "./components/Settings";
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from "./components/LanguageSwitcher";
 
 function App() {
+  const { t } = useTranslation();
+
   return (
     <ThemeProvider defaultTheme="system">
       <div className="flex flex-col h-dvh">
@@ -12,15 +16,16 @@ function App() {
         <Tabs defaultValue="packs" className="flex flex-col w-full h-full">
           <TabsList className="shadow-bottom-xs z-10 justify-between px-3 py-7 rounded-none w-full s">
             <div>
-              <TabsTrigger value="packs">My Packs</TabsTrigger>
-              <TabsTrigger value="edit">Edit</TabsTrigger>
-              <TabsTrigger value="settings">Settings</TabsTrigger>
+              <TabsTrigger value="packs">{t("nav.my_packs")}</TabsTrigger>
+              <TabsTrigger value="edit">{t("nav.edit")}</TabsTrigger>
+              <TabsTrigger value="settings">{t("nav.settings")}</TabsTrigger>
             </div>
+            <LanguageSwitcher />
             <ModeToggle />
           </TabsList>
 
           <TabsContent value="packs" className="w-ful h-full">
-            See your packs here.
+            View your packs here.
           </TabsContent>
           <TabsContent value="edit" className="w-ful h-full">
             Edit your packs here.
