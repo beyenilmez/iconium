@@ -25,14 +25,14 @@ func main() {
 
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title:             "desktop-manager",
+		Title:             "Desktop Manager",
 		Width:             1280,
 		Height:            800,
 		MinWidth:          1024,
 		MinHeight:         768,
 		DisableResize:     false,
 		Fullscreen:        false,
-		Frameless:         false,
+		Frameless:         true,
 		StartHidden:       false,
 		HideWindowOnClose: false,
 		BackgroundColour:  &options.RGBA{R: 255, G: 255, B: 255, A: 255},

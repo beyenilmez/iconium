@@ -76,3 +76,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .wails-drag {
+    --wails-draggable: drag;
+  }
+
+  .wails-nodrag {
+    --wails-draggable: no-drag;
+  }
+}

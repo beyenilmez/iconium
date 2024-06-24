@@ -56,3 +56,26 @@ func (a *App) Log(msg string, level int) {
 		runtime.LogFatal(a.ctx, msg)
 	}
 }
+
+// Quits the application
+func (a *App) Quit() {
+	runtime.LogInfo(a.ctx, "Quitting application")
+	runtime.Quit(a.ctx)
+}
+
+// Maximize the application
+func (a *App) Maximize() {
+	if runtime.WindowIsMaximised(a.ctx) {
+		runtime.LogInfo(a.ctx, "Unmaximizing window")
+		runtime.WindowUnmaximise(a.ctx)
+	} else {
+		runtime.LogInfo(a.ctx, "Maximizing window")
+		runtime.WindowMaximise(a.ctx)
+	}
+}
+
+// Minimize the application
+func (a *App) Minimize() {
+	runtime.LogInfo(a.ctx, "Minimizing window")
+	runtime.WindowMinimise(a.ctx)
+}
