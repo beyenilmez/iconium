@@ -13,7 +13,10 @@
 
       "language": {
         "label": "Language",
-        "description": "Select the language."
+        "description": "Select the language.",
+        "select_language": "Select language...",
+        "search_language": "Search language...",
+        "no_languages_found": "No languages found."
       }
     },
 

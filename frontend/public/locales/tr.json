@@ -13,7 +13,10 @@
 
       "language": {
         "label": "Dil",
-        "description": "Uygulama dilini seçin."
+        "description": "Uygulama dilini seçin.",
+        "select_language": "Dil seçin...",
+        "search_language": "Dil ara...",
+        "no_languages_found": "Dil bulunamadı."
       }
     },
 

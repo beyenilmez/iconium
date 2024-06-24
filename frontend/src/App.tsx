@@ -4,7 +4,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TitleBar from "./components/TitleBar";
 import Settings from "./components/Settings";
 import { useTranslation } from 'react-i18next';
-import LanguageSwitcher from "./components/LanguageSwitcher";
 
 function App() {
   const { t } = useTranslation();
@@ -20,7 +19,6 @@ function App() {
               <TabsTrigger value="edit">{t("nav.edit")}</TabsTrigger>
               <TabsTrigger value="settings">{t("nav.settings")}</TabsTrigger>
             </div>
-            <LanguageSwitcher />
             <ModeToggle />
           </TabsList>
 

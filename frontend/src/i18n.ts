@@ -3,9 +3,12 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import HttpApi from "i18next-http-backend";
+import locales from '@/locales.json';
 
 const initializeI18n = async () => {
   const language = (await GetLanguage()) || "en";
+
+  const supportedLngs = locales.locales.map(language => language.code);
 
   i18n
     .use(HttpApi)
@@ -13,7 +16,7 @@ const initializeI18n = async () => {
     .use(initReactI18next)
     .init({
       lng: language,
-      supportedLngs: ["en", "tr"], // Add supported languages here
+      supportedLngs: supportedLngs, // Add supported languages here
       fallbackLng: "en",
       debug: true,
       interpolation: {
