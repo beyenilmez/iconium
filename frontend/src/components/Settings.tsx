@@ -14,6 +14,9 @@ export default function Settings() {
         <TabsTrigger value="system" className="px-12 py-2 w-full">
           System
         </TabsTrigger>
+        <TabsTrigger value="advanced" className="px-12 py-2 w-full">
+          Advanced
+        </TabsTrigger>
       </TabsList>
 
       <TabsContent value="general" className="w-full">
@@ -24,6 +27,9 @@ export default function Settings() {
       </TabsContent>
       <TabsContent value="system" className="w-full">
         Edit your system settings here.
+      </TabsContent>
+      <TabsContent value="advanced" className="w-full">
+        Edit your advanced settings here.
       </TabsContent>
     </Tabs>
   );
