@@ -74,8 +74,9 @@ export function AppSettings() {
             <Switch
               checked={useSystemTitleBar}
               onCheckedChange={(value) => {
-                SetUseSystemTitleBar(value);
-                setUseSystemTitleBar(value);
+                SetUseSystemTitleBar(value).then(() => {
+                  setUseSystemTitleBar(value);
+                })
               }}
             />
           </SettingContent>

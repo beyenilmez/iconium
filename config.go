@@ -47,46 +47,6 @@ func GetDefaultConfig() Config {
 
 var config Config = GetDefaultConfig()
 
-func (app *App) GetTheme() string {
-	if config.Theme == nil {
-		return "undefined"
-	}
-	return *config.Theme
-}
-
-func (app *App) SetTheme(theme string) {
-	runtime.LogDebug(app.ctx, fmt.Sprintf("Setting theme to %s", theme))
-
-	config.Theme = &theme
-	err := SetConfig(config)
-
-	if err != nil {
-		runtime.LogError(app.ctx, err.Error())
-	}
-
-	runtime.LogInfo(app.ctx, fmt.Sprintf("Setted theme to %s", theme))
-}
-
-func (app *App) GetUseSystemTitleBar() bool {
-	if config.UseSystemTitleBar == nil {
-		return false
-	}
-	return *config.UseSystemTitleBar
-}
-
-func (app *App) SetUseSystemTitleBar(useSystemTitleBar bool) {
-	runtime.LogDebug(app.ctx, fmt.Sprintf("Setting useSystemTitleBar to %t", useSystemTitleBar))
-
-	config.UseSystemTitleBar = &useSystemTitleBar
-	err := SetConfig(config)
-
-	if err != nil {
-		runtime.LogError(app.ctx, err.Error())
-	}
-
-	runtime.LogInfo(app.ctx, fmt.Sprintf("Setted useSystemTitleBar to %t", useSystemTitleBar))
-}
-
 func config_init() error {
 	err := CreateConfig()
 	if err != nil {
@@ -150,6 +110,186 @@ func merge_defaults() {
 	if merged {
 		SetConfig(config)
 	}
+}
+
+func (app *App) GetTheme() string {
+	if config.Theme == nil {
+		return "undefined"
+	}
+	return *config.Theme
+}
+
+func (app *App) SetTheme(theme string) {
+	runtime.LogDebug(app.ctx, fmt.Sprintf("Setting theme to %s", theme))
+
+	config.Theme = &theme
+	err := SetConfig(config)
+
+	if err != nil {
+		runtime.LogError(app.ctx, err.Error())
+	}
+
+	runtime.LogInfo(app.ctx, fmt.Sprintf("Setted theme to %s", theme))
+}
+
+func (app *App) GetUseSystemTitleBar() bool {
+	if config.UseSystemTitleBar == nil {
+		return false
+	}
+	return *config.UseSystemTitleBar
+}
+
+func (app *App) SetUseSystemTitleBar(useSystemTitleBar bool) {
+	runtime.LogDebug(app.ctx, fmt.Sprintf("Setting useSystemTitleBar to %t", useSystemTitleBar))
+
+	config.UseSystemTitleBar = &useSystemTitleBar
+	err := SetConfig(config)
+
+	if err != nil {
+		runtime.LogError(app.ctx, err.Error())
+	}
+
+	runtime.LogInfo(app.ctx, fmt.Sprintf("Setted useSystemTitleBar to %t", useSystemTitleBar))
+}
+
+func (app *App) GetEnableLogging() bool {
+	if config.EnableLogging == nil {
+		return false
+	}
+	return *config.EnableLogging
+}
+
+func (app *App) SetEnableLogging(enableLogging bool) {
+	runtime.LogDebug(app.ctx, fmt.Sprintf("Setting enableLogging to %t", enableLogging))
+
+	config.EnableLogging = &enableLogging
+	err := SetConfig(config)
+
+	if err != nil {
+		runtime.LogError(app.ctx, err.Error())
+	}
+
+	runtime.LogInfo(app.ctx, fmt.Sprintf("Setted enableLogging to %t", enableLogging))
+}
+
+func (app *App) GetEnableTrace() bool {
+	if config.EnableTrace == nil {
+		return false
+	}
+	return *config.EnableTrace
+}
+
+func (app *App) SetEnableTrace(enableTrace bool) {
+	runtime.LogDebug(app.ctx, fmt.Sprintf("Setting enableTrace to %t", enableTrace))
+
+	config.EnableTrace = &enableTrace
+	err := SetConfig(config)
+
+	if err != nil {
+		runtime.LogError(app.ctx, err.Error())
+	}
+
+	runtime.LogInfo(app.ctx, fmt.Sprintf("Setted enableTrace to %t", enableTrace))
+}
+
+func (app *App) GetEnableDebug() bool {
+	if config.EnableDebug == nil {
+		return false
+	}
+	return *config.EnableDebug
+}
+
+func (app *App) SetEnableDebug(enableDebug bool) {
+	runtime.LogDebug(app.ctx, fmt.Sprintf("Setting enableDebug to %t", enableDebug))
+
+	config.EnableDebug = &enableDebug
+	err := SetConfig(config)
+
+	if err != nil {
+		runtime.LogError(app.ctx, err.Error())
+	}
+
+	runtime.LogInfo(app.ctx, fmt.Sprintf("Setted enableDebug to %t", enableDebug))
+}
+
+func (app *App) GetEnableInfo() bool {
+	if config.EnableInfo == nil {
+		return false
+	}
+	return *config.EnableInfo
+}
+
+func (app *App) SetEnableInfo(enableInfo bool) {
+	runtime.LogDebug(app.ctx, fmt.Sprintf("Setting enableInfo to %t", enableInfo))
+
+	config.EnableInfo = &enableInfo
+	err := SetConfig(config)
+
+	if err != nil {
+		runtime.LogError(app.ctx, err.Error())
+	}
+
+	runtime.LogInfo(app.ctx, fmt.Sprintf("Setted enableInfo to %t", enableInfo))
+}
+
+func (app *App) GetEnableWarn() bool {
+	if config.EnableWarn == nil {
+		return false
+	}
+	return *config.EnableWarn
+}
+
+func (app *App) SetEnableWarn(enableWarn bool) {
+	runtime.LogDebug(app.ctx, fmt.Sprintf("Setting enableWarn to %t", enableWarn))
+
+	config.EnableWarn = &enableWarn
+	err := SetConfig(config)
+
+	if err != nil {
+		runtime.LogError(app.ctx, err.Error())
+	}
+
+	runtime.LogInfo(app.ctx, fmt.Sprintf("Setted enableWarn to %t", enableWarn))
+}
+
+func (app *App) GetEnableError() bool {
+	if config.EnableError == nil {
+		return false
+	}
+	return *config.EnableError
+}
+
+func (app *App) SetEnableError(enableError bool) {
+	runtime.LogDebug(app.ctx, fmt.Sprintf("Setting enableError to %t", enableError))
+
+	config.EnableError = &enableError
+	err := SetConfig(config)
+
+	if err != nil {
+		runtime.LogError(app.ctx, err.Error())
+	}
+
+	runtime.LogInfo(app.ctx, fmt.Sprintf("Setted enableError to %t", enableError))
+}
+
+func (app *App) GetEnableFatal() bool {
+	if config.EnableFatal == nil {
+		return false
+	}
+	return *config.EnableFatal
+}
+
+func (app *App) SetEnableFatal(enableFatal bool) {
+	runtime.LogDebug(app.ctx, fmt.Sprintf("Setting enableFatal to %t", enableFatal))
+
+	config.EnableFatal = &enableFatal
+	err := SetConfig(config)
+
+	if err != nil {
+		runtime.LogError(app.ctx, err.Error())
+	}
+
+	runtime.LogInfo(app.ctx, fmt.Sprintf("Setted enableFatal to %t", enableFatal))
 }
 
 // Set default config to configPath
