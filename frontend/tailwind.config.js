@@ -73,6 +73,14 @@ module.exports = {
       transitionDuration: {
         250: "250ms",
       },
+      boxShadow: {
+        "bottom-xs": "0px 1px 2px rgba(0,0,0,0.1)",
+        "bottom-sm": "0px 2px 4px rgba(0,0,0,0.1)",
+        "bottom-md": "0px 4px 6px rgba(0,0,0,0.1)",
+        "bottom-lg": "0px 6px 8px rgba(0,0,0,0.1)",
+        "bottom-xl": "0px 8px 10px rgba(0,0,0,0.1)",
+        "bottom-2xl": "0px 12px 16px rgba(0,0,0,0.1)",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],
