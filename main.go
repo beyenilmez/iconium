@@ -3,8 +3,8 @@ package main
 import (
 	"embed"
 	"log"
-	"os"
 	"path"
+	"time"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/logger"
@@ -20,11 +20,16 @@ func main() {
 	// Create an instance of the app structure
 	app := NewApp()
 
-	logFile := path.Join(os.Getenv("APPDATA"), "desktop-manager", "desktop-manager.log")
+	logsFolder, err := get_logs_folder()
+	if err != nil {
+		log.Println(err)
+	}
+
+	logFile := path.Join(logsFolder, time.Now().Format("2006-01-02_15-04-05")+".log")
 	fileLogger := NewLogger(logFile)
 
 	// Create application with options
-	err := wails.Run(&options.App{
+	err = wails.Run(&options.App{
 		Title:             "Desktop Manager",
 		Width:             1280,
 		Height:            800,

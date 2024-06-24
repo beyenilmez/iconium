@@ -11,6 +11,8 @@ type App struct {
 	ctx context.Context
 }
 
+var appContext context.Context
+
 // NewApp creates a new App application struct
 func NewApp() *App {
 	return &App{}
@@ -18,8 +20,16 @@ func NewApp() *App {
 
 // startup is called at application startup
 func (a *App) startup(ctx context.Context) {
-	// Perform your setup here
 	a.ctx = ctx
+	appContext = ctx
+
+	// Initiate paths
+	runtime.LogInfo(appContext, "Initiating paths")
+	err := path_init()
+
+	if err != nil {
+		runtime.LogError(appContext, err.Error())
+	}
 }
 
 // domReady is called after front-end resources have been loaded
@@ -78,4 +88,14 @@ func (a *App) Maximize() {
 func (a *App) Minimize() {
 	runtime.LogInfo(a.ctx, "Minimizing window")
 	runtime.WindowMinimise(a.ctx)
+}
+
+type Config struct {
+	Theme string `json:"theme"`
+}
+
+func GetDefaultConfig() Config {
+	return Config{
+		Theme: "system",
+	}
 }
