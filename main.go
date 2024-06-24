@@ -42,7 +42,7 @@ func main() {
 		MinHeight:         768,
 		DisableResize:     false,
 		Fullscreen:        false,
-		Frameless:         true,
+		Frameless:         !*config.UseSystemTitleBar,
 		StartHidden:       false,
 		HideWindowOnClose: false,
 		BackgroundColour:  &options.RGBA{R: 255, G: 255, B: 255, A: 255},

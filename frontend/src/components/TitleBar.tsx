@@ -1,11 +1,21 @@
-import { Minimize, Maximize, Quit } from "wailsjs/go/main/App";
+import { Minimize, Maximize, Quit, GetUseSystemTitleBar } from "wailsjs/go/main/App";
 import { Minus, Copy, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import icon from "../assets/appicon.png";
+import { useEffect, useState } from "react";
 
 export default function TitleBar() {
+  const [useSystemTitleBar, setUseSystemTitleBar] = useState(false);
+
+  useEffect(() => {
+    GetUseSystemTitleBar().then((value) => {
+      setUseSystemTitleBar(value)
+    })
+  }), []
+  
   return (
-    <header className="flex justify-between items-center bg-muted pl-3 w-full h-8 wails-drag">
+    !useSystemTitleBar && (
+      <header className="flex justify-between items-center bg-muted pl-3 w-full h-8 wails-drag">
       <h1 className="flex gap-1 mt-2.5 font-semibold select-none">
         <img src={icon} className="w-6 h-6" />
         {document.title}
@@ -22,6 +32,7 @@ export default function TitleBar() {
         </Button>
       </div>
     </header>
+    )
   );
 }
 

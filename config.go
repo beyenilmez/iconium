@@ -3,40 +3,83 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"os"
 )
 
 type Config struct {
-	Theme string `json:"theme"`
+	Theme             *string `json:"theme"`             // system, light, dark
+	UseSystemTitleBar *bool   `json:"useSystemTitleBar"` // true, false
+}
+
+func GetDefaultConfig() Config {
+	defaultTheme := "system"
+	defaultUseSystemTitleBar := false
+	return Config{
+		Theme:             &defaultTheme,
+		UseSystemTitleBar: &defaultUseSystemTitleBar,
+	}
 }
 
 var config Config = GetDefaultConfig()
 
 func (app *App) GetTheme() string {
-	return config.Theme
+	if config.Theme == nil {
+		return "undefined"
+	}
+	return *config.Theme
 }
 
 func (app *App) SetTheme(theme string) {
-	config.Theme = theme
+	config.Theme = &theme
+	SetConfig(config)
+}
+
+func (app *App) GetUseSystemTitleBar() bool {
+	if config.UseSystemTitleBar == nil {
+		return false
+	}
+	return *config.UseSystemTitleBar
+}
+
+func (app *App) SetUseSystemTitleBar(useSystemTitleBar bool) {
+	config.UseSystemTitleBar = &useSystemTitleBar
 	SetConfig(config)
 }
 
 func config_init() error {
 	err := CreateConfig()
 	if err != nil {
-		return errors.New("Failed to create config file")
+		return errors.New("failed to create config file")
 	}
 	err = ReadConfig()
 	if err != nil {
-		return errors.New("Failed to read config file")
+		return errors.New("failed to read config file")
 	}
+
+	merge_defaults()
 
 	return nil
 }
 
-func GetDefaultConfig() Config {
-	return Config{
-		Theme: "system",
+func merge_defaults() {
+	defaultConfig := GetDefaultConfig()
+
+	fmt.Println("Merging default config")
+
+	merged := false
+
+	if config.Theme == nil {
+		config.Theme = defaultConfig.Theme
+		merged = true
+	}
+	if config.UseSystemTitleBar == nil {
+		config.UseSystemTitleBar = defaultConfig.UseSystemTitleBar
+		merged = true
+	}
+
+	if merged {
+		SetConfig(config)
 	}
 }
 
