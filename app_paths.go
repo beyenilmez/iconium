@@ -59,6 +59,12 @@ func get_logs_folder() (string, error) {
 	return logsFolder, nil
 }
 
+func get_config_path() string {
+	configPath = path.Join(os.Getenv("APPDATA"), "desktop-manager", "config.json")
+
+	return configPath
+}
+
 // Create folder if it doesn't exist, return error
 func create_folder(folder string) error {
 	if _, err := os.Stat(folder); os.IsNotExist(err) {

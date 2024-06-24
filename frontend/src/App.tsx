@@ -5,7 +5,7 @@ import TitleBar from "./components/TitleBar";
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+    <ThemeProvider defaultTheme="system">
       <div className="flex flex-col h-dvh">
         <TitleBar />
         <Tabs defaultValue="packs" className="w-full h-full">

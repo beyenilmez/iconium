@@ -28,6 +28,11 @@ func main() {
 	logFile := path.Join(logsFolder, time.Now().Format("2006-01-02_15-04-05")+".log")
 	fileLogger := NewLogger(logFile)
 
+	err = config_init()
+	if err != nil {
+		log.Println(err)
+	}
+
 	// Create application with options
 	err = wails.Run(&options.App{
 		Title:             "Desktop Manager",

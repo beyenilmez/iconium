@@ -89,13 +89,3 @@ func (a *App) Minimize() {
 	runtime.LogInfo(a.ctx, "Minimizing window")
 	runtime.WindowMinimise(a.ctx)
 }
-
-type Config struct {
-	Theme string `json:"theme"`
-}
-
-func GetDefaultConfig() Config {
-	return Config{
-		Theme: "system",
-	}
-}

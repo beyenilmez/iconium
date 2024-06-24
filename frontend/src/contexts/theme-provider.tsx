@@ -1,3 +1,4 @@
+import { GetTheme, Log, SetTheme } from "wailsjs/go/main/App"
 import { createContext, useContext, useEffect, useState } from "react"
 
 type Theme = "dark" | "light" | "system"
@@ -5,7 +6,6 @@ type Theme = "dark" | "light" | "system"
 type ThemeProviderProps = {
   children: React.ReactNode
   defaultTheme?: Theme
-  storageKey?: string
 }
 
 type ThemeProviderState = {
@@ -23,12 +23,24 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 export function ThemeProvider({
   children,
   defaultTheme = "system",
-  storageKey = "vite-ui-theme",
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
-  )
+  const [theme, setThemeState] = useState<Theme>(defaultTheme)
+
+  useEffect(() => {
+    const fetchTheme = async () => {
+      try {
+        const storedTheme = await GetTheme()
+        if (storedTheme) {
+          setThemeState(storedTheme as Theme)
+        }
+      } catch (error) {
+        Log("Failed to fetch theme", 4)
+      }
+    }
+
+    fetchTheme()
+  }, [])
 
   useEffect(() => {
     const root = window.document.documentElement
@@ -50,9 +62,13 @@ export function ThemeProvider({
 
   const value = {
     theme,
-    setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme)
-      setTheme(theme)
+    setTheme: async (theme: Theme) => {
+      try {
+        await SetTheme(theme)
+        setThemeState(theme)
+      } catch (error) {
+        Log("Failed to set theme", 4)
+      }
     },
   }
 
