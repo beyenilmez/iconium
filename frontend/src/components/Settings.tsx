@@ -1,5 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AppSettings } from "./Settings/AppSettings";
+import { AdvancedSettings } from "./Settings/AdvancedSettings";
 
 export default function Settings() {
   return (
@@ -29,7 +30,7 @@ export default function Settings() {
         Edit your system settings here.
       </TabsContent>
       <TabsContent value="advanced" className="w-full">
-        Edit your advanced settings here.
+        <AdvancedSettings />
       </TabsContent>
     </Tabs>
   );
