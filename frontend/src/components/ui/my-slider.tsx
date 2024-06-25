@@ -31,7 +31,7 @@ export const Slider: React.FC<SliderProps> = ({
         <SliderPrimitive.Range className="absolute bg-primary h-full" />
       </SliderPrimitive.Track>
       <SliderPrimitive.Thumb
-        className="block border-2 border-primary bg-background disabled:opacity-50 rounded-full w-5 h-5 transition-colors ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none"
+        className="block border-0 border-primary bg-muted-foreground disabled:opacity-50 rounded-full w-5 h-5 transition-colors ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none"
       />
     </SliderPrimitive.Root>
   );

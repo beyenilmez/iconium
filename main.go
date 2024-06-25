@@ -80,9 +80,10 @@ func main() {
 		},
 		// Windows platform specific options
 		Windows: &windows.Options{
-			WebviewIsTransparent: false,
-			WindowIsTranslucent:  false,
+			WebviewIsTransparent: true,
+			WindowIsTranslucent:  true,
 			DisableWindowIcon:    false,
+			BackdropType:         windows.Acrylic,
 			// DisableFramelessWindowDecorations: false,
 			WebviewUserDataPath: path.Join(os.Getenv("APPDATA"), "desktop-manager"),
 			ZoomFactor:          1.0,

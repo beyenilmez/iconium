@@ -25,7 +25,7 @@ export const SettingsItem: React.FC<SettingsItemProps> = ({ children, className,
 }
 
 export const SettingLabel: React.FC<SettingsComponentProps> = ({ children, className, ...rest }) => (
-  <div className={`font-medium text-primary ${className}`} {...rest}>{children}</div>
+  <div className={`font-medium text-foreground ${className}`} {...rest}>{children}</div>
 );
 
 export const SettingDescription: React.FC<SettingsComponentProps> = ({ children, className, ...rest }) => (
