@@ -11,8 +11,6 @@ export default function TitleBar() {
     GetConfigField("UseSystemTitleBar").then((value) => {
       setUseSystemTitleBar(value === "true");
     })
-
-    GetConfigField("deneme")
   }), []
   
   return (

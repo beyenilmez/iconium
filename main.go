@@ -38,6 +38,19 @@ func main() {
 		fileLogger = NewLogger(logFile)
 	}
 
+	// Window State
+	windowsStateInt := *config.WindowStartState
+	windowState := options.Normal
+
+	switch windowsStateInt {
+	case 1:
+		windowState = options.Minimised
+	case 2:
+		windowState = options.Maximised
+	case 3:
+		windowState = options.Fullscreen
+	}
+
 	// Create application with options
 	err = wails.Run(&options.App{
 		Title:             "Desktop Manager",
@@ -62,7 +75,7 @@ func main() {
 		OnDomReady:         app.domReady,
 		OnBeforeClose:      app.beforeClose,
 		OnShutdown:         app.shutdown,
-		WindowStartState:   options.Normal,
+		WindowStartState:   windowState,
 		Bind: []interface{}{
 			app,
 		},

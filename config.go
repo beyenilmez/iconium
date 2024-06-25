@@ -22,6 +22,7 @@ type Config struct {
 	EnableError       *bool   `json:"enableError"`       // true, false
 	EnableFatal       *bool   `json:"enableFatal"`       // true, false
 	Language          *string `json:"language"`          // en, tr
+	WindowStartState  *int    `json:"windowStartState"`  // 0 = Normal, 1 = Maximized, 2 = Minimized, 3 = Fullscreen
 }
 
 func GetDefaultConfig() Config {
@@ -35,6 +36,7 @@ func GetDefaultConfig() Config {
 	defaultEnableError := true
 	defaultEnableFatal := true
 	defaultLanguage := "en"
+	defaultWindowStartState := 0
 
 	return Config{
 		Theme:             &defaultTheme,
@@ -47,6 +49,7 @@ func GetDefaultConfig() Config {
 		EnableError:       &defaultEnableError,
 		EnableFatal:       &defaultEnableFatal,
 		Language:          &defaultLanguage,
+		WindowStartState:  &defaultWindowStartState,
 	}
 }
 
@@ -172,7 +175,7 @@ func (app *App) SetConfigField(fieldName string, value string) {
 	runtime.LogDebug(app.ctx, fmt.Sprintf("Config field %s set to %v", fieldName, fieldValue.Interface()))
 
 	runtime.LogDebug(app.ctx, "Attempting to write to config file")
-	err := SetConfig(config)
+	err := WriteConfig()
 
 	if err != nil {
 		runtime.LogError(app.ctx, fmt.Sprintf("Failed to write to config file: %v", err))
