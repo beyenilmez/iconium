@@ -193,26 +193,6 @@ func (app *App) SetConfigField(field string, value string) {
 	}
 }
 
-func (app *App) GetTheme() string {
-	if config.Theme == nil {
-		return "undefined"
-	}
-	return *config.Theme
-}
-
-func (app *App) SetTheme(theme string) {
-	runtime.LogDebug(app.ctx, fmt.Sprintf("Setting theme to %s", theme))
-
-	config.Theme = &theme
-	err := SetConfig(config)
-
-	if err != nil {
-		runtime.LogError(app.ctx, err.Error())
-	}
-
-	runtime.LogInfo(app.ctx, fmt.Sprintf("Setted theme to %s", theme))
-}
-
 // Set default config to configPath
 func SetDefaultConfig() error {
 	config = GetDefaultConfig()
