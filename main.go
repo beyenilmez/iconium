@@ -92,6 +92,10 @@ func main() {
 		OnBeforeClose:      app.beforeClose,
 		OnShutdown:         app.shutdown,
 		WindowStartState:   windowState,
+		SingleInstanceLock: &options.SingleInstanceLock{
+			UniqueId:               "4d1e7b7b-42a3-4357-92f3-425b1087b545",
+			OnSecondInstanceLaunch: app.onSecondInstanceLaunch,
+		},
 		Bind: []interface{}{
 			app,
 		},

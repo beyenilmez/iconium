@@ -50,10 +50,12 @@ export function AppSettings() {
   }, []);
 
   useEffect(() => {
-    document.documentElement.style.setProperty(
-      "--opacity",
-      String(Number(useWindowEffect === "1" ? "100" : useOpacity) / 100)
-    );
+    if (!isLoading) {
+      document.documentElement.style.setProperty(
+        "--opacity",
+        String(Number(useWindowEffect === "1" ? "100" : useOpacity) / 100)
+      );
+    }
   }, [useWindowEffect]);
 
   return (

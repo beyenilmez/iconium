@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"strings"
 
+	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
@@ -67,6 +69,18 @@ func (a *App) beforeClose(ctx context.Context) (prevent bool) {
 // shutdown is called at application termination
 func (a *App) shutdown(ctx context.Context) {
 	// Perform your teardown here
+}
+
+// onSecondInstanceLaunch is called when the application is launched from a second instance
+func (a *App) onSecondInstanceLaunch(secondInstanceData options.SecondInstanceData) {
+	secondInstanceArgs := secondInstanceData.Args
+
+	runtime.LogDebug(a.ctx, "User opened a second instance "+strings.Join(secondInstanceArgs, ","))
+	runtime.LogDebug(a.ctx, "User opened a second instance from "+secondInstanceData.WorkingDirectory)
+
+	runtime.WindowUnminimise(a.ctx)
+	runtime.Show(a.ctx)
+	go runtime.EventsEmit(a.ctx, "launchArgs", secondInstanceArgs)
 }
 
 // Log logs a message
