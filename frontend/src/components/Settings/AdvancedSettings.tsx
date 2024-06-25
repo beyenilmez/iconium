@@ -1,19 +1,4 @@
-import {
-  GetEnableLogging,
-  SetEnableLogging,
-  GetEnableTrace,
-  SetEnableTrace,
-  GetEnableDebug,
-  SetEnableDebug,
-  GetEnableInfo,
-  SetEnableInfo,
-  GetEnableWarn,
-  SetEnableWarn,
-  GetEnableError,
-  SetEnableError,
-  GetEnableFatal,
-  SetEnableFatal,
-} from "wailsjs/go/main/App";
+import { GetConfigField, SetConfigField } from "wailsjs/go/main/App";
 import {
   SettingsGroup,
   SettingsItem,
@@ -38,32 +23,32 @@ export function AdvancedSettings() {
   const [enableFatal, setEnableFatal] = useState(false);
 
   useEffect(() => {
-    GetEnableLogging().then((value) => {
-      setEnableLogging(value);
+    GetConfigField("enableLogging").then((value) => {
+      setEnableLogging(value === "true");
     });
 
-    GetEnableTrace().then((value) => {
-      setEnableTrace(value);
+    GetConfigField("enableTrace").then((value) => {
+      setEnableTrace(value === "true");
     });
 
-    GetEnableDebug().then((value) => {
-      setEnableDebug(value);
+    GetConfigField("enableDebug").then((value) => {
+      setEnableDebug(value === "true");
     });
 
-    GetEnableInfo().then((value) => {
-      setEnableInfo(value);
+    GetConfigField("enableInfo").then((value) => {
+      setEnableInfo(value === "true");
     });
 
-    GetEnableWarn().then((value) => {
-      setEnableWarn(value);
+    GetConfigField("enableWarn").then((value) => {
+      setEnableWarn(value === "true");
     });
 
-    GetEnableError().then((value) => {
-      setEnableError(value);
+    GetConfigField("enableError").then((value) => {
+      setEnableError(value === "true");
     });
 
-    GetEnableFatal().then((value) => {
-      setEnableFatal(value);
+    GetConfigField("enableFatal").then((value) => {
+      setEnableFatal(value === "true");
     });
   }, []);
 
@@ -75,16 +60,19 @@ export function AdvancedSettings() {
           <SettingDescription>
             {t("settings.advanced.logging.description") +
               " (" +
-              t("settings.restart_the_app_for_changes_to_take_effect") + ")"}
+              t("settings.restart_the_app_for_changes_to_take_effect") +
+              ")"}
           </SettingDescription>
         </div>
         <SettingContent>
           <Switch
             checked={enableLogging}
             onCheckedChange={() => {
-              SetEnableLogging(!enableLogging).then(() => {
-                setEnableLogging(!enableLogging);
-              });
+              SetConfigField("enableLogging", String(!enableLogging)).then(
+                () => {
+                  setEnableLogging(!enableLogging);
+                }
+              );
             }}
           />
         </SettingContent>
@@ -113,7 +101,7 @@ export function AdvancedSettings() {
               value="trace"
               aria-label="Enable trace logging"
               onClick={() => {
-                SetEnableTrace(!enableTrace).then(() => {
+                SetConfigField("enableTrace", String(!enableTrace)).then(() => {
                   setEnableTrace(!enableTrace);
                 });
               }}
@@ -125,7 +113,7 @@ export function AdvancedSettings() {
               value="debug"
               aria-label="Enable debug logging"
               onClick={() => {
-                SetEnableDebug(!enableDebug).then(() => {
+                SetConfigField("enableDebug", String(!enableDebug)).then(() => {
                   setEnableDebug(!enableDebug);
                 });
               }}
@@ -137,7 +125,7 @@ export function AdvancedSettings() {
               value="info"
               aria-label="Enable info logging"
               onClick={() => {
-                SetEnableInfo(!enableInfo).then(() => {
+                SetConfigField("enableInfo", String(!enableInfo)).then(() => {
                   setEnableInfo(!enableInfo);
                 });
               }}
@@ -149,7 +137,7 @@ export function AdvancedSettings() {
               value="warn"
               aria-label="Enable warn logging"
               onClick={() => {
-                SetEnableWarn(!enableWarn).then(() => {
+                SetConfigField("enableWarn", String(!enableWarn)).then(() => {
                   setEnableWarn(!enableWarn);
                 });
               }}
@@ -161,7 +149,7 @@ export function AdvancedSettings() {
               value="error"
               aria-label="Enable error logging"
               onClick={() => {
-                SetEnableError(!enableError).then(() => {
+                SetConfigField("enableError", String(!enableError)).then(() => {
                   setEnableError(!enableError);
                 });
               }}
@@ -173,7 +161,7 @@ export function AdvancedSettings() {
               value="fatal"
               aria-label="Enable fatal logging"
               onClick={() => {
-                SetEnableFatal(!enableFatal).then(() => {
+                SetConfigField("enableFatal", String(!enableFatal)).then(() => {
                   setEnableFatal(!enableFatal);
                 });
               }}

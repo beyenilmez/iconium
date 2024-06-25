@@ -1,4 +1,4 @@
-import { Minimize, Maximize, Quit, GetUseSystemTitleBar } from "wailsjs/go/main/App";
+import { Minimize, Maximize, Quit, GetConfigField } from "wailsjs/go/main/App";
 import { Minus, Copy, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import icon from "../assets/appicon.png";
@@ -8,8 +8,8 @@ export default function TitleBar() {
   const [useSystemTitleBar, setUseSystemTitleBar] = useState(false);
 
   useEffect(() => {
-    GetUseSystemTitleBar().then((value) => {
-      setUseSystemTitleBar(value)
+    GetConfigField("useSystemTitleBar").then((value) => {
+      setUseSystemTitleBar(value === "true");
     })
   }), []
   

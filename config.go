@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -120,6 +121,78 @@ func merge_defaults() {
 	}
 }
 
+func (app *App) GetConfigField(field string) string {
+	runtime.LogDebug(app.ctx, fmt.Sprintf("Getting config field %s", field))
+
+	switch field {
+	case "theme":
+		return *config.Theme
+	case "useSystemTitleBar":
+		return fmt.Sprintf("%t", *config.UseSystemTitleBar)
+	case "enableLogging":
+		return fmt.Sprintf("%t", *config.EnableLogging)
+	case "enableTrace":
+		return fmt.Sprintf("%t", *config.EnableTrace)
+	case "enableDebug":
+		return fmt.Sprintf("%t", *config.EnableDebug)
+	case "enableInfo":
+		return fmt.Sprintf("%t", *config.EnableInfo)
+	case "enableWarn":
+		return fmt.Sprintf("%t", *config.EnableWarn)
+	case "enableError":
+		return fmt.Sprintf("%t", *config.EnableError)
+	case "enableFatal":
+		return fmt.Sprintf("%t", *config.EnableFatal)
+	case "language":
+		return *config.Language
+	default:
+		runtime.LogWarning(app.ctx, fmt.Sprintf("Unknown config field %s", field))
+		return "undefined"
+	}
+}
+
+func (app *App) SetConfigField(field string, value string) {
+	runtime.LogDebug(app.ctx, fmt.Sprintf("Setting config field %s to %s", field, value))
+
+	valueBool, err := strconv.ParseBool(value)
+
+	if err != nil {
+		runtime.LogDebug(app.ctx, fmt.Sprintf("Failed to parse %s to bool", value))
+	}
+
+	unknown_field := false
+
+	switch field {
+	case "theme":
+		config.Theme = &value
+	case "useSystemTitleBar":
+		config.UseSystemTitleBar = &valueBool
+	case "enableLogging":
+		config.EnableLogging = &valueBool
+	case "enableTrace":
+		config.EnableTrace = &valueBool
+	case "enableDebug":
+		config.EnableDebug = &valueBool
+	case "enableInfo":
+		config.EnableInfo = &valueBool
+	case "enableWarn":
+		config.EnableWarn = &valueBool
+	case "enableError":
+		config.EnableError = &valueBool
+	case "enableFatal":
+		config.EnableFatal = &valueBool
+	case "language":
+		config.Language = &value
+	default:
+		unknown_field = true
+		runtime.LogWarning(app.ctx, fmt.Sprintf("Unknown config field %s", field))
+	}
+
+	if !unknown_field {
+		SetConfig(config)
+	}
+}
+
 func (app *App) GetTheme() string {
 	if config.Theme == nil {
 		return "undefined"
@@ -138,186 +211,6 @@ func (app *App) SetTheme(theme string) {
 	}
 
 	runtime.LogInfo(app.ctx, fmt.Sprintf("Setted theme to %s", theme))
-}
-
-func (app *App) GetUseSystemTitleBar() bool {
-	if config.UseSystemTitleBar == nil {
-		return false
-	}
-	return *config.UseSystemTitleBar
-}
-
-func (app *App) SetUseSystemTitleBar(useSystemTitleBar bool) {
-	runtime.LogDebug(app.ctx, fmt.Sprintf("Setting useSystemTitleBar to %t", useSystemTitleBar))
-
-	config.UseSystemTitleBar = &useSystemTitleBar
-	err := SetConfig(config)
-
-	if err != nil {
-		runtime.LogError(app.ctx, err.Error())
-	}
-
-	runtime.LogInfo(app.ctx, fmt.Sprintf("Setted useSystemTitleBar to %t", useSystemTitleBar))
-}
-
-func (app *App) GetEnableLogging() bool {
-	if config.EnableLogging == nil {
-		return false
-	}
-	return *config.EnableLogging
-}
-
-func (app *App) SetEnableLogging(enableLogging bool) {
-	runtime.LogDebug(app.ctx, fmt.Sprintf("Setting enableLogging to %t", enableLogging))
-
-	config.EnableLogging = &enableLogging
-	err := SetConfig(config)
-
-	if err != nil {
-		runtime.LogError(app.ctx, err.Error())
-	}
-
-	runtime.LogInfo(app.ctx, fmt.Sprintf("Setted enableLogging to %t", enableLogging))
-}
-
-func (app *App) GetEnableTrace() bool {
-	if config.EnableTrace == nil {
-		return false
-	}
-	return *config.EnableTrace
-}
-
-func (app *App) SetEnableTrace(enableTrace bool) {
-	runtime.LogDebug(app.ctx, fmt.Sprintf("Setting enableTrace to %t", enableTrace))
-
-	config.EnableTrace = &enableTrace
-	err := SetConfig(config)
-
-	if err != nil {
-		runtime.LogError(app.ctx, err.Error())
-	}
-
-	runtime.LogInfo(app.ctx, fmt.Sprintf("Setted enableTrace to %t", enableTrace))
-}
-
-func (app *App) GetEnableDebug() bool {
-	if config.EnableDebug == nil {
-		return false
-	}
-	return *config.EnableDebug
-}
-
-func (app *App) SetEnableDebug(enableDebug bool) {
-	runtime.LogDebug(app.ctx, fmt.Sprintf("Setting enableDebug to %t", enableDebug))
-
-	config.EnableDebug = &enableDebug
-	err := SetConfig(config)
-
-	if err != nil {
-		runtime.LogError(app.ctx, err.Error())
-	}
-
-	runtime.LogInfo(app.ctx, fmt.Sprintf("Setted enableDebug to %t", enableDebug))
-}
-
-func (app *App) GetEnableInfo() bool {
-	if config.EnableInfo == nil {
-		return false
-	}
-	return *config.EnableInfo
-}
-
-func (app *App) SetEnableInfo(enableInfo bool) {
-	runtime.LogDebug(app.ctx, fmt.Sprintf("Setting enableInfo to %t", enableInfo))
-
-	config.EnableInfo = &enableInfo
-	err := SetConfig(config)
-
-	if err != nil {
-		runtime.LogError(app.ctx, err.Error())
-	}
-
-	runtime.LogInfo(app.ctx, fmt.Sprintf("Setted enableInfo to %t", enableInfo))
-}
-
-func (app *App) GetEnableWarn() bool {
-	if config.EnableWarn == nil {
-		return false
-	}
-	return *config.EnableWarn
-}
-
-func (app *App) SetEnableWarn(enableWarn bool) {
-	runtime.LogDebug(app.ctx, fmt.Sprintf("Setting enableWarn to %t", enableWarn))
-
-	config.EnableWarn = &enableWarn
-	err := SetConfig(config)
-
-	if err != nil {
-		runtime.LogError(app.ctx, err.Error())
-	}
-
-	runtime.LogInfo(app.ctx, fmt.Sprintf("Setted enableWarn to %t", enableWarn))
-}
-
-func (app *App) GetEnableError() bool {
-	if config.EnableError == nil {
-		return false
-	}
-	return *config.EnableError
-}
-
-func (app *App) SetEnableError(enableError bool) {
-	runtime.LogDebug(app.ctx, fmt.Sprintf("Setting enableError to %t", enableError))
-
-	config.EnableError = &enableError
-	err := SetConfig(config)
-
-	if err != nil {
-		runtime.LogError(app.ctx, err.Error())
-	}
-
-	runtime.LogInfo(app.ctx, fmt.Sprintf("Setted enableError to %t", enableError))
-}
-
-func (app *App) GetEnableFatal() bool {
-	if config.EnableFatal == nil {
-		return false
-	}
-	return *config.EnableFatal
-}
-
-func (app *App) SetEnableFatal(enableFatal bool) {
-	runtime.LogDebug(app.ctx, fmt.Sprintf("Setting enableFatal to %t", enableFatal))
-
-	config.EnableFatal = &enableFatal
-	err := SetConfig(config)
-
-	if err != nil {
-		runtime.LogError(app.ctx, err.Error())
-	}
-
-	runtime.LogInfo(app.ctx, fmt.Sprintf("Setted enableFatal to %t", enableFatal))
-}
-
-func (app *App) GetLanguage() string {
-	if config.Language == nil {
-		return "en"
-	}
-	return *config.Language
-}
-
-func (app *App) SetLanguage(language string) {
-	runtime.LogDebug(app.ctx, fmt.Sprintf("Setting language to %s", language))
-
-	config.Language = &language
-	err := SetConfig(config)
-
-	if err != nil {
-		runtime.LogError(app.ctx, err.Error())
-	}
-
-	runtime.LogInfo(app.ctx, fmt.Sprintf("Setted language to %s", language))
 }
 
 // Set default config to configPath

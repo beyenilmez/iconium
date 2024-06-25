@@ -1,4 +1,4 @@
-import { GetLanguage, SetLanguage } from "wailsjs/go/main/App";
+import { SetConfigField, GetConfigField } from "wailsjs/go/main/App";
 import {
   SettingsGroup,
   SettingsItem,
@@ -19,16 +19,20 @@ export function GeneralSettings() {
   };
 
   const [language, setLanguage] = useState("en");
+  const [langIsSet, setLangIsSet] = useState(false);
 
   useEffect(() => {
-    GetLanguage().then((value) => {
+    GetConfigField("language").then((value) => {
       setLanguage(value);
+      setLangIsSet(true);
     });
   }, []);
 
   useEffect(() => {
-    SetLanguage(language);
-    changeLanguage(language);
+    if (langIsSet) {
+      SetConfigField("language", language);
+      changeLanguage(language);
+    }
   }, [language]);
 
   return (

@@ -1,7 +1,4 @@
-import {
-  GetUseSystemTitleBar,
-  SetUseSystemTitleBar,
-} from "wailsjs/go/main/App";
+import { GetConfigField, SetConfigField } from "wailsjs/go/main/App";
 import { Moon, Sun, Monitor } from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
@@ -23,8 +20,8 @@ export function AppSettings() {
   const [useSystemTitleBar, setUseSystemTitleBar] = useState(false);
 
   useEffect(() => {
-    GetUseSystemTitleBar().then((value) => {
-      setUseSystemTitleBar(value);
+    GetConfigField("useSystemTitleBar").then((value) => {
+      setUseSystemTitleBar(value === "true");
     });
   }, []);
 
@@ -80,7 +77,7 @@ export function AppSettings() {
           <Switch
             checked={useSystemTitleBar}
             onCheckedChange={(value) => {
-              SetUseSystemTitleBar(value).then(() => {
+              SetConfigField("useSystemTitleBar", String(value)).then(() => {
                 setUseSystemTitleBar(value);
               });
             }}
