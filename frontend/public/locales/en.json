@@ -17,6 +17,10 @@
         "select_language": "Select language...",
         "search_language": "Search language...",
         "no_languages_found": "No languages found."
+      },
+      "theme": {
+        "label": "Theme",
+        "description": "Select a color scheme for the interface."
       }
     },
 
@@ -26,11 +30,6 @@
       "window_scale": {
         "label": "Scale",
         "description": "Select the window scale."
-      },
-    
-      "theme": {
-        "label": "Theme",
-        "description": "Select a color scheme for the interface."
       },
       "use_system_title_bar": {
         "label": "Use System Title Bar",

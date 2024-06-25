@@ -17,6 +17,10 @@
         "select_language": "Dil seçin...",
         "search_language": "Dil ara...",
         "no_languages_found": "Dil bulunamadı."
+      },
+      "theme": {
+        "label": "Tema",
+        "description": "Arayüz için bir tema seçin."
       }
     },
 
@@ -26,11 +30,6 @@
       "window_scale": {
         "label": "Yakınlaştırma",
         "description": "Pencere ölçeğini seçin."
-      },
-
-      "theme": {
-        "label": "Tema",
-        "description": "Arayüz için bir tema seçin."
       },
       "use_system_title_bar": {
         "label": "Sistem Başlık Çubuğunu Kullan",

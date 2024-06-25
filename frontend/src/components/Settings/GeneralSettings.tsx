@@ -72,9 +72,9 @@ export function GeneralSettings() {
 
       <SettingsItem loading={isLoading}>
         <div>
-          <SettingLabel>{t("settings.application.theme.label")}</SettingLabel>
+          <SettingLabel>{t("settings.general.theme.label")}</SettingLabel>
           <SettingDescription>
-            {t("settings.application.theme.description")}
+            {t("settings.general.theme.description")}
           </SettingDescription>
         </div>
         <SettingContent>
