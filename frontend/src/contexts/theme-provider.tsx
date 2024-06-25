@@ -30,7 +30,7 @@ export function ThemeProvider({
   useEffect(() => {
     const fetchTheme = async () => {
       try {
-        const storedTheme = await GetConfigField("theme");
+        const storedTheme = await GetConfigField("Theme");
         if (storedTheme) {
           setThemeState(storedTheme as Theme);
         }
@@ -64,7 +64,7 @@ export function ThemeProvider({
     theme,
     setTheme: async (theme: Theme) => {
       try {
-        await SetConfigField("theme", theme);
+        await SetConfigField("Theme", theme);
         setThemeState(theme);
       } catch (error) {
         Log("Failed to set theme", 4);

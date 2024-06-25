@@ -25,7 +25,7 @@ export function GeneralSettings() {
   const [langIsSet, setLangIsSet] = useState(false);
 
   useEffect(() => {
-    GetConfigField("language").then((value) => {
+    GetConfigField("Language").then((value) => {
       setLanguage(value);
       setLangIsSet(true);
     });
@@ -33,7 +33,7 @@ export function GeneralSettings() {
 
   useEffect(() => {
     if (langIsSet) {
-      SetConfigField("language", language);
+      SetConfigField("Language", language);
       changeLanguage(language);
     }
   }, [language]);

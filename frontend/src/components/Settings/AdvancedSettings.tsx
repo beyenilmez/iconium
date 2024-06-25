@@ -23,31 +23,31 @@ export function AdvancedSettings() {
   const [enableFatal, setEnableFatal] = useState(false);
 
   useEffect(() => {
-    GetConfigField("enableLogging").then((value) => {
+    GetConfigField("EnableLogging").then((value) => {
       setEnableLogging(value === "true");
     });
 
-    GetConfigField("enableTrace").then((value) => {
+    GetConfigField("EnableTrace").then((value) => {
       setEnableTrace(value === "true");
     });
 
-    GetConfigField("enableDebug").then((value) => {
+    GetConfigField("EnableDebug").then((value) => {
       setEnableDebug(value === "true");
     });
 
-    GetConfigField("enableInfo").then((value) => {
+    GetConfigField("EnableInfo").then((value) => {
       setEnableInfo(value === "true");
     });
 
-    GetConfigField("enableWarn").then((value) => {
+    GetConfigField("EnableWarn").then((value) => {
       setEnableWarn(value === "true");
     });
 
-    GetConfigField("enableError").then((value) => {
+    GetConfigField("EnableError").then((value) => {
       setEnableError(value === "true");
     });
 
-    GetConfigField("enableFatal").then((value) => {
+    GetConfigField("EnableFatal").then((value) => {
       setEnableFatal(value === "true");
     });
   }, []);
@@ -68,7 +68,7 @@ export function AdvancedSettings() {
           <Switch
             checked={enableLogging}
             onCheckedChange={() => {
-              SetConfigField("enableLogging", String(!enableLogging)).then(
+              SetConfigField("EnableLogging", String(!enableLogging)).then(
                 () => {
                   setEnableLogging(!enableLogging);
                 }
@@ -101,7 +101,7 @@ export function AdvancedSettings() {
               value="trace"
               aria-label="Enable trace logging"
               onClick={() => {
-                SetConfigField("enableTrace", String(!enableTrace)).then(() => {
+                SetConfigField("EnableTrace", String(!enableTrace)).then(() => {
                   setEnableTrace(!enableTrace);
                 });
               }}
@@ -113,7 +113,7 @@ export function AdvancedSettings() {
               value="debug"
               aria-label="Enable debug logging"
               onClick={() => {
-                SetConfigField("enableDebug", String(!enableDebug)).then(() => {
+                SetConfigField("EnableDebug", String(!enableDebug)).then(() => {
                   setEnableDebug(!enableDebug);
                 });
               }}
@@ -125,7 +125,7 @@ export function AdvancedSettings() {
               value="info"
               aria-label="Enable info logging"
               onClick={() => {
-                SetConfigField("enableInfo", String(!enableInfo)).then(() => {
+                SetConfigField("EnableInfo", String(!enableInfo)).then(() => {
                   setEnableInfo(!enableInfo);
                 });
               }}
@@ -137,7 +137,7 @@ export function AdvancedSettings() {
               value="warn"
               aria-label="Enable warn logging"
               onClick={() => {
-                SetConfigField("enableWarn", String(!enableWarn)).then(() => {
+                SetConfigField("EnableWarn", String(!enableWarn)).then(() => {
                   setEnableWarn(!enableWarn);
                 });
               }}
@@ -149,7 +149,7 @@ export function AdvancedSettings() {
               value="error"
               aria-label="Enable error logging"
               onClick={() => {
-                SetConfigField("enableError", String(!enableError)).then(() => {
+                SetConfigField("EnableError", String(!enableError)).then(() => {
                   setEnableError(!enableError);
                 });
               }}
@@ -161,7 +161,7 @@ export function AdvancedSettings() {
               value="fatal"
               aria-label="Enable fatal logging"
               onClick={() => {
-                SetConfigField("enableFatal", String(!enableFatal)).then(() => {
+                SetConfigField("EnableFatal", String(!enableFatal)).then(() => {
                   setEnableFatal(!enableFatal);
                 });
               }}

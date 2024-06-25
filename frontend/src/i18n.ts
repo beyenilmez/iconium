@@ -6,7 +6,7 @@ import HttpApi from "i18next-http-backend";
 import locales from "@/locales.json";
 
 const initializeI18n = async () => {
-  const language = (await GetConfigField("language")) || "en";
+  const language = (await GetConfigField("Language")) || "en";
 
   const supportedLngs = locales.locales.map((language) => language.code);
 

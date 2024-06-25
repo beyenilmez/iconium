@@ -16,7 +16,7 @@ export function AppSettings() {
   const [useSystemTitleBar, setUseSystemTitleBar] = useState(false);
 
   useEffect(() => {
-    GetConfigField("useSystemTitleBar").then((value) => {
+    GetConfigField("UseSystemTitleBar").then((value) => {
       setUseSystemTitleBar(value === "true");
     });
   }, []);
@@ -39,7 +39,7 @@ export function AppSettings() {
           <Switch
             checked={useSystemTitleBar}
             onCheckedChange={(value) => {
-              SetConfigField("useSystemTitleBar", String(value)).then(() => {
+              SetConfigField("UseSystemTitleBar", String(value)).then(() => {
                 setUseSystemTitleBar(value);
               });
             }}

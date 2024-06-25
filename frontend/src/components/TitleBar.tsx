@@ -8,9 +8,11 @@ export default function TitleBar() {
   const [useSystemTitleBar, setUseSystemTitleBar] = useState(false);
 
   useEffect(() => {
-    GetConfigField("useSystemTitleBar").then((value) => {
+    GetConfigField("UseSystemTitleBar").then((value) => {
       setUseSystemTitleBar(value === "true");
     })
+
+    GetConfigField("deneme")
   }), []
   
   return (

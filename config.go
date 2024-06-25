@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"reflect"
 	"strconv"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -121,76 +122,90 @@ func merge_defaults() {
 	}
 }
 
-func (app *App) GetConfigField(field string) string {
-	runtime.LogDebug(app.ctx, fmt.Sprintf("Getting config field %s", field))
+func (app *App) GetConfigField(fieldName string) string {
+	runtime.LogDebug(app.ctx, fmt.Sprintf("Attempting to get config field %s", fieldName))
 
-	switch field {
-	case "theme":
-		return *config.Theme
-	case "useSystemTitleBar":
-		return fmt.Sprintf("%t", *config.UseSystemTitleBar)
-	case "enableLogging":
-		return fmt.Sprintf("%t", *config.EnableLogging)
-	case "enableTrace":
-		return fmt.Sprintf("%t", *config.EnableTrace)
-	case "enableDebug":
-		return fmt.Sprintf("%t", *config.EnableDebug)
-	case "enableInfo":
-		return fmt.Sprintf("%t", *config.EnableInfo)
-	case "enableWarn":
-		return fmt.Sprintf("%t", *config.EnableWarn)
-	case "enableError":
-		return fmt.Sprintf("%t", *config.EnableError)
-	case "enableFatal":
-		return fmt.Sprintf("%t", *config.EnableFatal)
-	case "language":
-		return *config.Language
-	default:
-		runtime.LogWarning(app.ctx, fmt.Sprintf("Unknown config field %s", field))
+	// Get the reflection Type and Value of the Config struct
+	v := reflect.ValueOf(&config).Elem()
+	t := v.Type()
+
+	// Find the field by name
+	_, found := t.FieldByName(fieldName)
+	if !found {
+		runtime.LogWarning(app.ctx, fmt.Sprintf("Unknown config field: %s", fieldName))
 		return "undefined"
 	}
+
+	// Get the field value
+	fieldValue := v.FieldByName(fieldName)
+
+	// Check if the field is a pointer
+	if fieldValue.Kind() == reflect.Ptr {
+		if fieldValue.IsNil() {
+			runtime.LogWarning(app.ctx, fmt.Sprintf("Config field %s is nil", fieldName))
+			return "undefined"
+		}
+		// Dereference the pointer
+		fieldValue = fieldValue.Elem()
+	}
+
+	runtime.LogDebug(app.ctx, fmt.Sprintf("Config field %s has value: %v", fieldName, fieldValue.Interface()))
+	return fmt.Sprintf("%v", fieldValue.Interface())
 }
 
-func (app *App) SetConfigField(field string, value string) {
-	runtime.LogDebug(app.ctx, fmt.Sprintf("Setting config field %s to %s", field, value))
+func (app *App) SetConfigField(fieldName string, value string) {
+	runtime.LogDebug(app.ctx, fmt.Sprintf("Attempting to set config field %s to %s", fieldName, value))
 
-	valueBool, err := strconv.ParseBool(value)
+	v := reflect.ValueOf(&config).Elem()
+	t := v.Type()
+
+	_, found := t.FieldByName(fieldName)
+	if !found {
+		runtime.LogWarning(app.ctx, fmt.Sprintf("Unknown config field: %s", fieldName))
+		return
+	}
+
+	fieldValue := v.FieldByName(fieldName)
+
+	if fieldValue.Kind() == reflect.Ptr {
+		if fieldValue.IsNil() {
+			fieldValue.Set(reflect.New(fieldValue.Type().Elem()))
+		}
+		fieldValue = fieldValue.Elem()
+	}
+
+	switch fieldValue.Kind() {
+	case reflect.String:
+		fieldValue.SetString(value)
+	case reflect.Bool:
+		boolVal, err := strconv.ParseBool(value)
+		if err != nil {
+			runtime.LogError(app.ctx, fmt.Sprintf("Invalid value for boolean field %s: %s", fieldName, value))
+			return
+		}
+		fieldValue.SetBool(boolVal)
+	case reflect.Int:
+		intVal, err := strconv.Atoi(value)
+		if err != nil {
+			runtime.LogError(app.ctx, fmt.Sprintf("Invalid value for integer field %s: %s", fieldName, value))
+			return
+		}
+		fieldValue.SetInt(int64(intVal))
+	default:
+		runtime.LogError(app.ctx, fmt.Sprintf("Unsupported field type for field %s", fieldName))
+		return
+	}
+
+	runtime.LogDebug(app.ctx, fmt.Sprintf("Config field %s set to %v", fieldName, fieldValue.Interface()))
+
+	runtime.LogDebug(app.ctx, "Attempting to write to config file")
+	err := SetConfig(config)
 
 	if err != nil {
-		runtime.LogDebug(app.ctx, fmt.Sprintf("Failed to parse %s to bool", value))
+		runtime.LogError(app.ctx, fmt.Sprintf("Failed to write to config file: %v", err))
 	}
 
-	unknown_field := false
-
-	switch field {
-	case "theme":
-		config.Theme = &value
-	case "useSystemTitleBar":
-		config.UseSystemTitleBar = &valueBool
-	case "enableLogging":
-		config.EnableLogging = &valueBool
-	case "enableTrace":
-		config.EnableTrace = &valueBool
-	case "enableDebug":
-		config.EnableDebug = &valueBool
-	case "enableInfo":
-		config.EnableInfo = &valueBool
-	case "enableWarn":
-		config.EnableWarn = &valueBool
-	case "enableError":
-		config.EnableError = &valueBool
-	case "enableFatal":
-		config.EnableFatal = &valueBool
-	case "language":
-		config.Language = &value
-	default:
-		unknown_field = true
-		runtime.LogWarning(app.ctx, fmt.Sprintf("Unknown config field %s", field))
-	}
-
-	if !unknown_field {
-		SetConfig(config)
-	}
+	runtime.LogDebug(app.ctx, "Config file written")
 }
 
 // Set default config to configPath
