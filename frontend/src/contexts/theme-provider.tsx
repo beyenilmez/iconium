@@ -1,4 +1,4 @@
-import { GetConfigField, Log, SetConfigField } from "wailsjs/go/main/App";
+import { GetConfigField, Log, SetConfigField, SetTheme } from "wailsjs/go/main/App";
 import { createContext, useContext, useEffect, useState } from "react";
 
 type Theme = "dark" | "light" | "system";
@@ -66,6 +66,7 @@ export function ThemeProvider({
       try {
         await SetConfigField("Theme", theme);
         setThemeState(theme);
+        SetTheme(theme);
       } catch (error) {
         Log("Failed to set theme", 4);
       }

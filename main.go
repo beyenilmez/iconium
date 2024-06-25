@@ -104,6 +104,7 @@ func main() {
 			// DisableFramelessWindowDecorations: false,
 			WebviewUserDataPath: path.Join(os.Getenv("APPDATA"), "desktop-manager"),
 			ZoomFactor:          1.0,
+			DisablePinchZoom:    true,
 		},
 	})
 
