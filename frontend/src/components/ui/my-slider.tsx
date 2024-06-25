@@ -17,7 +17,7 @@ export const Slider: React.FC<SliderProps> = ({
       )}
       {...props}
     >
-      <SliderPrimitive.Track className="relative bg-secondary rounded-full w-full h-2 overflow-hidden grow">
+      <SliderPrimitive.Track className="relative bg-secondary rounded-full w-full h-2 disabled:hover:cursor-default overflow-hidden grow">
         <SliderPrimitive.Range className="absolute bg-primary h-full" />
       </SliderPrimitive.Track>
       <SliderPrimitive.Thumb

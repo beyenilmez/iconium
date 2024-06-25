@@ -11,10 +11,18 @@ function App() {
   const { t } = useTranslation();
 
   useEffect(() => {
-    Promise.all([GetConfigField("WindowScale")])
-      .then(([windowScaleValue]) => {
+    Promise.all([
+      GetConfigField("WindowScale"),
+      GetConfigField("Opacity"),
+      GetConfigField("WindowEffect"),
+    ])
+      .then(([windowScaleValue, opacityValue, windowEffectValue]) => {
         document.documentElement.style.fontSize =
           Number(windowScaleValue) * (16 / 100) + "px";
+        document.documentElement.style.setProperty(
+          "--opacity",
+          String(Number(windowEffectValue === "1" ? "100" : opacityValue) / 100)
+        );
       })
       .catch((error) => {
         console.error("Error fetching configuration:", error);

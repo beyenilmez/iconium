@@ -12,14 +12,16 @@ export const SettingsGroup: React.FC<SettingsComponentProps> = ({ children, clas
 interface SettingsItemProps extends React.HTMLAttributes<HTMLDivElement> {
   loading?: boolean;
   vertical?: boolean;
+  disabled?: boolean;
   children: ReactNode;
 }
 
-export const SettingsItem: React.FC<SettingsItemProps> = ({ children, className, loading, vertical, ...rest }) => {
+export const SettingsItem: React.FC<SettingsItemProps> = ({ children, className, disabled, loading, vertical, ...rest }) => {
   if (loading) {
     return <SettingsItemSkeleton className={className} {...rest} />
   } else {
-    return <div className={`flex gap-4 justify-between py-2 w-full border-b ${vertical ? "flex-col" : "flex-row items-center"}
+    return <div className={`flex gap-4 justify-between py-2 w-full border-b ${vertical ? "flex-col" : "flex-row items-center"} 
+    ${disabled ? "opacity-50 pointer-events-none" : ""}
        ${className}`} {...rest}>{children}</div>
   }
 }

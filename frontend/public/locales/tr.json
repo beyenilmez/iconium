@@ -29,7 +29,13 @@
 
       "window_effect": {
         "label": "Pencere Efekti",
-        "description": "Pencere efektini seçin."
+        "description": "Pencere efektini seçin.",
+        
+        "auto": "Otomatik",
+        "none": "Yok",
+        "acrylic": "Akrilik",
+        "mica": "Mika",
+        "tabbed": "Sekmeli"
       },
       "window_opacity": {
         "label": "Pencere Opaklığı",

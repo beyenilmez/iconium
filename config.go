@@ -25,6 +25,7 @@ type Config struct {
 	WindowStartState  *int    `json:"windowStartState"`  // 0 = Normal, 1 = Maximized, 2 = Minimized, 3 = Fullscreen
 	WindowScale       *int    `json:"windowScale"`       // %
 	Opacity           *int    `json:"opacity"`           // %
+	WindowEffect      *int    `json:"windowEffect"`      // 0 = Auto, 1 = None, 2 = Mica, 3 = Acrylic, 4 = Tabbed
 }
 
 func GetDefaultConfig() Config {
@@ -40,7 +41,8 @@ func GetDefaultConfig() Config {
 	defaultLanguage := "en"
 	defaultWindowStartState := 0
 	defaultWindowScale := 100
-	opacity := 90
+	defaultOpacity := 90
+	defaultWindowEffect := 0
 
 	return Config{
 		Theme:             &defaultTheme,
@@ -55,7 +57,8 @@ func GetDefaultConfig() Config {
 		Language:          &defaultLanguage,
 		WindowStartState:  &defaultWindowStartState,
 		WindowScale:       &defaultWindowScale,
-		Opacity:           &opacity,
+		Opacity:           &defaultOpacity,
+		WindowEffect:      &defaultWindowEffect,
 	}
 }
 

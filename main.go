@@ -51,6 +51,23 @@ func main() {
 		windowState = options.Fullscreen
 	}
 
+	// Window Effect
+	windowEffectInt := *config.WindowEffect
+	windowEffect := windows.Auto
+	windowTransparent := true
+
+	switch windowEffectInt {
+	case 1:
+		windowEffect = windows.None
+		windowTransparent = false
+	case 2:
+		windowEffect = windows.Mica
+	case 3:
+		windowEffect = windows.Acrylic
+	case 4:
+		windowEffect = windows.Tabbed
+	}
+
 	// Create application with options
 	err = wails.Run(&options.App{
 		Title:             "Desktop Manager",
@@ -80,10 +97,10 @@ func main() {
 		},
 		// Windows platform specific options
 		Windows: &windows.Options{
-			WebviewIsTransparent: true,
-			WindowIsTranslucent:  true,
+			WebviewIsTransparent: windowTransparent,
+			WindowIsTranslucent:  windowTransparent,
 			DisableWindowIcon:    false,
-			BackdropType:         windows.Acrylic,
+			BackdropType:         windowEffect,
 			// DisableFramelessWindowDecorations: false,
 			WebviewUserDataPath: path.Join(os.Getenv("APPDATA"), "desktop-manager"),
 			ZoomFactor:          1.0,

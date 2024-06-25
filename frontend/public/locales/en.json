@@ -29,11 +29,17 @@
 
       "window_effect": {
         "label": "Window Effect",
-        "description": "Choose the effect for the window."
+        "description": "Choose the effect for the window.",
+        
+        "auto": "Auto",
+        "none": "None",
+        "acrylic": "Acrylic",
+        "mica": "Mica",
+        "tabbed": "Tabbed"
       },
       "window_opacity": {
-        "label": "Window Opacity",
-        "description": "Adjust the window opacity. (This setting will be ignored if the window effect is set to 'None'.)"
+        "label": "Background Opacity",
+        "description": "Sets the opacity of the window. (This setting will be ignored if the window effect is set to 'None'.)"
       },
 
       "window_scale": {
