@@ -1,34 +1,75 @@
-name: Build
-
+name: "build"
 on:
+  workflow_dispatch:
   push:
     branches:
-      - main
-      - development
-  pull_request:
-    branches:
-      - main
-      - development
+      - code-signing
+      
+permissions:
+  contents: write
 
 jobs:
-  build:
+  package:
     strategy:
-      fail-fast: false
       matrix:
-        build:
-          [
-            {
-              name: desktop-manager,
-              platform: windows/amd64,
-              os: windows-latest,
-            },
-          ]
-    runs-on: ${{ matrix.build.os }}
+        platform: [windows-latest]
+        build-name: ['desktop-manager']
+        go-version: [1.22]
+        node-version: [20]
+    runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
+
+      - name: Install Go
+        uses: actions/setup-go@v2
         with:
-          submodules: recursive
-      - uses: dAppServer/wails-build-action@v2.2
+          go-version: ${{ matrix.go-version }}
+
+      - name: Setup node
+        uses: actions/setup-node@v2
         with:
-          build-name: ${{ matrix.build.name }}
-          build-platform: ${{ matrix.build.platform }}
+          node-version: ${{ matrix.node-version }}
+
+      - name: Get Wails
+        run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
+
+      - name: Build Wails app
+        run: wails build
+
+      - name: Build NSIS installer
+        run: wails build -nsis
+
+      - name: Sign Windows binaries
+        shell: powershell
+        if: matrix.platform == 'windows-latest'
+        run: |
+          echo "Creating certificate file"
+          New-Item -ItemType directory -Path certificate
+          Set-Content -Path certificate\certificate.txt -Value '${{ secrets.WIN_SIGNING_CERT }}'
+          certutil -decode certificate\certificate.txt certificate\certificate.pfx
+          echo "Signing Binary"
+          & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe' sign /fd sha256 /tr http://ts.ssl.com /f certificate\certificate.pfx /p '${{ secrets.WIN_SIGNING_CERT_PASSWORD }}' .\build\bin\${{matrix.build-name}}.exe
+          echo "Signing Installer" 
+          & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe' sign /fd sha256 /tr http://ts.ssl.com /f certificate\certificate.pfx /p '${{ secrets.WIN_SIGNING_CERT_PASSWORD }}' .\build\bin\${{matrix.build-name}}-amd64-installer.exe
+
+      - name: Upload artifacts windows
+        if: matrix.platform == 'windows-latest'
+        uses: actions/upload-artifact@v2
+        with:
+          name: wails-binaries-windows
+          path: build/bin/*
+
+      - name: Get version from wails.json
+        id: get_version
+        run: echo "VERSION=$(jq -r '.info.productVersion' wails.json)" >> $GITHUB_ENV
+
+      - name: Create draft release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/code-signing'
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.get_version.outputs.VERSION }}
+          release_name: Release v${{ steps.get_version.outputs.VERSION }}
+          draft: true
