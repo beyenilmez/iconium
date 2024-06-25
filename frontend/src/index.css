@@ -71,6 +71,10 @@
 }
 
 @layer base {
+  html {
+    height: 100%;
+    overflow: hidden;
+  }
   * {
     @apply border-border;
   }
