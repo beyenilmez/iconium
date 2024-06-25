@@ -11,7 +11,7 @@ export default function TitleBar() {
     GetConfigField("UseSystemTitleBar").then((value) => {
       setUseSystemTitleBar(value === "true");
     })
-  }), []
+  }, [])
   
   return (
     !useSystemTitleBar && (

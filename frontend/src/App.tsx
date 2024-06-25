@@ -3,7 +3,7 @@ import ModeToggle from "@/components/ModeToggle";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TitleBar from "./components/TitleBar";
 import Settings from "./components/Settings";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
 function App() {
   const { t } = useTranslation();
