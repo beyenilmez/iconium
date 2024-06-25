@@ -55,7 +55,15 @@ func (a *App) beforeClose(ctx context.Context) (prevent bool) {
 		runtime.LogInfo(a.ctx, "Setting window state to normal")
 	}
 
-	WriteConfig()
+	runtime.LogInfo(a.ctx, "Saving config")
+	err := WriteConfig()
+
+	if err != nil {
+		runtime.LogError(a.ctx, err.Error())
+		return false
+	}
+
+	runtime.LogInfo(a.ctx, "Saving config complete")
 
 	return false
 }

@@ -78,8 +78,6 @@ func merge_defaults() {
 	v := reflect.ValueOf(&config).Elem()
 	t := v.Type()
 
-	merged := false
-
 	for i := 0; i < t.NumField(); i++ {
 		field := t.Field(i)
 		fieldName := field.Name
@@ -89,12 +87,7 @@ func merge_defaults() {
 			// If config's field is nil, set it to the default value's field
 			defaultValue := reflect.ValueOf(&defaultConfig).Elem().FieldByName(fieldName)
 			fieldValue.Set(defaultValue)
-			merged = true
 		}
-	}
-
-	if merged {
-		SetConfig(config)
 	}
 }
 
@@ -173,32 +166,6 @@ func (app *App) SetConfigField(fieldName string, value string) {
 	}
 
 	runtime.LogDebug(app.ctx, fmt.Sprintf("Config field %s set to %v", fieldName, fieldValue.Interface()))
-
-	runtime.LogDebug(app.ctx, "Attempting to write to config file")
-	err := WriteConfig()
-
-	if err != nil {
-		runtime.LogError(app.ctx, fmt.Sprintf("Failed to write to config file: %v", err))
-	}
-
-	runtime.LogDebug(app.ctx, "Config file written")
-}
-
-// Set default config to configPath
-func SetDefaultConfig() error {
-	config = GetDefaultConfig()
-	return WriteConfig()
-}
-
-// GetConfig returns the current config
-func GetConfig() Config {
-	return config
-}
-
-// SetConfig sets the current config
-func SetConfig(newConfig Config) error {
-	config = newConfig
-	return WriteConfig()
 }
 
 // Creates a default config at configPath if none exists
@@ -206,7 +173,7 @@ func CreateConfigIfNotExist() error {
 	configPath = get_config_path()
 
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		return SetDefaultConfig()
+		config = GetDefaultConfig()
 	}
 	return nil
 }
