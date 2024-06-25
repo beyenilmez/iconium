@@ -1,4 +1,4 @@
-import { GetConfigField, SetConfigField } from "wailsjs/go/main/App";
+import { GetConfigField, Log, SetConfigField } from "wailsjs/go/main/App";
 import {
   SettingsGroup,
   SettingsItem,
@@ -14,6 +14,8 @@ import { useTranslation } from "react-i18next";
 export function AdvancedSettings() {
   const { t } = useTranslation();
 
+  const [isLoading, setIsLoading] = useState(true);
+
   const [enableLogging, setEnableLogging] = useState(false);
   const [enableTrace, setEnableTrace] = useState(false);
   const [enableDebug, setEnableDebug] = useState(false);
@@ -23,38 +25,45 @@ export function AdvancedSettings() {
   const [enableFatal, setEnableFatal] = useState(false);
 
   useEffect(() => {
-    GetConfigField("EnableLogging").then((value) => {
-      setEnableLogging(value === "true");
-    });
+    Promise.all([
+      GetConfigField("EnableLogging"),
+      GetConfigField("EnableTrace"),
+      GetConfigField("EnableDebug"),
+      GetConfigField("EnableInfo"),
+      GetConfigField("EnableWarn"),
+      GetConfigField("EnableError"),
+      GetConfigField("EnableFatal"),
+    ])
+      .then(
+        ([
+          enableLogging,
+          enableTrace,
+          enableDebug,
+          enableInfo,
+          enableWarn,
+          enableError,
+          enableFatal,
+        ]) => {
+          setEnableLogging(enableLogging === "true");
+          setEnableTrace(enableTrace === "true");
+          setEnableDebug(enableDebug === "true");
+          setEnableInfo(enableInfo === "true");
+          setEnableWarn(enableWarn === "true");
+          setEnableError(enableError === "true");
+          setEnableFatal(enableFatal === "true");
 
-    GetConfigField("EnableTrace").then((value) => {
-      setEnableTrace(value === "true");
-    });
-
-    GetConfigField("EnableDebug").then((value) => {
-      setEnableDebug(value === "true");
-    });
-
-    GetConfigField("EnableInfo").then((value) => {
-      setEnableInfo(value === "true");
-    });
-
-    GetConfigField("EnableWarn").then((value) => {
-      setEnableWarn(value === "true");
-    });
-
-    GetConfigField("EnableError").then((value) => {
-      setEnableError(value === "true");
-    });
-
-    GetConfigField("EnableFatal").then((value) => {
-      setEnableFatal(value === "true");
-    });
+          setIsLoading(false);
+        }
+      )
+      .catch((error) => {
+        Log("Error while loading advanced settings: " + error, 4);
+        setIsLoading(false);
+      });
   }, []);
 
   return (
     <SettingsGroup className="flex flex-col items-start px-4 py-2 w-full h-full">
-      <SettingsItem>
+      <SettingsItem loading={isLoading}>
         <div>
           <SettingLabel>{t("settings.advanced.logging.label")}</SettingLabel>
           <SettingDescription>
@@ -78,7 +87,7 @@ export function AdvancedSettings() {
         </SettingContent>
       </SettingsItem>
 
-      <SettingsItem>
+      <SettingsItem loading={isLoading}>
         <div>
           <SettingLabel>{t("settings.advanced.log_levels.label")}</SettingLabel>
           <SettingDescription>

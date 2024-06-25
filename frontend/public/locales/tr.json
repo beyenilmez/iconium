@@ -23,6 +23,11 @@
     "application": {
       "label": "Uygulama",
 
+      "window_scale": {
+        "label": "Yakınlaştırma",
+        "description": "Pencere ölçeğini seçin."
+      },
+
       "theme": {
         "label": "Tema",
         "description": "Arayüz için bir tema seçin."

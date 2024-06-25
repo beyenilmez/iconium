@@ -21,13 +21,22 @@ export function GeneralSettings() {
     i18n.changeLanguage(lng);
   };
 
+  const [isLoading, setIsLoading] = useState(true);
+
   const [language, setLanguage] = useState("en");
   const [langIsSet, setLangIsSet] = useState(false);
 
   useEffect(() => {
-    GetConfigField("Language").then((value) => {
+    Promise.all([
+      GetConfigField("Language")
+    ]).then(([value]) => {
       setLanguage(value);
       setLangIsSet(true);
+
+      setIsLoading(false); // Mark loading as complete
+    }).catch((error) => {
+      console.error("Error fetching configuration:", error);
+      setIsLoading(false); // Handle loading error
     });
   }, []);
 
@@ -42,7 +51,7 @@ export function GeneralSettings() {
 
   return (
     <SettingsGroup className="flex flex-col items-start px-4 py-2 w-full h-full">
-      <SettingsItem>
+      <SettingsItem loading={isLoading}>
         <div>
           <SettingLabel>{t("settings.general.language.label")}</SettingLabel>
           <SettingDescription>
@@ -67,7 +76,7 @@ export function GeneralSettings() {
         </SettingContent>
       </SettingsItem>
 
-      <SettingsItem>
+      <SettingsItem loading={isLoading}>
         <div>
           <SettingLabel>{t("settings.application.theme.label")}</SettingLabel>
           <SettingDescription>
