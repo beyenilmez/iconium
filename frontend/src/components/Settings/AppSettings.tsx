@@ -9,7 +9,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Slider } from "../ui/slider";
+import { Slider } from "../ui/my-slider";
 
 export function AppSettings() {
   const { t } = useTranslation();
@@ -43,10 +43,7 @@ export function AppSettings() {
             {t("settings.application.window_scale.label")}
           </SettingLabel>
           <SettingDescription>
-            {t("settings.application.window_scale.description") +
-              " (" +
-              t("settings.restart_the_app_for_changes_to_take_effect") +
-              ")"}
+            {t("settings.application.window_scale.description")}
           </SettingDescription>
         </div>
         <SettingContent>
@@ -55,17 +52,20 @@ export function AppSettings() {
             <Slider
               onValueChange={(value) => {
                 SetConfigField("WindowScale", String(value)).then(() => {
-                  console.log(value[0]);
                   setUseScale(value[0]);
                 });
               }}
+              onRelease={() => {
+                document.documentElement.style.fontSize =
+                  useScale * (16 / 100) + "px";
+              }}
               defaultValue={[useScale]}
               min={50}
-              max={250}
+              max={150}
               step={10}
               className={"w-64 cursor-pointer"}
             />
-            250% <div className="font-bold">({useScale}%)</div>
+            150% <div className="font-bold">({useScale}%)</div>
           </div>
         </SettingContent>
       </SettingsItem>

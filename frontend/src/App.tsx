@@ -1,12 +1,25 @@
+import { GetConfigField } from "wailsjs/go/main/App";
 import { ThemeProvider } from "./contexts/theme-provider";
 import ModeToggle from "@/components/ModeToggle";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TitleBar from "./components/TitleBar";
 import Settings from "./components/Settings";
 import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
 
 function App() {
   const { t } = useTranslation();
+
+  useEffect(() => {
+    Promise.all([GetConfigField("WindowScale")])
+      .then(([windowScaleValue]) => {
+        document.documentElement.style.fontSize =
+          Number(windowScaleValue) * (16 / 100) + "px";
+      })
+      .catch((error) => {
+        console.error("Error fetching configuration:", error);
+      });
+  }, []);
 
   return (
     <ThemeProvider defaultTheme="system">
