@@ -24,28 +24,19 @@ export function GeneralSettings() {
   const [isLoading, setIsLoading] = useState(true);
 
   const [language, setLanguage] = useState("en");
-  const [langIsSet, setLangIsSet] = useState(false);
 
   useEffect(() => {
-    Promise.all([
-      GetConfigField("Language")
-    ]).then(([value]) => {
-      setLanguage(value);
-      setLangIsSet(true);
+    Promise.all([GetConfigField("Language")])
+      .then(([value]) => {
+        setLanguage(value);
 
-      setIsLoading(false); // Mark loading as complete
-    }).catch((error) => {
-      console.error("Error fetching configuration:", error);
-      setIsLoading(false); // Handle loading error
-    });
+        setIsLoading(false); // Mark loading as complete
+      })
+      .catch((error) => {
+        console.error("Error fetching configuration:", error);
+        setIsLoading(false); // Handle loading error
+      });
   }, []);
-
-  useEffect(() => {
-    if (langIsSet) {
-      SetConfigField("Language", language);
-      changeLanguage(language);
-    }
-  }, [language]);
 
   const { theme, setTheme } = useTheme();
 
@@ -60,8 +51,7 @@ export function GeneralSettings() {
         </div>
         <SettingContent>
           <Combobox
-            value={language}
-            setValue={setLanguage}
+            initialValue={language}
             mandatory={true}
             elements={locales.locales.map((language) => ({
               value: language.code,
@@ -72,6 +62,10 @@ export function GeneralSettings() {
             nothingFoundMessage={t(
               "settings.general.language.no_languages_found"
             )}
+            onChange={(value) => {
+              SetConfigField("Language", value);
+              changeLanguage(value);
+            }}
           />
         </SettingContent>
       </SettingsItem>

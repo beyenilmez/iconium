@@ -23,13 +23,18 @@ interface ComboboxProps {
     searchPlaceholder?: string;
     nothingFoundMessage?: string;
     mandatory?: boolean;
-    value: any;
-    setValue: (value: any) => void;
+    initialValue?: any;
+    onChange: (value: any) => void;
 }
 
 
 export function Combobox(props: ComboboxProps) {
+  const [value, setValue] = React.useState(props.initialValue)
   const [open, setOpen] = React.useState(false)
+
+  React.useEffect(() => {
+    props.onChange(value)
+  }, [value])
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -40,8 +45,8 @@ export function Combobox(props: ComboboxProps) {
           aria-expanded={open}
           className="justify-between w-[200px]"
         >
-          {props.value
-            ? props.elements.find((element) => element.value === props.value)?.label
+          {value
+            ? props.elements.find((element) => element.value === value)?.label
             : (props.placeholder ? props.placeholder : "Select...")}
           <ChevronsUpDown className="opacity-50 ml-2 w-4 h-4 shrink-0" />
         </Button>
@@ -57,7 +62,7 @@ export function Combobox(props: ComboboxProps) {
                   key={element.value}
                   value={element.value}
                   onSelect={(currentValue) => {
-                    props.setValue(!props.mandatory && currentValue === props.value ? "" : currentValue)
+                    setValue(!props.mandatory && currentValue === value ? "" : currentValue)
                     setOpen(false)
                   }}
                 >
@@ -65,7 +70,7 @@ export function Combobox(props: ComboboxProps) {
                   <Check
                     className={cn(
                       "ml-auto h-4 w-4",
-                      props.value === element.value ? "opacity-100" : "opacity-0"
+                      value === element.value ? "opacity-100" : "opacity-0"
                     )}
                   />
                 </CommandItem>
