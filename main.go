@@ -59,7 +59,6 @@ func main() {
 		MinWidth:          1024,
 		MinHeight:         768,
 		DisableResize:     false,
-		Fullscreen:        false,
 		Frameless:         !*config.UseSystemTitleBar,
 		StartHidden:       false,
 		HideWindowOnClose: false,
