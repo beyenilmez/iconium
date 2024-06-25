@@ -85,7 +85,7 @@ func main() {
 			DisableWindowIcon:    false,
 			// DisableFramelessWindowDecorations: false,
 			WebviewUserDataPath: path.Join(os.Getenv("APPDATA"), "desktop-manager"),
-			ZoomFactor:          1.0,
+			ZoomFactor:          float64(*config.WindowScale) / 100,
 		},
 	})
 

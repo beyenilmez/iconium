@@ -23,6 +23,7 @@ type Config struct {
 	EnableFatal       *bool   `json:"enableFatal"`       // true, false
 	Language          *string `json:"language"`          // en, tr
 	WindowStartState  *int    `json:"windowStartState"`  // 0 = Normal, 1 = Maximized, 2 = Minimized, 3 = Fullscreen
+	WindowScale       *int    `json:"windowScale"`       // %
 }
 
 func GetDefaultConfig() Config {
@@ -37,6 +38,7 @@ func GetDefaultConfig() Config {
 	defaultEnableFatal := true
 	defaultLanguage := "en"
 	defaultWindowStartState := 0
+	defaultWindowScale := 100
 
 	return Config{
 		Theme:             &defaultTheme,
@@ -50,6 +52,7 @@ func GetDefaultConfig() Config {
 		EnableFatal:       &defaultEnableFatal,
 		Language:          &defaultLanguage,
 		WindowStartState:  &defaultWindowStartState,
+		WindowScale:       &defaultWindowScale,
 	}
 }
 
