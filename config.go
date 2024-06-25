@@ -53,7 +53,7 @@ func GetDefaultConfig() Config {
 var config Config = GetDefaultConfig()
 
 func config_init() error {
-	err := CreateConfig()
+	err := CreateConfigIfNotExist()
 	if err != nil {
 		return errors.New("failed to create config file")
 	}
@@ -72,49 +72,22 @@ func merge_defaults() {
 
 	fmt.Println("Merging default config")
 
+	v := reflect.ValueOf(&config).Elem()
+	t := v.Type()
+
 	merged := false
 
-	if config.Theme == nil {
-		config.Theme = defaultConfig.Theme
-		merged = true
-	}
-	if config.UseSystemTitleBar == nil {
-		config.UseSystemTitleBar = defaultConfig.UseSystemTitleBar
-		merged = true
-	}
+	for i := 0; i < t.NumField(); i++ {
+		field := t.Field(i)
+		fieldName := field.Name
+		fieldValue := v.FieldByName(fieldName)
 
-	if config.EnableLogging == nil {
-		config.EnableLogging = defaultConfig.EnableLogging
-		merged = true
-	}
-	if config.EnableTrace == nil {
-		config.EnableTrace = defaultConfig.EnableTrace
-		merged = true
-	}
-	if config.EnableDebug == nil {
-		config.EnableDebug = defaultConfig.EnableDebug
-		merged = true
-	}
-	if config.EnableInfo == nil {
-		config.EnableInfo = defaultConfig.EnableInfo
-		merged = true
-	}
-	if config.EnableWarn == nil {
-		config.EnableWarn = defaultConfig.EnableWarn
-		merged = true
-	}
-	if config.EnableError == nil {
-		config.EnableError = defaultConfig.EnableError
-		merged = true
-	}
-	if config.EnableFatal == nil {
-		config.EnableFatal = defaultConfig.EnableFatal
-		merged = true
-	}
-
-	if config.Language == nil {
-		config.Language = defaultConfig.Language
-		merged = true
+		if fieldValue.Kind() == reflect.Ptr && fieldValue.IsNil() {
+			// If config's field is nil, set it to the default value's field
+			defaultValue := reflect.ValueOf(&defaultConfig).Elem().FieldByName(fieldName)
+			fieldValue.Set(defaultValue)
+			merged = true
+		}
 	}
 
 	if merged {
@@ -226,7 +199,7 @@ func SetConfig(newConfig Config) error {
 }
 
 // Creates a default config at configPath if none exists
-func CreateConfig() error {
+func CreateConfigIfNotExist() error {
 	configPath = get_config_path()
 
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
