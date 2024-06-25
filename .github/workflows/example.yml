@@ -1,7 +1,8 @@
 name: "example"
 on:
-  workflow_dispatch:
-    # This Action only starts when you go to Actions and manually run the workflow.
+  push:
+    branches:
+      - code-signing
 
 jobs:
   package:
