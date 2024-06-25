@@ -27,6 +27,15 @@
     "application": {
       "label": "Application",
 
+      "window_effect": {
+        "label": "Window Effect",
+        "description": "Choose the effect for the window."
+      },
+      "window_opacity": {
+        "label": "Window Opacity",
+        "description": "Adjust the window opacity. (This setting will be ignored if the window effect is set to 'None'.)"
+      },
+
       "window_scale": {
         "label": "Scale",
         "description": "Select the window scale."

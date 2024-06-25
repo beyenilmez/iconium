@@ -27,6 +27,15 @@
     "application": {
       "label": "Uygulama",
 
+      "window_effect": {
+        "label": "Pencere Efekti",
+        "description": "Pencere efektini seçin."
+      },
+      "window_opacity": {
+        "label": "Pencere Opaklığı",
+        "description": "Pencere opaklığını ayarlayın. (Efekt 'Yok' olarak ayarlandığında yok sayılacaktır.)"
+      },
+
       "window_scale": {
         "label": "Yakınlaştırma",
         "description": "Pencere ölçeğini seçin."

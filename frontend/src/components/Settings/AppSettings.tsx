@@ -18,17 +18,22 @@ export function AppSettings() {
 
   const [useSystemTitleBar, setUseSystemTitleBar] = useState(false);
   const [useScale, setUseScale] = useState(-1);
+  const [useOpacity, setUseOpacity] = useState(-1);
 
   useEffect(() => {
     Promise.all([
       GetConfigField("UseSystemTitleBar"),
       GetConfigField("WindowScale"),
+      GetConfigField("Opacity"),
     ])
-      .then(([useSystemTitleBarValue, windowScaleValue]) => {
-        setUseSystemTitleBar(useSystemTitleBarValue === "true");
-        setUseScale(parseInt(windowScaleValue));
-        setIsLoading(false); // Mark loading as complete
-      })
+      .then(
+        ([useSystemTitleBarValue, windowScaleValue, windowOpacityValue]) => {
+          setUseSystemTitleBar(useSystemTitleBarValue === "true");
+          setUseScale(parseInt(windowScaleValue));
+          setUseOpacity(parseInt(windowOpacityValue));
+          setIsLoading(false); // Mark loading as complete
+        }
+      )
       .catch((error) => {
         console.error("Error fetching configuration:", error);
         setIsLoading(false); // Handle loading error
@@ -40,6 +45,41 @@ export function AppSettings() {
       <SettingsItem loading={isLoading} vertical={false}>
         <div>
           <SettingLabel>
+            {t("settings.application.window_opacity.label")}
+          </SettingLabel>
+          <SettingDescription>
+            {t("settings.application.window_opacity.description")}
+          </SettingDescription>
+        </div>
+        <SettingContent>
+          <div className="flex gap-2">
+            <div>50%</div>
+            <Slider
+              onValueChange={(value) => {
+                setUseOpacity(value[0]);
+                document.documentElement.style.setProperty(
+                  "--opacity",
+                  String(useOpacity / 100)
+                );
+              }}
+              onPointerUp={() => {
+                SetConfigField("Opacity", String(useOpacity));
+              }}
+              defaultValue={[useOpacity]}
+              min={50}
+              max={100}
+              step={1}
+              className={"w-64 cursor-pointer"}
+            />
+            <div>100%</div>
+            <div className="w-16 font-bold text-center">({useOpacity}%)</div>
+          </div>
+        </SettingContent>
+      </SettingsItem>
+
+      <SettingsItem loading={isLoading} vertical={false}>
+        <div>
+          <SettingLabel>
             {t("settings.application.window_scale.label")}
           </SettingLabel>
           <SettingDescription>
@@ -48,16 +88,16 @@ export function AppSettings() {
         </div>
         <SettingContent>
           <div className="flex gap-2">
-            50%
+            <div>50%</div>
             <Slider
               onValueChange={(value) => {
-                SetConfigField("WindowScale", String(value)).then(() => {
-                  setUseScale(value[0]);
-                });
+                setUseScale(value[0]);
               }}
-              onRelease={() => {
+              onPointerUp={() => {
                 document.documentElement.style.fontSize =
                   useScale * (16 / 100) + "px";
+
+                SetConfigField("WindowScale", String(useScale));
               }}
               defaultValue={[useScale]}
               min={50}
@@ -65,7 +105,8 @@ export function AppSettings() {
               step={10}
               className={"w-64 cursor-pointer"}
             />
-            150% <div className="font-bold">({useScale}%)</div>
+            <div>150%</div>
+            <div className="w-16 font-bold text-center">({useScale}%)</div>
           </div>
         </SettingContent>
       </SettingsItem>

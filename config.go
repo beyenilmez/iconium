@@ -24,6 +24,7 @@ type Config struct {
 	Language          *string `json:"language"`          // en, tr
 	WindowStartState  *int    `json:"windowStartState"`  // 0 = Normal, 1 = Maximized, 2 = Minimized, 3 = Fullscreen
 	WindowScale       *int    `json:"windowScale"`       // %
+	Opacity           *int    `json:"opacity"`           // %
 }
 
 func GetDefaultConfig() Config {
@@ -39,6 +40,7 @@ func GetDefaultConfig() Config {
 	defaultLanguage := "en"
 	defaultWindowStartState := 0
 	defaultWindowScale := 100
+	opacity := 90
 
 	return Config{
 		Theme:             &defaultTheme,
@@ -53,6 +55,7 @@ func GetDefaultConfig() Config {
 		Language:          &defaultLanguage,
 		WindowStartState:  &defaultWindowStartState,
 		WindowScale:       &defaultWindowScale,
+		Opacity:           &opacity,
 	}
 }
 

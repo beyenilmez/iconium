@@ -2,22 +2,13 @@ import * as React from "react";
 import * as SliderPrimitive from "@radix-ui/react-slider";
 import { cn } from "@/lib/utils";
 
-interface SliderProps extends React.ComponentProps<typeof SliderPrimitive.Root> {
-  onRelease?: (value: number) => void;
-}
+interface SliderProps extends React.ComponentProps<typeof SliderPrimitive.Root> {}
+
 
 export const Slider: React.FC<SliderProps> = ({
   className,
-  onRelease,
   ...props
 }) => {
-  const handleRelease = (event: React.PointerEvent<HTMLDivElement>) => {
-    const sliderValue = parseFloat(event.currentTarget.getAttribute("aria-valuenow") || "0");
-    if (onRelease) {
-      onRelease(sliderValue);
-    }
-  };
-
   return (
     <SliderPrimitive.Root
       className={cn(
@@ -25,7 +16,6 @@ export const Slider: React.FC<SliderProps> = ({
         className
       )}
       {...props}
-      onPointerUp={handleRelease}
     >
       <SliderPrimitive.Track className="relative bg-secondary rounded-full w-full h-2 overflow-hidden grow">
         <SliderPrimitive.Range className="absolute bg-primary h-full" />
