@@ -11,6 +11,7 @@ import (
 var packsFolder string
 var logsFolder string
 var configPath string
+var appIconPath string
 
 func path_init() error {
 	appData, err := os.UserConfigDir()
@@ -27,6 +28,7 @@ func path_init() error {
 	logsFolder = path.Join(appFolder, "logs")
 
 	configPath = path.Join(appFolder, "config.json")
+	appIconPath = path.Join(appFolder, "appicon.png")
 
 	runtime.LogTrace(appContext, "Attempting to create folders")
 	err = create_folder(appFolder)
@@ -41,6 +43,17 @@ func path_init() error {
 	err = create_folder(logsFolder)
 	if err != nil {
 		return err
+	}
+
+	runtime.LogTrace(appContext, "Attempting to create appicon")
+
+	// Create icon from embedded appIcon if it exists
+	if _, err := os.Stat(appIconPath); os.IsNotExist(err) {
+		runtime.LogTrace(appContext, "appicon not found, creating from embedded appIcon")
+		err = os.WriteFile(appIconPath, appIcon, 0o644)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

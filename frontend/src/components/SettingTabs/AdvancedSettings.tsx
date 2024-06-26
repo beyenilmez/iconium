@@ -1,4 +1,9 @@
-import { GetConfigField, Log, SetConfigField } from "wailsjs/go/main/App";
+import {
+  GetConfigField,
+  Log,
+  SendNotification,
+  SetConfigField,
+} from "wailsjs/go/main/App";
 import {
   SettingsGroup,
   SettingsItem,
@@ -11,6 +16,7 @@ import { Switch } from "../ui/switch";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Input } from "../ui/input";
+import { Button } from "../ui/button";
 
 export function AdvancedSettings() {
   const { t } = useTranslation();
@@ -216,6 +222,29 @@ export function AdvancedSettings() {
             min={1}
             max={10000}
           />
+        </SettingContent>
+      </SettingsItem>
+
+      <SettingsItem loading={isLoading}>
+        <div>
+          <SettingLabel>
+            {t("settings.advanced.max_log_files.label")}
+          </SettingLabel>
+          <SettingDescription>
+            {t("settings.advanced.max_log_files.description") +
+              " (" +
+              t("settings.restart_the_app_for_changes_to_take_effect") +
+              ")"}
+          </SettingDescription>
+        </div>
+        <SettingContent>
+          <Button
+            onClick={() => {
+              SendNotification("Max log files", maxLogFiles.toString());
+            }}
+          >
+            Notify
+          </Button>
         </SettingContent>
       </SettingsItem>
     </SettingsGroup>

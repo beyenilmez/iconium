@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"os"
 	"strings"
 
+	"github.com/gen2brain/beeep"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -39,8 +41,10 @@ func (a *App) startup(ctx context.Context) {
 	runtime.LogInfo(appContext, "Deleting old log files")
 	delete_old_logs()
 
-	// Set default language in first run
-	set_system_language_first_run()
+	// Check if configPath exists
+	if _, err := os.Stat(configPath); os.IsNotExist(err) {
+		onFirstRun()
+	}
 }
 
 // domReady is called after front-end resources have been loaded
@@ -92,6 +96,13 @@ func (a *App) onSecondInstanceLaunch(secondInstanceData options.SecondInstanceDa
 	go runtime.EventsEmit(a.ctx, "launchArgs", secondInstanceArgs)
 }
 
+func onFirstRun() {
+	runtime.LogInfo(appContext, "First run detected")
+
+	runtime.LogInfo(appContext, "Setting default system language")
+	set_system_language()
+}
+
 // Log logs a message
 func (a *App) Log(msg string, level int) {
 	switch level {
@@ -131,4 +142,14 @@ func (a *App) Maximize() {
 func (a *App) Minimize() {
 	runtime.LogInfo(a.ctx, "Minimizing window")
 	runtime.WindowMinimise(a.ctx)
+}
+
+// Send notification
+func (a *App) SendNotification(title string, message string) {
+	runtime.LogInfo(a.ctx, "Sending notification")
+
+	err := beeep.Notify(title, message, appIconPath)
+	if err != nil {
+		runtime.LogError(a.ctx, "Error sending notification: "+err.Error())
+	}
 }

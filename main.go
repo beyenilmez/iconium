@@ -17,6 +17,9 @@ import (
 //go:embed all:frontend/dist
 var assets embed.FS
 
+//go:embed build/appicon.png
+var appIcon []byte
+
 func main() {
 	// Create an instance of the app structure
 	app := NewApp()

@@ -4,7 +4,6 @@ import (
 	_ "embed"
 
 	"encoding/json"
-	"os"
 
 	"github.com/jeandeaual/go-locale"
 )
@@ -12,32 +11,30 @@ import (
 //go:embed frontend/src/locales.json
 var localesJSON string
 
-func set_system_language_first_run() error {
-	// Check if configPath exists
-	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		userLocales, err := locale.GetLocales()
-		if err != nil {
-			return err
-		}
+func set_system_language() error {
 
-		var localesData struct {
-			Locales []struct {
-				Code string `json:"code"`
-			} `json:"locales"`
-		}
-		err = json.Unmarshal([]byte(localesJSON), &localesData)
-		if err != nil {
-			return err
-		}
-		availableLocales := make([]string, len(localesData.Locales))
-		for i, l := range localesData.Locales {
-			availableLocales[i] = l.Code
-		}
+	userLocales, err := locale.GetLocales()
+	if err != nil {
+		return err
+	}
 
-		for _, l := range userLocales {
-			if contains(availableLocales, l) {
-				config.Language = &l
-			}
+	var localesData struct {
+		Locales []struct {
+			Code string `json:"code"`
+		} `json:"locales"`
+	}
+	err = json.Unmarshal([]byte(localesJSON), &localesData)
+	if err != nil {
+		return err
+	}
+	availableLocales := make([]string, len(localesData.Locales))
+	for i, l := range localesData.Locales {
+		availableLocales[i] = l.Code
+	}
+
+	for _, l := range userLocales {
+		if contains(availableLocales, l) {
+			config.Language = &l
 		}
 	}
 
