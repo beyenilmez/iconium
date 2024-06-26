@@ -10,6 +10,9 @@ jobs:
   extract-version:
     runs-on: ubuntu-latest
 
+    outputs:
+      version: ${{ steps.extract_version.outputs.version }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -17,8 +20,8 @@ jobs:
       - name: Extract version
         id: extract_version
         run: |
-          productVersion=$(jq -r '.info.productVersion' wails.json)
-          echo "::set-output name=productVersion::$productVersion"
+          version=$(jq -r '.info.productVersion' wails.json)
+          echo "version=$version" >> $GITHUB_OUTPUT
 
   print-version:
     needs: extract-version
@@ -27,4 +30,4 @@ jobs:
     steps:
       - name: Print version
         run: |
-          echo ${{ needs.extract-version.outputs.productVersion }}
+          echo ${{ needs.extract-version.outputs.version }}
