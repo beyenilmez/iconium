@@ -38,6 +38,9 @@ func (a *App) startup(ctx context.Context) {
 	// Delete old log files
 	runtime.LogInfo(appContext, "Deleting old log files")
 	delete_old_logs()
+
+	// Set default language in first run
+	set_system_language_first_run()
 }
 
 // domReady is called after front-end resources have been loaded

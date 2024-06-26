@@ -6,7 +6,7 @@ import HttpApi from "i18next-http-backend";
 import locales from "@/locales.json";
 
 const initializeI18n = async () => {
-  const language = (await GetConfigField("Language")) || "en";
+  const language = (await GetConfigField("Language")) || "en-US";
 
   const supportedLngs = locales.locales.map((language) => language.code);
 
@@ -17,7 +17,7 @@ const initializeI18n = async () => {
     .init({
       lng: language,
       supportedLngs: supportedLngs, // Add supported languages here
-      fallbackLng: "en",
+      fallbackLng: "en-US",
       debug: true,
       interpolation: {
         escapeValue: false, // React already safes from XSS

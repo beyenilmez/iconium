@@ -4,7 +4,10 @@ go 1.21
 
 toolchain go1.22.0
 
-require github.com/wailsapp/wails/v2 v2.9.1
+require (
+	github.com/jeandeaual/go-locale v0.0.0-20240223122105-ce5225dcaa49
+	github.com/wailsapp/wails/v2 v2.9.1
+)
 
 require (
 	github.com/bep/debounce v1.2.1 // indirect

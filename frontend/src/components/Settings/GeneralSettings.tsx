@@ -23,7 +23,7 @@ export function GeneralSettings() {
 
   const [isLoading, setIsLoading] = useState(true);
 
-  const [language, setLanguage] = useState("en");
+  const [language, setLanguage] = useState("en-US");
 
   useEffect(() => {
     Promise.all([GetConfigField("Language")])

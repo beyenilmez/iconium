@@ -22,7 +22,7 @@ type Config struct {
 	EnableError       *bool   `json:"enableError"`       // true, false
 	EnableFatal       *bool   `json:"enableFatal"`       // true, false
 	MaxLogFiles       *int    `json:"maxLogFiles"`       // int
-	Language          *string `json:"language"`          // en, tr
+	Language          *string `json:"language"`          // en-US, tr-TR
 	WindowStartState  *int    `json:"windowStartState"`  // 0 = Normal, 1 = Maximized, 2 = Minimized, 3 = Fullscreen
 	WindowScale       *int    `json:"windowScale"`       // %
 	Opacity           *int    `json:"opacity"`           // %
@@ -40,7 +40,7 @@ func GetDefaultConfig() Config {
 	defaultEnableError := true
 	defaultEnableFatal := true
 	defaultMaxLogFiles := 20
-	defaultLanguage := "en"
+	defaultLanguage := "en-US"
 	defaultWindowStartState := 0
 	defaultWindowScale := 100
 	defaultOpacity := 90
