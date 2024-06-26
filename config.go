@@ -21,6 +21,7 @@ type Config struct {
 	EnableWarn        *bool   `json:"enableWarn"`        // true, false
 	EnableError       *bool   `json:"enableError"`       // true, false
 	EnableFatal       *bool   `json:"enableFatal"`       // true, false
+	MaxLogFiles       *int    `json:"maxLogFiles"`       // int
 	Language          *string `json:"language"`          // en, tr
 	WindowStartState  *int    `json:"windowStartState"`  // 0 = Normal, 1 = Maximized, 2 = Minimized, 3 = Fullscreen
 	WindowScale       *int    `json:"windowScale"`       // %
@@ -38,6 +39,7 @@ func GetDefaultConfig() Config {
 	defaultEnableWarn := true
 	defaultEnableError := true
 	defaultEnableFatal := true
+	defaultMaxLogFiles := 20
 	defaultLanguage := "en"
 	defaultWindowStartState := 0
 	defaultWindowScale := 100
@@ -54,6 +56,7 @@ func GetDefaultConfig() Config {
 		EnableWarn:        &defaultEnableWarn,
 		EnableError:       &defaultEnableError,
 		EnableFatal:       &defaultEnableFatal,
+		MaxLogFiles:       &defaultMaxLogFiles,
 		Language:          &defaultLanguage,
 		WindowStartState:  &defaultWindowStartState,
 		WindowScale:       &defaultWindowScale,

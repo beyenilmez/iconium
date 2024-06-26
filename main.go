@@ -21,11 +21,13 @@ func main() {
 	// Create an instance of the app structure
 	app := NewApp()
 
+	// Config
 	err := config_init()
 	if err != nil {
 		log.Println(err)
 	}
 
+	// Logger
 	var fileLogger Logger
 
 	if *config.EnableLogging {

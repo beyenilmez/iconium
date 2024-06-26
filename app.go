@@ -25,6 +25,8 @@ func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 	appContext = ctx
 
+	runtime.LogInfo(appContext, "Starting application")
+
 	// Initiate paths
 	runtime.LogInfo(appContext, "Initiating paths")
 	err := path_init()
@@ -32,6 +34,10 @@ func (a *App) startup(ctx context.Context) {
 	if err != nil {
 		runtime.LogError(appContext, err.Error())
 	}
+
+	// Delete old log files
+	runtime.LogInfo(appContext, "Deleting old log files")
+	delete_old_logs()
 }
 
 // domReady is called after front-end resources have been loaded

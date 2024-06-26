@@ -10,6 +10,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Switch } from "../ui/switch";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Input } from "../ui/input";
 
 export function AdvancedSettings() {
   const { t } = useTranslation();
@@ -23,6 +24,7 @@ export function AdvancedSettings() {
   const [enableWarn, setEnableWarn] = useState(false);
   const [enableError, setEnableError] = useState(false);
   const [enableFatal, setEnableFatal] = useState(false);
+  const [maxLogFiles, setMaxLogFiles] = useState(-1);
 
   useEffect(() => {
     Promise.all([
@@ -33,6 +35,7 @@ export function AdvancedSettings() {
       GetConfigField("EnableWarn"),
       GetConfigField("EnableError"),
       GetConfigField("EnableFatal"),
+      GetConfigField("MaxLogFiles"),
     ])
       .then(
         ([
@@ -43,6 +46,7 @@ export function AdvancedSettings() {
           enableWarn,
           enableError,
           enableFatal,
+          maxLogFiles,
         ]) => {
           setEnableLogging(enableLogging === "true");
           setEnableTrace(enableTrace === "true");
@@ -51,6 +55,7 @@ export function AdvancedSettings() {
           setEnableWarn(enableWarn === "true");
           setEnableError(enableError === "true");
           setEnableFatal(enableFatal === "true");
+          setMaxLogFiles(parseInt(maxLogFiles));
 
           setIsLoading(false);
         }
@@ -178,6 +183,39 @@ export function AdvancedSettings() {
               Fatal
             </ToggleGroupItem>
           </ToggleGroup>
+        </SettingContent>
+      </SettingsItem>
+
+      <SettingsItem loading={isLoading}>
+        <div>
+          <SettingLabel>
+            {t("settings.advanced.max_log_files.label")}
+          </SettingLabel>
+          <SettingDescription>
+            {t("settings.advanced.max_log_files.description") +
+              " (" +
+              t("settings.restart_the_app_for_changes_to_take_effect") +
+              ")"}
+          </SettingDescription>
+        </div>
+        <SettingContent>
+          <Input
+            type="number"
+            placeholder="20"
+            value={maxLogFiles}
+            onChange={(e) => {
+              const value = Math.max(
+                1,
+                Math.min(10000, parseInt(e.target.value))
+              );
+              const targetValue = isNaN(parseInt(e.target.value)) ? 20 : value;
+              SetConfigField("MaxLogFiles", String(targetValue)).then(() => {
+                setMaxLogFiles(value);
+              });
+            }}
+            min={1}
+            max={10000}
+          />
         </SettingContent>
       </SettingsItem>
     </SettingsGroup>

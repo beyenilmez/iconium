@@ -1,8 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"path"
+	"sort"
+
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 type Logger interface {
@@ -91,4 +96,39 @@ func (l *FileLogger) Fatal(message string) {
 		l.Println("FATAL | " + message)
 	}
 	os.Exit(1)
+}
+
+func delete_old_logs() {
+	maxLogFiles := *config.MaxLogFiles
+
+	files, err := os.ReadDir(logsFolder)
+	if err != nil {
+		runtime.LogWarning(appContext, "Failed to read log files in logs folder: "+err.Error())
+	}
+
+	runtime.LogTrace(appContext, "Attempting to delete old log files")
+	runtime.LogTrace(appContext, "Attempting to sort log files")
+
+	sort.Slice(files, func(i, j int) bool {
+		infoI, err := os.Stat(path.Join(logsFolder, files[i].Name()))
+		if err != nil {
+			return false
+		}
+
+		infoJ, err := os.Stat(path.Join(logsFolder, files[j].Name()))
+		if err != nil {
+			return false
+		}
+
+		return infoI.ModTime().Before(infoJ.ModTime())
+	})
+
+	runtime.LogTrace(appContext, "Sorting log files complete")
+
+	if len(files) > maxLogFiles {
+		runtime.LogDebug(appContext, fmt.Sprintf("Attempting to delete oldest %d log files", len(files)-maxLogFiles))
+		for i := 0; i < len(files)-maxLogFiles; i++ {
+			os.Remove(path.Join(logsFolder, files[i].Name()))
+		}
+	}
 }

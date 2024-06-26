@@ -66,6 +66,10 @@
       "log_levels": {
         "label": "Selected Log Levels",
         "description": "Choose the log levels to be recorded."
+      },
+      "max_log_files":{
+        "label": "Max Log Files",
+        "description": "Set the maximum number of log files to keep." 
       }
     }
   }

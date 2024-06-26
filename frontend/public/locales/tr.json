@@ -30,7 +30,7 @@
       "window_effect": {
         "label": "Pencere Efekti",
         "description": "Pencere efektini seçin.",
-        
+
         "auto": "Otomatik",
         "none": "Yok",
         "acrylic": "Akrilik",
@@ -66,6 +66,10 @@
       "log_levels": {
         "label": "Seçilen Günlük Seviyeleri",
         "description": "Kaydedilecek günlük seviyelerini seçin."
+      },
+      "max_log_files": {
+        "label": "Maksimum Günlük Dosyası Sayısı",
+        "description": "Saklanacak maksimum günlük dosyası sayısını ayarlayın."
       }
     }
   }
