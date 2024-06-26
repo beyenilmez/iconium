@@ -11,13 +11,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - name: Extract version
         id: extract_version
         run: |
           productVersion=$(jq -r '.info.productVersion' wails.json)
-          echo "productVersion=$productVersion" >> $GITHUB_ENV
+          echo "::set-output name=productVersion::$productVersion"
 
-      - name: Print productVersion
-        run: echo "The product version is ${{ env.productVersion }}"
+  print-version:
+    needs: extract-version
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Print version
+        run: |
+          echo ${{ needs.extract-version.outputs.productVersion }}
