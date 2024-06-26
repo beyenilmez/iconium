@@ -11,9 +11,11 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Slider } from "../ui/my-slider";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
+import { useStorage } from "@/contexts/storage-provider";
 
 export function AppSettings() {
   const { t } = useTranslation();
+  const { getValue, setValue } = useStorage();
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -40,6 +42,9 @@ export function AppSettings() {
           setUseScale(parseInt(windowScaleValue));
           setUseOpacity(parseInt(windowOpacityValue));
           setUseWindowEffect(windowEffectValue);
+          if (getValue("initialWindowEffect") === undefined) {
+            setValue("initialWindowEffect", windowEffectValue);
+          }
           setIsLoading(false); // Mark loading as complete
         }
       )
@@ -53,7 +58,13 @@ export function AppSettings() {
     if (!isLoading) {
       document.documentElement.style.setProperty(
         "--opacity",
-        String(Number(useWindowEffect === "1" ? "100" : useOpacity) / 100)
+        String(
+          Number(
+            useWindowEffect === "1" || getValue("initialWindowEffect") === "1"
+              ? "100"
+              : useOpacity
+          ) / 100
+        )
       );
     }
   }, [useWindowEffect]);
@@ -140,7 +151,7 @@ export function AppSettings() {
       <SettingsItem
         loading={isLoading}
         vertical={false}
-        disabled={useWindowEffect === "1"}
+        disabled={useWindowEffect === "1" || getValue("initialWindowEffect") === "1"}
       >
         <div>
           <SettingLabel>
@@ -158,7 +169,12 @@ export function AppSettings() {
                 setUseOpacity(value[0]);
                 document.documentElement.style.setProperty(
                   "--opacity",
-                  String(useOpacity / 100)
+                  String(
+                    (useWindowEffect === "1" ||
+                    getValue("initialWindowEffect") === "1"
+                      ? 100
+                      : useOpacity) / 100
+                  )
                 );
               }}
               onPointerUp={() => {
