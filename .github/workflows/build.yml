@@ -3,7 +3,16 @@ on:
   workflow_dispatch:
   push:
     branches:
+      - development
+      - main
       - code-signing
+  pull_request:
+    branches:
+      - development
+      - main
+
+permissions:
+  contents: write
 
 jobs:
   package:
@@ -87,7 +96,6 @@ jobs:
           path: ./artifacts
 
       - name: Create Draft Release
-        id: create_release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
