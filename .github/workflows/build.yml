@@ -4,18 +4,18 @@ on:
   push:
     branches:
       - code-signing
-      
+
 permissions:
   contents: write
 
 jobs:
   package:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/code-signing'
     name: Package
     strategy:
       matrix:
         platform: [windows-latest]
-        build-name: ['desktop-manager']
+        build-name: ["desktop-manager"]
         go-version: [1.22]
         node-version: [20]
     runs-on: ${{ matrix.platform }}
@@ -81,20 +81,15 @@ jobs:
   create-release:
     if: github.ref == 'refs/heads/code-signing'
     name: Create release
-    needs: [extract-version]
+    needs: [extract-version, package]
     runs-on: ubuntu-latest
     steps:
-      - name: Create Draft Release
-        uses: actions/github-script@v6
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
         with:
-          script: |
-            const version = '${{ needs.extract-version.outputs.version }}';
-            const response = await github.rest.repos.createRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              tag_name: `v${version}`,
-              name: `Release v${version}`,
-              draft: true,
-              generate_release_notes: true,
-            });
-            console.log(response.data);
+          path: ./artifacts
+
+      - name: Create Draft Release
+        id: create_release
+        run: |
+          gh release create v${{ needs.extract-version.outputs.version }} ./artifacts/* --title "Release v${{ needs.extract-version.outputs.version }}" --draft --generate-notes
