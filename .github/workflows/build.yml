@@ -92,5 +92,6 @@ jobs:
         id: create_release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
         run: |
           gh release create v${{ needs.extract-version.outputs.version }} ./artifacts/* --title "Release v${{ needs.extract-version.outputs.version }}" --draft --generate-notes
