@@ -5,7 +5,6 @@ on:
     branches:
       - development
       - main
-      - code-signing
   pull_request:
     branches:
       - development
@@ -66,7 +65,7 @@ jobs:
           path: build/bin/*
 
   extract-version:
-    if: github.ref == 'refs/heads/code-signing'
+    if: github.ref == 'refs/heads/main'
     name: Extract version
     runs-on: ubuntu-latest
 
@@ -84,7 +83,7 @@ jobs:
           echo "version=$version" >> $GITHUB_OUTPUT
 
   create-release:
-    if: github.ref == 'refs/heads/code-signing'
+    if: github.ref == 'refs/heads/main'
     name: Create release
     needs: [extract-version, package]
     runs-on: ubuntu-latest
