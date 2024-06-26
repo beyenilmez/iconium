@@ -1,0 +1,23 @@
+name: Extract productVersion
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - code-signing
+
+jobs:
+  extract-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Extract version
+        id: extract_version
+        run: |
+          productVersion=$(jq -r '.info.productVersion' wails.json)
+          echo "productVersion=$productVersion" >> $GITHUB_ENV
+
+      - name: Print productVersion
+        run: echo "The product version is ${{ env.productVersion }}"
