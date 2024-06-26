@@ -1,13 +1,13 @@
 name: "build"
 on:
   workflow_dispatch:
-  
       
 permissions:
   contents: write
 
 jobs:
   package:
+    name: Package
     strategy:
       matrix:
         platform: [windows-latest]
@@ -16,9 +16,10 @@ jobs:
         node-version: [20]
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Install Go
+      - name: Setup Go
         uses: actions/setup-go@v2
         with:
           go-version: ${{ matrix.go-version }}
@@ -28,7 +29,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Get Wails
+      - name: Setup Wails
         run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
 
       - name: Build Wails app
@@ -39,7 +40,6 @@ jobs:
 
       - name: Sign Windows binaries
         shell: powershell
-        if: matrix.platform == 'windows-latest'
         run: |
           echo "Creating certificate file"
           New-Item -ItemType directory -Path certificate
@@ -51,23 +51,25 @@ jobs:
           & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe' sign /fd sha256 /tr http://ts.ssl.com /f certificate\certificate.pfx /p '${{ secrets.WIN_SIGNING_CERT_PASSWORD }}' .\build\bin\${{matrix.build-name}}-amd64-installer.exe
 
       - name: Upload artifacts
-        if: matrix.platform == 'windows-latest'
         uses: actions/upload-artifact@v2
         with:
-          name: wails-binaries-windows
+          name: wails-binaries
           path: build/bin/*.exe
 
-      - name: Get version from wails.json
-        id: get_version
-        run: echo "VERSION=$(jq -r '.info.productVersion' wails.json)" >> $GITHUB_ENV
+  extract-version:
+    if: github.ref == 'refs/heads/main'
+    name: Extract version
+    runs-on: ubuntu-latest
 
-      - name: Create draft release
-        if: github.event_name == 'push' && github.ref == 'refs/heads/code-signing'
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ env.VERSION }}
-          release_name: Release v${{ env.VERSION }}
-          draft: true
+    outputs:
+      version: ${{ steps.extract_version.outputs.version }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Extract version
+        id: extract_version
+        run: |
+          version=$(jq -r '.info.productVersion' wails.json)
+          echo "version=$version" >> $GITHUB_OUTPUT

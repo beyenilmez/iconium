@@ -8,6 +8,8 @@ on:
 
 jobs:
   extract-version:
+    if: github.ref == 'refs/heads/main'
+    name: Extract version
     runs-on: ubuntu-latest
 
     outputs:
