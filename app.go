@@ -148,8 +148,15 @@ func (a *App) Minimize() {
 func (a *App) SendNotification(title string, message string) {
 	runtime.LogInfo(a.ctx, "Sending notification")
 
-	err := beeep.Notify(title, message, appIconPath)
-	if err != nil {
-		runtime.LogError(a.ctx, "Error sending notification: "+err.Error())
+	if runtime.WindowIsNormal(a.ctx) || runtime.WindowIsMaximised(a.ctx) || runtime.WindowIsFullscreen(a.ctx) {
+		runtime.WindowExecJS(a.ctx, `window.toast({
+			title: "`+title+`", 
+			description: "`+message+`"
+			});`)
+	} else {
+		err := beeep.Notify(title, message, appIconPath)
+		if err != nil {
+			runtime.LogError(a.ctx, "Error sending notification: "+err.Error())
+		}
 	}
 }

@@ -7,9 +7,12 @@ import Settings from "./components/Settings";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import { StorageProvider } from "./contexts/storage-provider";
+import { Toaster } from "./components/ui/toaster";
+import { useToast } from "./components/ui/use-toast";
 
 function App() {
   const { t } = useTranslation();
+  const { toast } = useToast();
 
   useEffect(() => {
     Promise.all([
@@ -29,6 +32,12 @@ function App() {
         console.error("Error fetching configuration:", error);
       });
   }, []);
+
+  window.toast = ({ ...props }: any) => {
+    toast({
+      ...props,
+    });
+  };
 
   return (
     <ThemeProvider defaultTheme="system">
@@ -56,6 +65,7 @@ function App() {
             </TabsContent>
           </Tabs>
         </div>
+        <Toaster />
       </StorageProvider>
     </ThemeProvider>
   );

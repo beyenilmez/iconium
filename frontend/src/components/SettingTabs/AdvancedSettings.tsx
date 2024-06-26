@@ -224,29 +224,6 @@ export function AdvancedSettings() {
           />
         </SettingContent>
       </SettingsItem>
-
-      <SettingsItem loading={isLoading}>
-        <div>
-          <SettingLabel>
-            {t("settings.advanced.max_log_files.label")}
-          </SettingLabel>
-          <SettingDescription>
-            {t("settings.advanced.max_log_files.description") +
-              " (" +
-              t("settings.restart_the_app_for_changes_to_take_effect") +
-              ")"}
-          </SettingDescription>
-        </div>
-        <SettingContent>
-          <Button
-            onClick={() => {
-              SendNotification("Max log files", maxLogFiles.toString());
-            }}
-          >
-            Notify
-          </Button>
-        </SettingContent>
-      </SettingsItem>
     </SettingsGroup>
   );
 }
