@@ -29,3 +29,6 @@ node_modules
 /frontend/dist-ssr
 /frontend/wailsjs
 /frontend/package.json.md5
+
+# Certificate files
+certificate.*
