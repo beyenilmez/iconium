@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { Slider } from "../ui/my-slider";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import { useStorage } from "@/contexts/storage-provider";
+import { ThemeSetting } from "./ThemeSetting";
 
 export function AppSettings() {
   const { t } = useTranslation();
@@ -71,6 +72,8 @@ export function AppSettings() {
 
   return (
     <SettingsGroup className="flex flex-col items-start px-4 py-2 w-full h-full">
+      <ThemeSetting />
+
       <SettingsItem loading={isLoading}>
         <div>
           <SettingLabel>
@@ -151,7 +154,9 @@ export function AppSettings() {
       <SettingsItem
         loading={isLoading}
         vertical={false}
-        disabled={useWindowEffect === "1" || getValue("initialWindowEffect") === "1"}
+        disabled={
+          useWindowEffect === "1" || getValue("initialWindowEffect") === "1"
+        }
       >
         <div>
           <SettingLabel>

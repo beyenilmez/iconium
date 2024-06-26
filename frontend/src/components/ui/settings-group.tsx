@@ -42,7 +42,7 @@ interface SettingsGroupSkeletonProps extends React.HTMLAttributes<HTMLDivElement
 }
 
 const SettingsItemSkeleton: React.FC<SettingsGroupSkeletonProps> = ({ className, ...rest }) => (
-  <div className={`flex items-center justify-between w-full mb-2 ${className}`} {...rest}>
+  <div className={`flex items-center justify-between w-full my-2 ${className}`} {...rest}>
       <div className="space-y-2 w-full">
         <Skeleton className="w-1/3 h-4" />
         <Skeleton className="w-[90%] h-4" />

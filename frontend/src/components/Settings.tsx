@@ -1,8 +1,8 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AppSettings } from "./Settings/AppSettings";
-import { AdvancedSettings } from "./Settings/AdvancedSettings";
+import { AppSettings } from "./SettingTabs/AppSettings";
+import { AdvancedSettings } from "./SettingTabs/AdvancedSettings";
 import { useTranslation } from "react-i18next";
-import { GeneralSettings } from "./Settings/GeneralSettings";
+import { GeneralSettings } from "./SettingTabs/GeneralSettings";
 
 export default function Settings() {
   const { t } = useTranslation();
