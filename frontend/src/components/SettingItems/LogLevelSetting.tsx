@@ -1,4 +1,3 @@
-import { Log } from "wailsjs/go/main/App";
 import {
   SettingsItem,
   SettingContent,
@@ -30,30 +29,25 @@ export function LogLevelSetting() {
       GetConfigField("EnableWarn"),
       GetConfigField("EnableError"),
       GetConfigField("EnableFatal"),
-    ])
-      .then(
-        ([
-          enableTrace,
-          enableDebug,
-          enableInfo,
-          enableWarn,
-          enableError,
-          enableFatal,
-        ]) => {
-          setEnableTrace(enableTrace === "true");
-          setEnableDebug(enableDebug === "true");
-          setEnableInfo(enableInfo === "true");
-          setEnableWarn(enableWarn === "true");
-          setEnableError(enableError === "true");
-          setEnableFatal(enableFatal === "true");
+    ]).then(
+      ([
+        enableTrace,
+        enableDebug,
+        enableInfo,
+        enableWarn,
+        enableError,
+        enableFatal,
+      ]) => {
+        setEnableTrace(enableTrace === "true");
+        setEnableDebug(enableDebug === "true");
+        setEnableInfo(enableInfo === "true");
+        setEnableWarn(enableWarn === "true");
+        setEnableError(enableError === "true");
+        setEnableFatal(enableFatal === "true");
 
-          setIsLoading(false);
-        }
-      )
-      .catch((error) => {
-        Log("Error while loading advanced settings: " + error, 4);
         setIsLoading(false);
-      });
+      }
+    );
   }, []);
 
   return (

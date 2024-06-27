@@ -1,4 +1,3 @@
-import { Log } from "wailsjs/go/main/App";
 import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/contexts/theme-provider";
@@ -13,7 +12,6 @@ export default function ModeToggle() {
       onClick={() => {
         const themeToSet = theme === "light" ? "dark" : "light";
         setTheme(themeToSet);
-        Log("Setted theme to " + themeToSet, 1);
       }}
       className="bg-transparent hover:bg-transparent duration-0"
     >

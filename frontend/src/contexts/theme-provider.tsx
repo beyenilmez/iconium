@@ -1,4 +1,5 @@
-import { Log, SetTheme } from "wailsjs/go/main/App";
+import { SetTheme } from "wailsjs/go/main/App";
+import { LogError, LogInfo, LogWarning } from "wailsjs/runtime/runtime";
 import { createContext, useContext, useEffect, useState } from "react";
 import { GetConfigField, SetConfigField } from "@/lib/config";
 
@@ -36,7 +37,7 @@ export function ThemeProvider({
           setThemeState(storedTheme as Theme);
         }
       } catch (error) {
-        Log("Failed to fetch theme", 4);
+        LogWarning("Failed to fetch theme");
       }
     };
 
@@ -68,8 +69,9 @@ export function ThemeProvider({
         await SetConfigField("Theme", theme);
         setThemeState(theme);
         SetTheme(theme);
+        LogInfo(`Setted theme to ${theme}`);
       } catch (error) {
-        Log("Failed to set theme", 4);
+        LogError("Failed to set theme");
       }
     },
   };

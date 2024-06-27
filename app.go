@@ -103,47 +103,6 @@ func onFirstRun() {
 	set_system_language()
 }
 
-// Log logs a message
-func (a *App) Log(msg string, level int) {
-	switch level {
-	case 1:
-		runtime.LogTrace(a.ctx, msg)
-	case 2:
-		runtime.LogDebug(a.ctx, msg)
-	case 3:
-		runtime.LogInfo(a.ctx, msg)
-	case 4:
-		runtime.LogWarning(a.ctx, msg)
-	case 5:
-		runtime.LogError(a.ctx, msg)
-	default:
-		runtime.LogFatal(a.ctx, msg)
-	}
-}
-
-// Quits the application
-func (a *App) Quit() {
-	runtime.LogInfo(a.ctx, "Quitting application")
-	runtime.Quit(a.ctx)
-}
-
-// Maximize the application
-func (a *App) Maximize() {
-	if runtime.WindowIsMaximised(a.ctx) {
-		runtime.LogInfo(a.ctx, "Unmaximizing window")
-		runtime.WindowUnmaximise(a.ctx)
-	} else {
-		runtime.LogInfo(a.ctx, "Maximizing window")
-		runtime.WindowMaximise(a.ctx)
-	}
-}
-
-// Minimize the application
-func (a *App) Minimize() {
-	runtime.LogInfo(a.ctx, "Minimizing window")
-	runtime.WindowMinimise(a.ctx)
-}
-
 // Send notification
 func (a *App) SendNotification(title string, message string) {
 	runtime.LogInfo(a.ctx, "Sending notification")
