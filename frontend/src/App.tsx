@@ -1,4 +1,4 @@
-import { GetConfigField } from "wailsjs/go/main/App";
+import { GetConfigField, InitConfigCache } from "@/lib/config";
 import { ThemeProvider } from "./contexts/theme-provider";
 import ModeToggle from "@/components/ModeToggle";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -15,6 +15,8 @@ function App() {
   const { toast } = useToast();
 
   useEffect(() => {
+    InitConfigCache();
+
     Promise.all([
       GetConfigField("WindowScale"),
       GetConfigField("Opacity"),

@@ -1,4 +1,4 @@
-import { SetConfigField, GetConfigField } from "wailsjs/go/main/App";
+import { SetConfigField, GetConfigField } from "@/lib/config";
 import {
   SettingsGroup,
   SettingsItem,

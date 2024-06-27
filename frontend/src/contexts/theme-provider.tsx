@@ -1,5 +1,6 @@
-import { GetConfigField, Log, SetConfigField, SetTheme } from "wailsjs/go/main/App";
+import { Log, SetTheme } from "wailsjs/go/main/App";
 import { createContext, useContext, useEffect, useState } from "react";
+import { GetConfigField, SetConfigField } from "@/lib/config";
 
 type Theme = "dark" | "light" | "system";
 
