@@ -27,7 +27,6 @@ node_modules
 /build/bin
 /frontend/dist
 /frontend/dist-ssr
-/frontend/wailsjs
 /frontend/package.json.md5
 
 # Certificate files
