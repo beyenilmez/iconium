@@ -5,6 +5,7 @@ on:
     branches:
       - development
       - main
+      - rewrite-2
   pull_request:
     branches:
       - development
@@ -65,7 +66,7 @@ jobs:
           path: build/bin/*
 
   extract-version:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/rewrite-2'
     name: Extract version
     runs-on: ubuntu-latest
 
@@ -83,7 +84,7 @@ jobs:
           echo "version=$version" >> $GITHUB_OUTPUT
 
   create-release:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/rewrite-2'
     name: Create release
     needs: [extract-version, package]
     runs-on: ubuntu-latest
