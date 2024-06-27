@@ -8,68 +8,66 @@
   "settings": {
     "restart_the_app_for_changes_to_take_effect": "Restart the app for changes to take effect.",
 
-    "general": {
-      "label": "General",
+    "categories": {
+      "general": "General",
+      "application": "Application",
+      "system": "System",
+      "advanced": "Advanced"
+    },
 
+    "setting": {
       "language": {
         "label": "Language",
-        "description": "Select the language.",
+        "description": "Select your preferred language.",
         "select_language": "Select language...",
         "search_language": "Search language...",
         "no_languages_found": "No languages found."
       },
+
       "theme": {
         "label": "Theme",
-        "description": "Select a color scheme for the interface."
-      }
-    },
-
-    "application": {
-      "label": "Application",
+        "description": "Choose a color scheme for the interface."
+      },
 
       "window_effect": {
         "label": "Window Effect",
-        "description": "Choose the effect for the window.",
-        
+        "description": "Select the window effect.",
+
         "auto": "Auto",
         "none": "None",
         "acrylic": "Acrylic",
         "mica": "Mica",
         "tabbed": "Tabbed"
       },
+
       "window_opacity": {
-        "label": "Background Opacity",
-        "description": "Sets the opacity of the window. (This setting will be ignored if the window effect is set to 'None'.)"
+        "label": "Window Opacity",
+        "description": "Adjust the window opacity. (This setting is ignored if 'None' is selected for window effect.)"
       },
 
       "window_scale": {
-        "label": "Scale",
-        "description": "Select the window scale."
+        "label": "Window Scale",
+        "description": "Adjust the window scale."
       },
+
       "use_system_title_bar": {
         "label": "Use System Title Bar",
-        "description": "Switch to the default system title bar instead of the custom one."
-      }
-    },
-
-    "system": {
-      "label": "System"
-    },
-
-    "advanced": {
-      "label": "Advanced",
+        "description": "Use the default system title bar instead of a custom one."
+      },
 
       "logging": {
         "label": "Enable Logging",
         "description": "Enable logging to files."
       },
+
       "log_levels": {
-        "label": "Selected Log Levels",
-        "description": "Choose the log levels to be recorded."
+        "label": "Log Levels",
+        "description": "Select the log levels to record."
       },
-      "max_log_files":{
+
+      "max_log_files": {
         "label": "Max Log Files",
-        "description": "Set the maximum number of log files to keep." 
+        "description": "Set the maximum number of log files to retain."
       }
     }
   }

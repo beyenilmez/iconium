@@ -8,24 +8,26 @@
   "settings": {
     "restart_the_app_for_changes_to_take_effect": "Değişikliklerin etkili olması için uygulamayı yeniden başlatın.",
 
-    "general": {
-      "label": "Genel",
+    "categories": {
+      "general": "Genel",
+      "application": "Uygulama",
+      "system": "Sistem",
+      "advanced": "Gelişmiş"
+    },
 
+    "setting": {
       "language": {
         "label": "Dil",
-        "description": "Uygulama dilini seçin.",
+        "description": "Tercih ettiğiniz dili seçin.",
         "select_language": "Dil seçin...",
         "search_language": "Dil ara...",
-        "no_languages_found": "Dil bulunamadı."
+        "no_languages_found": "Hiçbir dil bulunamadı."
       },
+
       "theme": {
         "label": "Tema",
         "description": "Arayüz için bir tema seçin."
-      }
-    },
-
-    "application": {
-      "label": "Uygulama",
+      },
 
       "window_effect": {
         "label": "Pencere Efekti",
@@ -35,41 +37,37 @@
         "none": "Yok",
         "acrylic": "Akrilik",
         "mica": "Mika",
-        "tabbed": "Sekmeli"
+        "tabbed": "Tabbed"
       },
+
       "window_opacity": {
         "label": "Pencere Opaklığı",
-        "description": "Pencere opaklığını ayarlayın. (Efekt 'Yok' olarak ayarlandığında yok sayılacaktır.)"
+        "description": "Pencere opaklığını ayarlayın. (Pencere efekti için 'Yok' seçilmişse bu ayar yok sayılır.)"
       },
 
       "window_scale": {
-        "label": "Yakınlaştırma",
-        "description": "Pencere ölçeğini seçin."
+        "label": "Pencere Ölçeği",
+        "description": "Pencere ölçeğini ayarlayın."
       },
+
       "use_system_title_bar": {
         "label": "Sistem Başlık Çubuğunu Kullan",
-        "description": "Özel başlık çubuğu yerine varsayılan sistem başlık çubuğuna geçin."
-      }
-    },
-
-    "system": {
-      "label": "Sistem"
-    },
-
-    "advanced": {
-      "label": "Gelişmiş",
+        "description": "Özel başlık çubuğu yerine varsayılan sistem başlık çubuğunu kullanın."
+      },
 
       "logging": {
-        "label": "Günlük Kaydını Etkinleştir",
-        "description": "Dosyalara günlük kaydını etkinleştirin."
+        "label": "Günlüğe Kaydetmeyi Etkinleştir",
+        "description": "Dosyalara günlüğe kaydetmeyi etkinleştir."
       },
+
       "log_levels": {
-        "label": "Seçilen Günlük Seviyeleri",
+        "label": "Günlük Seviyeleri",
         "description": "Kaydedilecek günlük seviyelerini seçin."
       },
+
       "max_log_files": {
-        "label": "Maksimum Günlük Dosyası Sayısı",
-        "description": "Saklanacak maksimum günlük dosyası sayısını ayarlayın."
+        "label": "Maksimum Günlük Dosyaları",
+        "description": "Tutulacak maksimum günlük dosyası sayısını ayarlayın."
       }
     }
   }

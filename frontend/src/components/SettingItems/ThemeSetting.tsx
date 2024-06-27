@@ -16,9 +16,9 @@ export function ThemeSetting() {
     return (
         <SettingsItem>
             <div>
-                <SettingLabel>{t("settings.general.theme.label")}</SettingLabel>
+                <SettingLabel>{t("settings.setting.theme.label")}</SettingLabel>
                 <SettingDescription>
-                    {t("settings.general.theme.description")}
+                    {t("settings.setting.theme.description")}
                 </SettingDescription>
             </div>
             <SettingContent>
