@@ -1,7 +1,6 @@
 import {
   GetConfigField,
   Log,
-  SendNotification,
   SetConfigField,
 } from "wailsjs/go/main/App";
 import {
@@ -16,7 +15,6 @@ import { Switch } from "../ui/switch";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Input } from "../ui/input";
-import { Button } from "../ui/button";
 
 export function AdvancedSettings() {
   const { t } = useTranslation();
