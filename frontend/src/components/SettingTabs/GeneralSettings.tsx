@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Combobox } from "../ui/combobox";
 import locales from "@/locales.json";
-import {ThemeSetting} from "./ThemeSetting";
+import {ThemeSetting} from "../SettingItems/ThemeSetting";
 
 export function GeneralSettings() {
   const { t, i18n } = useTranslation();

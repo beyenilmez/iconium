@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next";
 import { Slider } from "../ui/my-slider";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import { useStorage } from "@/contexts/storage-provider";
-import { ThemeSetting } from "./ThemeSetting";
+import { ThemeSetting } from "../SettingItems/ThemeSetting";
 
 export function AppSettings() {
   const { t } = useTranslation();
