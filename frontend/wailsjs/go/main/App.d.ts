@@ -9,6 +9,8 @@ export function OpenFileInExplorer(arg1:string):Promise<void>;
 
 export function ReadConfig(arg1:string):Promise<void>;
 
+export function RestartApplication():Promise<void>;
+
 export function SaveConfigDialog():Promise<void>;
 
 export function SendNotification(arg1:string,arg2:string,arg3:string,arg4:string):Promise<void>;

@@ -18,6 +18,10 @@ export function ReadConfig(arg1) {
   return window['go']['main']['App']['ReadConfig'](arg1);
 }
 
+export function RestartApplication() {
+  return window['go']['main']['App']['RestartApplication']();
+}
+
 export function SaveConfigDialog() {
   return window['go']['main']['App']['SaveConfigDialog']();
 }

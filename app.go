@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 
 	"github.com/gen2brain/beeep"
@@ -149,4 +150,36 @@ func (a *App) SendNotification(title string, message string, path string, varian
 			runtime.LogError(a.ctx, "Error sending notification: "+err.Error())
 		}
 	}
+}
+
+func (a *App) RestartApplication() error {
+	// Get the path to the current executable
+	executable, err := os.Executable()
+	if err != nil {
+		return err
+	}
+
+	// Create a command to execute the current executable with its arguments
+	cmd := exec.Command(executable, os.Args[1:]...)
+
+	// Pass along the environment variables
+	cmd.Env = os.Environ()
+
+	// Set up standard input, output, and error streams
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	// Start the new process
+	if err := cmd.Start(); err != nil {
+		return err
+	}
+
+	a.beforeClose(a.ctx)
+
+	// Exit the current process
+	os.Exit(0)
+
+	// This code is unreachable due to os.Exit(0), but included for clarity
+	return nil
 }

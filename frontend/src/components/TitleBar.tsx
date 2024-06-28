@@ -1,10 +1,11 @@
-import { GetConfigField } from "wailsjs/go/main/App";
+import { GetConfigField } from "@/lib/config";
+import { RestartApplication } from "wailsjs/go/main/App";
 import {
   WindowMinimise,
   WindowToggleMaximise,
   Quit,
 } from "wailsjs/runtime/runtime";
-import { Minus, Copy, X } from "lucide-react";
+import { Minus, Copy, X, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import icon from "../assets/appicon.png";
 import { useEffect, useState } from "react";
@@ -44,6 +45,14 @@ export default function TitleBar() {
             className="hover:dark:brightness-150 hover:brightness-75 rounded-none h-8 cursor-default"
           >
             <Copy size={"1rem"} className="rotate-90" />
+          </Button>
+          <Button
+            size={"icon"}
+            onClick={() => RestartApplication()}
+            variant={"ghost"}
+            className="hover:dark:brightness-150 hover:brightness-75 rounded-none h-8 cursor-default"
+          >
+            <RotateCcw size={"1rem"} />
           </Button>
           <Button
             size={"icon"}
