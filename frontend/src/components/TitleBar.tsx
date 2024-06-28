@@ -9,9 +9,11 @@ import { Minus, Copy, X, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import icon from "../assets/appicon.png";
 import { useEffect, useState } from "react";
+import { useRestart } from "@/contexts/restart-provider";
 
 export default function TitleBar() {
   const [useSystemTitleBar, setUseSystemTitleBar] = useState(false);
+  const { restartRequired } = useRestart();
 
   useEffect(() => {
     GetConfigField("UseSystemTitleBar").then((value) => {
@@ -50,7 +52,8 @@ export default function TitleBar() {
             size={"icon"}
             onClick={() => RestartApplication()}
             variant={"ghost"}
-            className="hover:dark:brightness-150 hover:brightness-75 rounded-none h-8 cursor-default"
+            className={`${restartRequired ? "" : "w-0"} transition-all
+              hover:dark:brightness-150 hover:brightness-75 rounded-none h-8 cursor-default`}
           >
             <RotateCcw size={"1rem"} />
           </Button>

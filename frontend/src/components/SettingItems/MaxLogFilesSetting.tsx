@@ -8,15 +8,23 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Input } from "../ui/input";
 import { GetConfigField, SetConfigField } from "@/lib/config";
+import { useStorage } from "@/contexts/storage-provider";
+import { useRestart } from "@/contexts/restart-provider";
 
 export function MaxLogFilesSetting() {
   const { t } = useTranslation();
+  const { getValue, setValue } = useStorage();
+  const { addRestartRequired, removeRestartRequired } = useRestart();
+
   const [isLoading, setIsLoading] = useState(true);
   const [maxLogFiles, setMaxLogFiles] = useState(-1);
 
   useEffect(() => {
     GetConfigField("MaxLogFiles").then((value) => {
       setMaxLogFiles(parseInt(value));
+      if (getValue("initialMaxLogFiles") === undefined) {
+        setValue("initialMaxLogFiles", value);
+      }
       setIsLoading(false);
     });
   }, []);
@@ -45,6 +53,11 @@ export function MaxLogFilesSetting() {
             const targetValue = isNaN(parseInt(e.target.value)) ? 20 : value;
             SetConfigField("MaxLogFiles", String(targetValue)).then(() => {
               setMaxLogFiles(value);
+              if (String(targetValue) === getValue("initialMaxLogFiles")) {
+                removeRestartRequired("MaxLogFiles");
+              } else {
+                addRestartRequired("MaxLogFiles");
+              }
             });
           }}
           min={1}

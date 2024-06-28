@@ -11,10 +11,12 @@ import { Slider } from "../ui/my-slider";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import { useStorage } from "@/contexts/storage-provider";
 import React from "react";
+import { useRestart } from "@/contexts/restart-provider";
 
 export function WindowEffectOpacitySetting() {
   const { t } = useTranslation();
   const { getValue, setValue } = useStorage();
+  const { addRestartRequired, removeRestartRequired } = useRestart();
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -49,6 +51,12 @@ export function WindowEffectOpacitySetting() {
           ) / 100
         )
       );
+
+      if (useWindowEffect === getValue("initialWindowEffect")) {
+        removeRestartRequired("WindowEffect");
+      } else {
+        addRestartRequired("WindowEffect");
+      }
     }
   }, [useWindowEffect]);
 

@@ -12,6 +12,7 @@ import { useToast } from "./components/ui/use-toast";
 import { ToastAction } from "@radix-ui/react-toast";
 import { Button } from "./components/ui/button";
 import { OpenFileInExplorer } from "wailsjs/go/main/App";
+import { RestartProvider } from "./contexts/restart-provider";
 
 function App() {
   const { t } = useTranslation();
@@ -54,34 +55,38 @@ function App() {
   };
 
   return (
-    <ThemeProvider defaultTheme="system">
-      <StorageProvider>
-        <div className="flex flex-col h-dvh">
-          <TitleBar />
-          <Tabs defaultValue="packs" className="flex flex-col w-full h-full">
-            <TabsList className="shadow-bottom-xs z-10 justify-between px-3 py-7 rounded-none w-full s">
-              <div>
-                <TabsTrigger value="packs">{t("nav.my_packs")}</TabsTrigger>
-                <TabsTrigger value="edit">{t("nav.edit")}</TabsTrigger>
-                <TabsTrigger value="settings">{t("nav.settings")}</TabsTrigger>
-              </div>
-              <ModeToggle />
-            </TabsList>
+    <RestartProvider>
+      <ThemeProvider defaultTheme="system">
+        <StorageProvider>
+          <div className="flex flex-col h-dvh">
+            <TitleBar />
+            <Tabs defaultValue="packs" className="flex flex-col w-full h-full">
+              <TabsList className="shadow-bottom-xs z-10 justify-between px-3 py-7 rounded-none w-full s">
+                <div>
+                  <TabsTrigger value="packs">{t("nav.my_packs")}</TabsTrigger>
+                  <TabsTrigger value="edit">{t("nav.edit")}</TabsTrigger>
+                  <TabsTrigger value="settings">
+                    {t("nav.settings")}
+                  </TabsTrigger>
+                </div>
+                <ModeToggle />
+              </TabsList>
 
-            <TabsContent value="packs" className="w-ful h-full">
-              View your packs here.
-            </TabsContent>
-            <TabsContent value="edit" className="w-ful h-full">
-              Edit your packs here.
-            </TabsContent>
-            <TabsContent value="settings" className="w-ful h-full">
-              <Settings />
-            </TabsContent>
-          </Tabs>
-        </div>
-        <Toaster />
-      </StorageProvider>
-    </ThemeProvider>
+              <TabsContent value="packs" className="w-ful h-full">
+                View your packs here.
+              </TabsContent>
+              <TabsContent value="edit" className="w-ful h-full">
+                Edit your packs here.
+              </TabsContent>
+              <TabsContent value="settings" className="w-ful h-full">
+                <Settings />
+              </TabsContent>
+            </Tabs>
+          </div>
+          <Toaster />
+        </StorageProvider>
+      </ThemeProvider>{" "}
+    </RestartProvider>
   );
 }
 

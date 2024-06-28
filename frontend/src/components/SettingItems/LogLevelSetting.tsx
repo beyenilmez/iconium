@@ -8,9 +8,13 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { GetConfigField, SetConfigField } from "@/lib/config";
+import { useStorage } from "@/contexts/storage-provider";
+import { useRestart } from "@/contexts/restart-provider";
 
 export function LogLevelSetting() {
   const { t } = useTranslation();
+  const { getValue, setValue } = useStorage();
+  const { addRestartRequired, removeRestartRequired } = useRestart();
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -45,10 +49,45 @@ export function LogLevelSetting() {
         setEnableError(enableError === "true");
         setEnableFatal(enableFatal === "true");
 
+        if (getValue("initialEnableLogLevel") === undefined) {
+          setValue(
+            "initialEnableLogLevel",
+            enableTrace +
+              enableDebug +
+              enableInfo +
+              enableWarn +
+              enableError +
+              enableFatal
+          );
+        }
+
         setIsLoading(false);
       }
     );
   }, []);
+
+  useEffect(() => {
+    if (
+      getValue("initialEnableLogLevel") ===
+      String(enableTrace) +
+        String(enableDebug) +
+        String(enableInfo) +
+        String(enableWarn) +
+        String(enableError) +
+        String(enableFatal)
+    ) {
+      removeRestartRequired("LogLevelSetting");
+    } else {
+      addRestartRequired("LogLevelSetting");
+    }
+  }, [
+    enableTrace,
+    enableDebug,
+    enableInfo,
+    enableWarn,
+    enableError,
+    enableFatal,
+  ]);
 
   return (
     <SettingsItem loading={isLoading}>

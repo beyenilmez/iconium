@@ -15,6 +15,7 @@ const initializeI18n = async () => {
     .use(LanguageDetector)
     .use(initReactI18next)
     .init({
+      load: "currentOnly",
       lng: language,
       supportedLngs: supportedLngs, // Add supported languages here
       fallbackLng: "en-US",

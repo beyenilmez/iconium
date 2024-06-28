@@ -8,15 +8,23 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useStorage } from "@/contexts/storage-provider";
+import { useRestart } from "@/contexts/restart-provider";
 
 export function UseSystemTitleBarSetting() {
   const { t } = useTranslation();
+  const { getValue, setValue } = useStorage();
+  const { addRestartRequired, removeRestartRequired } = useRestart();
+
   const [isLoading, setIsLoading] = useState(true);
   const [useSystemTitleBar, setUseSystemTitleBar] = useState(false);
 
   useEffect(() => {
     GetConfigField("UseSystemTitleBar").then((value) => {
       setUseSystemTitleBar(value === "true");
+      if (getValue("initialUseSystemTitleBar") === undefined) {
+        setValue("initialUseSystemTitleBar", value);
+      }
       setIsLoading(false);
     });
   }, []);
@@ -40,6 +48,11 @@ export function UseSystemTitleBarSetting() {
           onCheckedChange={(value) => {
             SetConfigField("UseSystemTitleBar", String(value)).then(() => {
               setUseSystemTitleBar(value);
+              if (String(value) === getValue("initialUseSystemTitleBar")) {
+                removeRestartRequired("UseSystemTitleBar");
+              } else {
+                addRestartRequired("UseSystemTitleBar");
+              }
             });
           }}
         />

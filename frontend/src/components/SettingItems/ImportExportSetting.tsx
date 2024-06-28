@@ -1,6 +1,7 @@
 import {
   GetLoadConfigPath,
   ReadConfig,
+  RestartApplication,
   SaveConfigDialog,
 } from "wailsjs/go/main/App";
 import {
@@ -12,7 +13,7 @@ import {
 import { Button } from "../ui/button";
 import { AreYouSureDialog, AreYouSureDialogRef } from "../ui/are-you-sure";
 import { useRef, useState } from "react";
-import { LogDebug, WindowReloadApp } from "wailsjs/runtime/runtime";
+import { LogDebug } from "wailsjs/runtime/runtime";
 import { InitConfigCache } from "@/lib/config";
 import { useTranslation } from "react-i18next";
 
@@ -52,7 +53,7 @@ export function ImportExportSetting() {
               LogDebug("Attempting to read config from " + usePath);
               ReadConfig(usePath).then(() => {
                 InitConfigCache().then(() => {
-                  WindowReloadApp();
+                  RestartApplication();
                 });
               });
             }}
