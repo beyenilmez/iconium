@@ -26,6 +26,8 @@ type Config struct {
 	WindowStartState     *int    `json:"windowStartState"`     // 0 = Normal, 1 = Maximized, 2 = Minimized, 3 = Fullscreen
 	WindowStartPositionX *int    `json:"windowStartPositionX"` // x
 	WindowStartPositionY *int    `json:"windowStartPositionY"` // y
+	WindowStartSizeX     *int    `json:"windowStartSizeX"`     // x
+	WindowStartSizeY     *int    `json:"windowStartSizeY"`     // y
 	WindowScale          *int    `json:"windowScale"`          // %
 	Opacity              *int    `json:"opacity"`              // %
 	WindowEffect         *int    `json:"windowEffect"`         // 0 = Auto, 1 = None, 2 = Mica, 3 = Acrylic, 4 = Tabbed
@@ -46,6 +48,8 @@ func GetDefaultConfig() Config {
 	defaultWindowStartState := 0
 	defaultWindowStartPositionX := -1
 	defaultWindowStartPositionY := -1
+	defaultWindowStartSizeX := -1
+	defaultWindowStartSizeY := -1
 	defaultWindowScale := 100
 	defaultOpacity := 90
 	defaultWindowEffect := 0
@@ -65,6 +69,8 @@ func GetDefaultConfig() Config {
 		WindowStartState:     &defaultWindowStartState,
 		WindowStartPositionX: &defaultWindowStartPositionX,
 		WindowStartPositionY: &defaultWindowStartPositionY,
+		WindowStartSizeX:     &defaultWindowStartSizeX,
+		WindowStartSizeY:     &defaultWindowStartSizeY,
 		WindowScale:          &defaultWindowScale,
 		Opacity:              &defaultOpacity,
 		WindowEffect:         &defaultWindowEffect,

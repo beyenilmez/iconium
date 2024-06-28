@@ -31,9 +31,15 @@ func (a *App) startup(ctx context.Context) {
 	runtime.LogInfo(appContext, "Starting application")
 
 	// Set window position
-	runtime.LogInfo(appContext, "Setting window position")
 	if *config.WindowStartPositionX >= 0 && *config.WindowStartPositionY >= 0 {
+		runtime.LogInfo(appContext, "Setting window position")
 		runtime.WindowSetPosition(appContext, *config.WindowStartPositionX, *config.WindowStartPositionY)
+	}
+
+	// Set window size
+	if *config.WindowStartSizeX >= 0 && *config.WindowStartSizeY >= 0 && runtime.WindowIsNormal(appContext) {
+		runtime.LogInfo(appContext, "Setting window size")
+		runtime.WindowSetSize(appContext, *config.WindowStartSizeX, *config.WindowStartSizeY)
 	}
 
 	// Initiate paths
@@ -76,6 +82,10 @@ func (a *App) beforeClose(ctx context.Context) (prevent bool) {
 	windowPositionX, windowPositionY := runtime.WindowGetPosition(a.ctx)
 	config.WindowStartPositionX, config.WindowStartPositionY = &windowPositionX, &windowPositionY
 	runtime.LogInfo(a.ctx, fmt.Sprintf("Setting window position to %d,%d", windowPositionX, windowPositionY))
+
+	windowSizeX, windowSizeY := runtime.WindowGetSize(a.ctx)
+	config.WindowStartSizeX, config.WindowStartSizeY = &windowSizeX, &windowSizeY
+	runtime.LogInfo(a.ctx, fmt.Sprintf("Setting window size to %d,%d", windowSizeX, windowSizeY))
 
 	runtime.LogInfo(a.ctx, "Saving config")
 	err := WriteConfig(configPath)
