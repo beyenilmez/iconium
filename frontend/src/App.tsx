@@ -40,12 +40,12 @@ function App() {
 
   window.toast = ({ title, description, path, variant }: any) => {
     toast({
-      title: title,
-      description: description,
+      title: t(title),
+      description: t(description),
       action: path ? (
-        <ToastAction altText="Show in Explorer" asChild>
+        <ToastAction altText={t("show_in_explorer")} asChild>
           <Button onClick={() => OpenFileInExplorer(path)}>
-            Show in Explorer
+            {t("show_in_explorer")}
           </Button>
         </ToastAction>
       ) : undefined,

@@ -12,23 +12,25 @@ import {
 import { Button } from "../ui/button";
 import { AreYouSureDialog, AreYouSureDialogRef } from "../ui/are-you-sure";
 import { useRef, useState } from "react";
-import { LogDebug, WindowReload } from "wailsjs/runtime/runtime";
+import { LogDebug, WindowReloadApp } from "wailsjs/runtime/runtime";
 import { InitConfigCache } from "@/lib/config";
+import { useTranslation } from "react-i18next";
 
 export function ImportExportSetting() {
+  const { t } = useTranslation();
   const dialogRef = useRef<AreYouSureDialogRef>(null);
   const [usePath, setUsePath] = useState("");
 
   return (
     <SettingsItem vertical={false}>
       <div>
-        <SettingLabel>Import/Export Settings</SettingLabel>
+        <SettingLabel>{t("settings.setting.import_export.label")}</SettingLabel>
         <SettingDescription>
-          Import or export your settings from/to a JSON file
+          {t("settings.setting.import_export.description")}
         </SettingDescription>
       </div>
       <SettingContent>
-        <div className="flex gap-2">
+        <div className="flex gap-0.5">
           <Button
             onClick={() => {
               GetLoadConfigPath().then((path) => {
@@ -39,26 +41,23 @@ export function ImportExportSetting() {
               });
             }}
           >
-            Import
+            {t("import")}
           </Button>
           <AreYouSureDialog
             ref={dialogRef}
-            title="Are you sure?"
-            description="Are you really sure?"
-            cancelText="Cancel"
-            acceptText="Yes"
+            title={t("settings.are_you_sure_you_want_to_import_this_config")}
+            cancelText={t("cancel")}
+            acceptText={t("yes")}
             onAccept={() => {
               LogDebug("Attempting to read config from " + usePath);
               ReadConfig(usePath).then(() => {
                 InitConfigCache().then(() => {
-                  WindowReload();
+                  WindowReloadApp();
                 });
               });
             }}
-          >
-            gdfgdfgdfg
-          </AreYouSureDialog>
-          <Button onClick={() => SaveConfigDialog()}>Export</Button>
+          />
+          <Button onClick={() => SaveConfigDialog()}>{t("export")}</Button>
         </div>
       </SettingContent>
     </SettingsItem>

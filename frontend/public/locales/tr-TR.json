@@ -1,4 +1,11 @@
 {
+  "cancel": "İptal",
+  "yes": "Evet",
+  "no": "Hayır",
+  "show_in_explorer": "Klasörü aç",
+  "import": "İçe Aktar",
+  "export": "Dışa Aktar",
+
   "nav": {
     "my_packs": "Paketlerim",
     "edit": "Düzenle",
@@ -7,6 +14,9 @@
 
   "settings": {
     "restart_the_app_for_changes_to_take_effect": "Değişikliklerin etkili olması için uygulamayı yeniden başlatın.",
+    "are_you_sure_you_want_to_import_this_config": "Bu ayarları yüklemek istediğinize emin misiniz?",
+    "config_saved": "Ayarlar kaydedildi",
+    "there_was_an_error_saving_the_config": "Ayarlar kaydedilirken bir hata oluştu.",
 
     "categories": {
       "general": "Genel",
@@ -68,6 +78,11 @@
       "max_log_files": {
         "label": "Maksimum Günlük Dosyaları",
         "description": "Tutulacak maksimum günlük dosyası sayısını ayarlayın."
+      },
+
+      "import_export": {
+        "label": "Ayarları İçe/Dışa Aktar",
+        "description": "Ayarlarınızı bir JSON dosyasından içe veya dışa aktarın."
       }
     }
   }

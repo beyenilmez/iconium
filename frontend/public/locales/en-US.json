@@ -1,4 +1,11 @@
 {
+  "cancel": "Cancel",
+  "yes": "Yes",
+  "no": "No",
+  "show_in_explorer": "Show in Explorer",
+  "import": "Import",
+  "export": "Export",
+
   "nav": {
     "my_packs": "My Packs",
     "edit": "Edit",
@@ -7,6 +14,9 @@
 
   "settings": {
     "restart_the_app_for_changes_to_take_effect": "Restart the app for changes to take effect.",
+    "are_you_sure_you_want_to_import_this_config": "Are you sure you want to import this config?",
+    "config_saved": "Config saved",
+    "there_was_an_error_saving_the_config": "There was an error saving the config.",
 
     "categories": {
       "general": "General",
@@ -68,6 +78,11 @@
       "max_log_files": {
         "label": "Max Log Files",
         "description": "Set the maximum number of log files to retain."
+      },
+
+      "import_export": {
+        "label": "Import/Export Settings",
+        "description": "Import or export settings your settings from/to a JSON file."
       }
     }
   }

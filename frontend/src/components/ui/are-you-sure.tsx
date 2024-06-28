@@ -12,13 +12,13 @@ import {
 } from "@/components/ui/dialog";
 
 interface AreYouSureDialogProps {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   cancelText: string;
   acceptText: string;
   onCancel?: () => void;
   onAccept?: () => void;
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 export interface AreYouSureDialogRef {
@@ -51,11 +51,11 @@ export const AreYouSureDialog = forwardRef<AreYouSureDialogRef, AreYouSureDialog
           <div className="flex items-center space-x-2">
             {children}
           </div>
-          <DialogFooter className="sm:justify-start">
+          <DialogFooter className="sm:justify-end">
             <DialogClose asChild>
               <Button
                 type="button"
-                variant="secondary"
+                variant="destructive"
                 onClick={() => {
                   closeDialog();
                   if (onCancel) {
