@@ -6,8 +6,24 @@ export function GetConfigField(arg1) {
   return window['go']['main']['App']['GetConfigField'](arg1);
 }
 
-export function SendNotification(arg1, arg2) {
-  return window['go']['main']['App']['SendNotification'](arg1, arg2);
+export function GetLoadConfigPath() {
+  return window['go']['main']['App']['GetLoadConfigPath']();
+}
+
+export function OpenFileInExplorer(arg1) {
+  return window['go']['main']['App']['OpenFileInExplorer'](arg1);
+}
+
+export function ReadConfig(arg1) {
+  return window['go']['main']['App']['ReadConfig'](arg1);
+}
+
+export function SaveConfigDialog() {
+  return window['go']['main']['App']['SaveConfigDialog']();
+}
+
+export function SendNotification(arg1, arg2, arg3, arg4) {
+  return window['go']['main']['App']['SendNotification'](arg1, arg2, arg3, arg4);
 }
 
 export function SetConfigField(arg1, arg2) {

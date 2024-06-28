@@ -9,6 +9,7 @@ import { WindowScaleSetting } from "./SettingItems/WindowScaleSetting";
 import { MaxLogFilesSetting } from "./SettingItems/MaxLogFilesSetting";
 import { EnableLoggingSetting } from "./SettingItems/EnableLoggingSetting";
 import { LogLevelSetting } from "./SettingItems/LogLevelSetting";
+import { ImportExportSetting } from "./SettingItems/ImportExportSetting";
 
 export default function Settings() {
   const { t } = useTranslation();
@@ -52,6 +53,7 @@ export default function Settings() {
           <EnableLoggingSetting />
           <LogLevelSetting />
           <MaxLogFilesSetting />
+          <ImportExportSetting />
         </SettingsGroup>
       </TabsContent>
     </Tabs>

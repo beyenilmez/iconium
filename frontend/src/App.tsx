@@ -9,6 +9,9 @@ import { useEffect } from "react";
 import { StorageProvider } from "./contexts/storage-provider";
 import { Toaster } from "./components/ui/toaster";
 import { useToast } from "./components/ui/use-toast";
+import { ToastAction } from "@radix-ui/react-toast";
+import { Button } from "./components/ui/button";
+import { OpenFileInExplorer } from "wailsjs/go/main/App";
 
 function App() {
   const { t } = useTranslation();
@@ -35,9 +38,18 @@ function App() {
       });
   }, []);
 
-  window.toast = ({ ...props }: any) => {
+  window.toast = ({ title, description, path, variant }: any) => {
     toast({
-      ...props,
+      title: title,
+      description: description,
+      action: path ? (
+        <ToastAction altText="Show in Explorer" asChild>
+          <Button onClick={() => OpenFileInExplorer(path)}>
+            Show in Explorer
+          </Button>
+        </ToastAction>
+      ) : undefined,
+      variant: variant,
     });
   };
 

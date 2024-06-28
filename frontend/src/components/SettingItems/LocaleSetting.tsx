@@ -28,6 +28,10 @@ export function LocaleSetting() {
       });
   }, []);
 
+  useEffect(() => {
+    i18n.changeLanguage(language);
+  }, [language]);
+
   return (
     <SettingsItem loading={isLoading}>
       <div>
@@ -50,8 +54,9 @@ export function LocaleSetting() {
             "settings.setting.language.no_languages_found"
           )}
           onChange={(value) => {
-            SetConfigField("Language", value);
-            i18n.changeLanguage(value);
+            SetConfigField("Language", value).then(() => {
+              setLanguage(value);
+            });
           }}
         />
       </SettingContent>

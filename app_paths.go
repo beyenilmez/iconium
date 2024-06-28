@@ -10,6 +10,7 @@ import (
 
 var packsFolder string
 var logsFolder string
+var savedConfigFolder string
 var configPath string
 var appIconPath string
 
@@ -26,6 +27,7 @@ func path_init() error {
 	appFolder := path.Join(appData, "desktop-manager")
 	packsFolder = path.Join(appFolder, "packs")
 	logsFolder = path.Join(appFolder, "logs")
+	savedConfigFolder = path.Join(appFolder, "savedconfigs")
 
 	configPath = path.Join(appFolder, "config.json")
 	appIconPath = path.Join(appFolder, "appicon.png")
@@ -44,6 +46,12 @@ func path_init() error {
 	if err != nil {
 		return err
 	}
+	err = create_folder(savedConfigFolder)
+	if err != nil {
+		return err
+	}
+
+	runtime.LogTrace(appContext, "Creating folders complete")
 
 	runtime.LogTrace(appContext, "Attempting to create appicon")
 

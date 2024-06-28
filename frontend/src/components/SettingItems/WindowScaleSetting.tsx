@@ -18,15 +18,13 @@ export function WindowScaleSetting() {
     GetConfigField("WindowScale").then((value) => {
       setUseScale(parseInt(value));
       setIsLoading(false);
-    })
+    });
   }, []);
 
   return (
     <SettingsItem loading={isLoading} vertical={false}>
       <div>
-        <SettingLabel>
-          {t("settings.setting.window_scale.label")}
-        </SettingLabel>
+        <SettingLabel>{t("settings.setting.window_scale.label")}</SettingLabel>
         <SettingDescription>
           {t("settings.setting.window_scale.description")}
         </SettingDescription>

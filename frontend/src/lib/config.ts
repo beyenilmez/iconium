@@ -39,20 +39,40 @@ export async function SetConfigField(
 }
 
 // Function to initialize config cache
-export function InitConfigCache(): void {
-  GetConfigField("Theme");
-  GetConfigField("UseSystemTitleBar");
-  GetConfigField("EnableLogging");
-  GetConfigField("EnableTrace");
-  GetConfigField("EnableDebug");
-  GetConfigField("EnableInfo");
-  GetConfigField("EnableWarn");
-  GetConfigField("EnableError");
-  GetConfigField("EnableFatal");
-  GetConfigField("MaxLogFiles");
-  GetConfigField("Language");
-  GetConfigField("WindowStartState");
-  GetConfigField("WindowScale");
-  GetConfigField("Opacity");
-  GetConfigField("WindowEffect");
+// Function to initialize config cache
+export async function InitConfigCache(): Promise<void> {
+  // Reset cache
+  configCache = {};
+
+  // Array of keys to fetch
+  const keys = [
+    "Theme",
+    "UseSystemTitleBar",
+    "EnableLogging",
+    "EnableTrace",
+    "EnableDebug",
+    "EnableInfo",
+    "EnableWarn",
+    "EnableError",
+    "EnableFatal",
+    "MaxLogFiles",
+    "Language",
+    "WindowStartState",
+    "WindowScale",
+    "Opacity",
+    "WindowEffect",
+  ];
+
+  // Array to store promises
+  const fetchPromises: Promise<string>[] = keys.map((key) => GetConfigField(key));
+
+  // Wait for all promises to resolve
+  const results = await Promise.all(fetchPromises);
+
+  // Update cache with fetched values
+  keys.forEach((key, index) => {
+    configCache[key] = results[index];
+  });
+
+  // Optional: Log or perform additional actions after fetching all values
 }

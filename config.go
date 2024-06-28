@@ -72,7 +72,7 @@ func config_init() error {
 	if err != nil {
 		return errors.New("failed to create config file")
 	}
-	err = ReadConfig()
+	err = ReadConfig(configPath)
 	if err != nil {
 		return errors.New("failed to read config file")
 	}
@@ -190,9 +190,9 @@ func CreateConfigIfNotExist() error {
 	return nil
 }
 
-// WriteConfig writes the current config to the configPath
-func WriteConfig() error {
-	file, err := os.Create(configPath)
+// WriteConfig writes the current config to the path
+func WriteConfig(path string) error {
+	file, err := os.Create(path)
 	if err != nil {
 		return err
 	}
@@ -207,9 +207,9 @@ func WriteConfig() error {
 	return nil
 }
 
-// Read config from configPath
-func ReadConfig() error {
-	file, err := os.Open(configPath)
+// Read config from path
+func ReadConfig(path string) error {
+	file, err := os.Open(path)
 
 	if err != nil {
 		return err
@@ -226,4 +226,8 @@ func ReadConfig() error {
 	}
 
 	return nil
+}
+
+func (app *App) ReadConfig(path string) error {
+	return ReadConfig(path)
 }

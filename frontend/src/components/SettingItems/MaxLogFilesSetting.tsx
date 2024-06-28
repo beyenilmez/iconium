@@ -24,9 +24,7 @@ export function MaxLogFilesSetting() {
   return (
     <SettingsItem loading={isLoading}>
       <div>
-        <SettingLabel>
-          {t("settings.setting.max_log_files.label")}
-        </SettingLabel>
+        <SettingLabel>{t("settings.setting.max_log_files.label")}</SettingLabel>
         <SettingDescription>
           {t("settings.setting.max_log_files.description") +
             " (" +

@@ -3,7 +3,15 @@
 
 export function GetConfigField(arg1:string):Promise<string>;
 
-export function SendNotification(arg1:string,arg2:string):Promise<void>;
+export function GetLoadConfigPath():Promise<string>;
+
+export function OpenFileInExplorer(arg1:string):Promise<void>;
+
+export function ReadConfig(arg1:string):Promise<void>;
+
+export function SaveConfigDialog():Promise<void>;
+
+export function SendNotification(arg1:string,arg2:string,arg3:string,arg4:string):Promise<void>;
 
 export function SetConfigField(arg1:string,arg2:string):Promise<void>;
 

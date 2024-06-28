@@ -67,7 +67,7 @@ func (a *App) beforeClose(ctx context.Context) (prevent bool) {
 	}
 
 	runtime.LogInfo(a.ctx, "Saving config")
-	err := WriteConfig()
+	err := WriteConfig(configPath)
 
 	if err != nil {
 		runtime.LogError(a.ctx, err.Error())
@@ -104,14 +104,24 @@ func onFirstRun() {
 }
 
 // Send notification
-func (a *App) SendNotification(title string, message string) {
+func (a *App) SendNotification(title string, message string, path string, variant string) {
 	runtime.LogInfo(a.ctx, "Sending notification")
 
 	if runtime.WindowIsNormal(a.ctx) || runtime.WindowIsMaximised(a.ctx) || runtime.WindowIsFullscreen(a.ctx) {
-		runtime.WindowExecJS(a.ctx, `window.toast({
-			title: "`+title+`", 
-			description: "`+message+`"
-			});`)
+		if path != "" {
+			runtime.WindowExecJS(a.ctx, `window.toast({
+				title: "`+title+`", 
+				description: "`+message+`",
+				path: "`+path+`",
+				variant: "`+variant+`"
+				});`)
+		} else {
+			runtime.WindowExecJS(a.ctx, `window.toast({
+				title: "`+title+`", 
+				description: "`+message+`",
+				variant: "`+variant+`"
+				});`)
+		}
 	} else {
 		err := beeep.Notify(title, message, appIconPath)
 		if err != nil {
