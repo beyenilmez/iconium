@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"strings"
 
@@ -28,6 +29,12 @@ func (a *App) startup(ctx context.Context) {
 	appContext = ctx
 
 	runtime.LogInfo(appContext, "Starting application")
+
+	// Set window position
+	runtime.LogInfo(appContext, "Setting window position")
+	if *config.WindowStartPositionX >= 0 && *config.WindowStartPositionY >= 0 {
+		runtime.WindowSetPosition(appContext, *config.WindowStartPositionX, *config.WindowStartPositionY)
+	}
 
 	// Initiate paths
 	runtime.LogInfo(appContext, "Initiating paths")
@@ -65,6 +72,10 @@ func (a *App) beforeClose(ctx context.Context) (prevent bool) {
 		config.WindowStartState = &windowState
 		runtime.LogInfo(a.ctx, "Setting window state to normal")
 	}
+
+	windowPositionX, windowPositionY := runtime.WindowGetPosition(a.ctx)
+	config.WindowStartPositionX, config.WindowStartPositionY = &windowPositionX, &windowPositionY
+	runtime.LogInfo(a.ctx, fmt.Sprintf("Setting window position to %d,%d", windowPositionX, windowPositionY))
 
 	runtime.LogInfo(a.ctx, "Saving config")
 	err := WriteConfig(configPath)

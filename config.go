@@ -12,21 +12,23 @@ import (
 )
 
 type Config struct {
-	Theme             *string `json:"theme"`             // system, light, dark
-	UseSystemTitleBar *bool   `json:"useSystemTitleBar"` // true, false
-	EnableLogging     *bool   `json:"enableLogging"`     // true, false
-	EnableTrace       *bool   `json:"enableTrace"`       // true, false
-	EnableDebug       *bool   `json:"enableDebug"`       // true, false
-	EnableInfo        *bool   `json:"enableInfo"`        // true, false
-	EnableWarn        *bool   `json:"enableWarn"`        // true, false
-	EnableError       *bool   `json:"enableError"`       // true, false
-	EnableFatal       *bool   `json:"enableFatal"`       // true, false
-	MaxLogFiles       *int    `json:"maxLogFiles"`       // int
-	Language          *string `json:"language"`          // en-US, tr-TR
-	WindowStartState  *int    `json:"windowStartState"`  // 0 = Normal, 1 = Maximized, 2 = Minimized, 3 = Fullscreen
-	WindowScale       *int    `json:"windowScale"`       // %
-	Opacity           *int    `json:"opacity"`           // %
-	WindowEffect      *int    `json:"windowEffect"`      // 0 = Auto, 1 = None, 2 = Mica, 3 = Acrylic, 4 = Tabbed
+	Theme                *string `json:"theme"`                // system, light, dark
+	UseSystemTitleBar    *bool   `json:"useSystemTitleBar"`    // true, false
+	EnableLogging        *bool   `json:"enableLogging"`        // true, false
+	EnableTrace          *bool   `json:"enableTrace"`          // true, false
+	EnableDebug          *bool   `json:"enableDebug"`          // true, false
+	EnableInfo           *bool   `json:"enableInfo"`           // true, false
+	EnableWarn           *bool   `json:"enableWarn"`           // true, false
+	EnableError          *bool   `json:"enableError"`          // true, false
+	EnableFatal          *bool   `json:"enableFatal"`          // true, false
+	MaxLogFiles          *int    `json:"maxLogFiles"`          // int
+	Language             *string `json:"language"`             // en-US, tr-TR
+	WindowStartState     *int    `json:"windowStartState"`     // 0 = Normal, 1 = Maximized, 2 = Minimized, 3 = Fullscreen
+	WindowStartPositionX *int    `json:"windowStartPositionX"` // x
+	WindowStartPositionY *int    `json:"windowStartPositionY"` // y
+	WindowScale          *int    `json:"windowScale"`          // %
+	Opacity              *int    `json:"opacity"`              // %
+	WindowEffect         *int    `json:"windowEffect"`         // 0 = Auto, 1 = None, 2 = Mica, 3 = Acrylic, 4 = Tabbed
 }
 
 func GetDefaultConfig() Config {
@@ -42,26 +44,30 @@ func GetDefaultConfig() Config {
 	defaultMaxLogFiles := 20
 	defaultLanguage := "en-US"
 	defaultWindowStartState := 0
+	defaultWindowStartPositionX := -1
+	defaultWindowStartPositionY := -1
 	defaultWindowScale := 100
 	defaultOpacity := 90
 	defaultWindowEffect := 0
 
 	return Config{
-		Theme:             &defaultTheme,
-		UseSystemTitleBar: &defaultUseSystemTitleBar,
-		EnableLogging:     &defaultEnableLogging,
-		EnableTrace:       &defaultEnableTrace,
-		EnableDebug:       &defaultEnableDebug,
-		EnableInfo:        &defaultEnableInfo,
-		EnableWarn:        &defaultEnableWarn,
-		EnableError:       &defaultEnableError,
-		EnableFatal:       &defaultEnableFatal,
-		MaxLogFiles:       &defaultMaxLogFiles,
-		Language:          &defaultLanguage,
-		WindowStartState:  &defaultWindowStartState,
-		WindowScale:       &defaultWindowScale,
-		Opacity:           &defaultOpacity,
-		WindowEffect:      &defaultWindowEffect,
+		Theme:                &defaultTheme,
+		UseSystemTitleBar:    &defaultUseSystemTitleBar,
+		EnableLogging:        &defaultEnableLogging,
+		EnableTrace:          &defaultEnableTrace,
+		EnableDebug:          &defaultEnableDebug,
+		EnableInfo:           &defaultEnableInfo,
+		EnableWarn:           &defaultEnableWarn,
+		EnableError:          &defaultEnableError,
+		EnableFatal:          &defaultEnableFatal,
+		MaxLogFiles:          &defaultMaxLogFiles,
+		Language:             &defaultLanguage,
+		WindowStartState:     &defaultWindowStartState,
+		WindowStartPositionX: &defaultWindowStartPositionX,
+		WindowStartPositionY: &defaultWindowStartPositionY,
+		WindowScale:          &defaultWindowScale,
+		Opacity:              &defaultOpacity,
+		WindowEffect:         &defaultWindowEffect,
 	}
 }
 
