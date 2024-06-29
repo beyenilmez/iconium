@@ -9,12 +9,10 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { GetConfigField, SetConfigField } from "@/lib/config";
 import { useStorage } from "@/contexts/storage-provider";
-import { useRestart } from "@/contexts/restart-provider";
 
 export function LogLevelSetting() {
   const { t } = useTranslation();
   const { getValue, setValue } = useStorage();
-  const { addRestartRequired, removeRestartRequired } = useRestart();
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -66,31 +64,20 @@ export function LogLevelSetting() {
     );
   }, []);
 
-  useEffect(() => {
-    if (
-      getValue("initialEnableLogLevel") ===
-      String(enableTrace) +
+  return (
+    <SettingsItem
+      loading={isLoading}
+      name="LogLevels"
+      initialValue={getValue("initialEnableLogLevel")}
+      value={
+        String(enableTrace) +
         String(enableDebug) +
         String(enableInfo) +
         String(enableWarn) +
         String(enableError) +
         String(enableFatal)
-    ) {
-      removeRestartRequired("LogLevelSetting");
-    } else {
-      addRestartRequired("LogLevelSetting");
-    }
-  }, [
-    enableTrace,
-    enableDebug,
-    enableInfo,
-    enableWarn,
-    enableError,
-    enableFatal,
-  ]);
-
-  return (
-    <SettingsItem loading={isLoading}>
+      }
+    >
       <div>
         <SettingLabel>{t("settings.setting.log_levels.label")}</SettingLabel>
         <SettingDescription>

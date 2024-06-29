@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from "react";
 
 interface StorageContextType {
   setValue: (key: string, value: any) => void;
@@ -11,7 +11,9 @@ interface StorageProviderProps {
 
 const StorageContext = createContext<StorageContextType | undefined>(undefined);
 
-export const StorageProvider: React.FC<StorageProviderProps> = ({ children }) => {
+export const StorageProvider: React.FC<StorageProviderProps> = ({
+  children,
+}) => {
   const [storage, setStorage] = useState<{ [key: string]: any }>({});
 
   const setValue = (key: string, value: any) => {
@@ -40,7 +42,7 @@ export const StorageProvider: React.FC<StorageProviderProps> = ({ children }) =>
 export const useStorage = () => {
   const context = useContext(StorageContext);
   if (!context) {
-    throw new Error('useStorage must be used within a StorageProvider');
+    throw new Error("useStorage must be used within a StorageProvider");
   }
   return context;
 };

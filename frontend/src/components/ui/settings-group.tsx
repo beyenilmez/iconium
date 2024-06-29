@@ -1,5 +1,6 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton"
+import { useRestart } from "@/contexts/restart-provider";
 
 interface SettingsComponentProps extends React.HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
@@ -14,9 +15,24 @@ interface SettingsItemProps extends React.HTMLAttributes<HTMLDivElement> {
   vertical?: boolean;
   disabled?: boolean;
   children: ReactNode;
+  initialValue?: any;
+  value?: any;
+  name?: string;
 }
 
-export const SettingsItem: React.FC<SettingsItemProps> = ({ children, className, disabled, loading, vertical, ...rest }) => {
+export const SettingsItem: React.FC<SettingsItemProps> = ({ children, className, disabled, loading, vertical, initialValue, name, value, ...rest }) => {
+  const { addRestartRequired, removeRestartRequired } = useRestart();
+
+  useEffect(() => {
+    if(initialValue && value && name && !loading){
+      if(value === initialValue){
+        removeRestartRequired(name);
+      }else{
+        addRestartRequired(name);
+      }
+    }
+  }, [initialValue, value]);
+
   if (loading) {
     return <SettingsItemSkeleton className={className} {...rest} />
   } else {

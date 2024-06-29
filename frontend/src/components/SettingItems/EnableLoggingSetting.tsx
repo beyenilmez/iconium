@@ -9,12 +9,10 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { GetConfigField, SetConfigField } from "@/lib/config";
 import { useStorage } from "@/contexts/storage-provider";
-import { useRestart } from "@/contexts/restart-provider";
 
 export function EnableLoggingSetting() {
   const { t } = useTranslation();
   const { getValue, setValue } = useStorage();
-  const { addRestartRequired, removeRestartRequired } = useRestart();
 
   const [isLoading, setIsLoading] = useState(true);
   const [enableLogging, setEnableLogging] = useState(false);
@@ -30,7 +28,7 @@ export function EnableLoggingSetting() {
   }, []);
 
   return (
-    <SettingsItem loading={isLoading}>
+    <SettingsItem loading={isLoading} name="EnableLogging" initialValue={getValue("initialEnableLogging")} value={String(enableLogging)}>
       <div>
         <SettingLabel>{t("settings.setting.logging.label")}</SettingLabel>
         <SettingDescription>
@@ -46,11 +44,6 @@ export function EnableLoggingSetting() {
           onCheckedChange={() => {
             SetConfigField("EnableLogging", String(!enableLogging)).then(() => {
               setEnableLogging(!enableLogging);
-              if (String(enableLogging) === getValue("initialEnableLogging")) {
-                addRestartRequired("EnableLogging");
-              } else {
-                removeRestartRequired("EnableLogging");
-              }
             });
           }}
         />

@@ -11,12 +11,10 @@ import { Slider } from "../ui/my-slider";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import { useStorage } from "@/contexts/storage-provider";
 import React from "react";
-import { useRestart } from "@/contexts/restart-provider";
 
 export function WindowEffectOpacitySetting() {
   const { t } = useTranslation();
   const { getValue, setValue } = useStorage();
-  const { addRestartRequired, removeRestartRequired } = useRestart();
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -51,18 +49,17 @@ export function WindowEffectOpacitySetting() {
           ) / 100
         )
       );
-
-      if (useWindowEffect === getValue("initialWindowEffect")) {
-        removeRestartRequired("WindowEffect");
-      } else {
-        addRestartRequired("WindowEffect");
-      }
     }
   }, [useWindowEffect]);
 
   return (
     <React.Fragment>
-      <SettingsItem loading={isLoading}>
+      <SettingsItem
+        loading={isLoading}
+        name="WindowEffect"
+        initialValue={getValue("initialWindowEffect")}
+        value={useWindowEffect}
+      >
         <div>
           <SettingLabel>
             {t("settings.setting.window_effect.label")}
