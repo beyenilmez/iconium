@@ -47,6 +47,7 @@ export function ImportExportSetting() {
           <AreYouSureDialog
             ref={dialogRef}
             title={t("settings.are_you_sure_you_want_to_import_this_config")}
+            description={t("settings.the_app_will_restart_to_load_the_new_config")}
             cancelText={t("cancel")}
             acceptText={t("yes")}
             onAccept={() => {

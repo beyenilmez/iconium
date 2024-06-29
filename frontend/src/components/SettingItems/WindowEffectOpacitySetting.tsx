@@ -14,7 +14,7 @@ import React from "react";
 
 export function WindowEffectOpacitySetting() {
   const { t } = useTranslation();
-  const { getValue, setValue } = useStorage();
+  const { getValue, setValueIfUndefined } = useStorage();
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -26,9 +26,7 @@ export function WindowEffectOpacitySetting() {
       .then(([windowOpacityValue, windowEffectValue]) => {
         setUseOpacity(parseInt(windowOpacityValue));
         setUseWindowEffect(windowEffectValue);
-        if (getValue("initialWindowEffect") === undefined) {
-          setValue("initialWindowEffect", windowEffectValue);
-        }
+        setValueIfUndefined("initialWindowEffect", windowEffectValue);
         setIsLoading(false); // Mark loading as complete
       })
       .catch((error) => {

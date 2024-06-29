@@ -15,6 +15,7 @@
   "settings": {
     "restart_the_app_for_changes_to_take_effect": "Restart the app for changes to take effect.",
     "are_you_sure_you_want_to_import_this_config": "Are you sure you want to import this config?",
+    "the_app_will_restart_to_load_the_new_config": "The app will be restarted to load the new config.",
     "config_saved": "Config saved",
     "there_was_an_error_saving_the_config": "There was an error saving the config.",
 

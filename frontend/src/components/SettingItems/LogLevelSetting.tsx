@@ -12,7 +12,7 @@ import { useStorage } from "@/contexts/storage-provider";
 
 export function LogLevelSetting() {
   const { t } = useTranslation();
-  const { getValue, setValue } = useStorage();
+  const { getValue, setValueIfUndefined } = useStorage();
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -47,17 +47,15 @@ export function LogLevelSetting() {
         setEnableError(enableError === "true");
         setEnableFatal(enableFatal === "true");
 
-        if (getValue("initialEnableLogLevel") === undefined) {
-          setValue(
-            "initialEnableLogLevel",
-            enableTrace +
-              enableDebug +
-              enableInfo +
-              enableWarn +
-              enableError +
-              enableFatal
-          );
-        }
+        setValueIfUndefined(
+          "initialEnableLogLevel",
+          enableTrace +
+            enableDebug +
+            enableInfo +
+            enableWarn +
+            enableError +
+            enableFatal
+        );
 
         setIsLoading(false);
       }

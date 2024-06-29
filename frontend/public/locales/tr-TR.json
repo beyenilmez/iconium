@@ -15,6 +15,7 @@
   "settings": {
     "restart_the_app_for_changes_to_take_effect": "Değişikliklerin etkili olması için uygulamayı yeniden başlatın.",
     "are_you_sure_you_want_to_import_this_config": "Bu ayarları yüklemek istediğinize emin misiniz?",
+    "the_app_will_restart_to_load_the_new_config": "Uygulama, yeni ayarları yüklemek için yeniden başlatılacak.",
     "config_saved": "Ayarlar kaydedildi",
     "there_was_an_error_saving_the_config": "Ayarlar kaydedilirken bir hata oluştu.",
 

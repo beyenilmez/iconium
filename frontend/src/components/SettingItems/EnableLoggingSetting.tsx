@@ -12,7 +12,7 @@ import { useStorage } from "@/contexts/storage-provider";
 
 export function EnableLoggingSetting() {
   const { t } = useTranslation();
-  const { getValue, setValue } = useStorage();
+  const { getValue, setValueIfUndefined } = useStorage();
 
   const [isLoading, setIsLoading] = useState(true);
   const [enableLogging, setEnableLogging] = useState(false);
@@ -20,15 +20,19 @@ export function EnableLoggingSetting() {
   useEffect(() => {
     GetConfigField("EnableLogging").then((value) => {
       setEnableLogging(value === "true");
-      if (getValue("initialEnableLogging") === undefined) {
-        setValue("initialEnableLogging", value);
-      }
+      setValueIfUndefined("initialEnableLogging", value);
+
       setIsLoading(false);
     });
   }, []);
 
   return (
-    <SettingsItem loading={isLoading} name="EnableLogging" initialValue={getValue("initialEnableLogging")} value={String(enableLogging)}>
+    <SettingsItem
+      loading={isLoading}
+      name="EnableLogging"
+      initialValue={getValue("initialEnableLogging")}
+      value={String(enableLogging)}
+    >
       <div>
         <SettingLabel>{t("settings.setting.logging.label")}</SettingLabel>
         <SettingDescription>

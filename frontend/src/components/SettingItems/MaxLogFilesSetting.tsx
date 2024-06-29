@@ -12,7 +12,7 @@ import { useStorage } from "@/contexts/storage-provider";
 
 export function MaxLogFilesSetting() {
   const { t } = useTranslation();
-  const { getValue, setValue } = useStorage();
+  const { getValue, setValueIfUndefined } = useStorage();
 
   const [isLoading, setIsLoading] = useState(true);
   const [maxLogFiles, setMaxLogFiles] = useState(-1);
@@ -20,9 +20,7 @@ export function MaxLogFilesSetting() {
   useEffect(() => {
     GetConfigField("MaxLogFiles").then((value) => {
       setMaxLogFiles(parseInt(value));
-      if (getValue("initialMaxLogFiles") === undefined) {
-        setValue("initialMaxLogFiles", value);
-      }
+      setValueIfUndefined("initialMaxLogFiles", value);
       setIsLoading(false);
     });
   }, []);

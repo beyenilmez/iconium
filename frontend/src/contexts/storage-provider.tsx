@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, ReactNode } from "react";
 interface StorageContextType {
   setValue: (key: string, value: any) => void;
   getValue: (key: string) => any;
+  setValueIfUndefined: (key: string, value: any) => void;
 }
 
 interface StorageProviderProps {
@@ -27,9 +28,16 @@ export const StorageProvider: React.FC<StorageProviderProps> = ({
     return storage[key];
   };
 
+  const setValueIfUndefined = (key: string, value: any) => {
+    if (storage[key] === undefined) {
+      setValue(key, value);
+    }
+  };
+
   const contextValue: StorageContextType = {
     setValue,
     getValue,
+    setValueIfUndefined,
   };
 
   return (

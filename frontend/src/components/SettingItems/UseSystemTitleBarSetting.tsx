@@ -12,7 +12,7 @@ import { useStorage } from "@/contexts/storage-provider";
 
 export function UseSystemTitleBarSetting() {
   const { t } = useTranslation();
-  const { getValue, setValue } = useStorage();
+  const { getValue, setValueIfUndefined } = useStorage();
 
   const [isLoading, setIsLoading] = useState(true);
   const [useSystemTitleBar, setUseSystemTitleBar] = useState(false);
@@ -20,15 +20,18 @@ export function UseSystemTitleBarSetting() {
   useEffect(() => {
     GetConfigField("UseSystemTitleBar").then((value) => {
       setUseSystemTitleBar(value === "true");
-      if (getValue("initialUseSystemTitleBar") === undefined) {
-        setValue("initialUseSystemTitleBar", value);
-      }
+      setValueIfUndefined("initialUseSystemTitleBar", value);
       setIsLoading(false);
     });
   }, []);
 
   return (
-    <SettingsItem loading={isLoading} name="UseSystemTitleBar" initialValue={getValue("initialUseSystemTitleBar")} value={String(useSystemTitleBar)}>
+    <SettingsItem
+      loading={isLoading}
+      name="UseSystemTitleBar"
+      initialValue={getValue("initialUseSystemTitleBar")}
+      value={String(useSystemTitleBar)}
+    >
       <div>
         <SettingLabel>
           {t("settings.setting.use_system_title_bar.label")}
