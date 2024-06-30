@@ -25,6 +25,7 @@ lerna-debug.log*
 *.local
 node_modules
 /build/bin
+/build/windows/installer/wails_tools.nsh
 /frontend/dist
 /frontend/dist-ssr
 /frontend/package.json.md5
