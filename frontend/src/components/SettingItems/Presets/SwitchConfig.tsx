@@ -52,7 +52,7 @@ export function SwitchConfig({
     >
       <div>
         <SettingLabel>{label}</SettingLabel>
-        {description && <SettingDescription>{description+ " (" + t("settings.restart_the_app_for_changes_to_take_effect") + ")"}</SettingDescription>}
+        {description && <SettingDescription>{description + (requiresRestart ? " (" + t("settings.restart_the_app_for_changes_to_take_effect") + ")" : "")}</SettingDescription>}
       </div>
       <SettingContent>
         <Switch
