@@ -1,6 +1,6 @@
 # Iconium
 
-Desktop icon and description manager, with a profile creation tool.
+Icon and description pack creation tool.
 
 ## Screenshots
 
@@ -8,16 +8,16 @@ Desktop icon and description manager, with a profile creation tool.
 
 ## Features
 
-- Create desktop profiles
+- Create icon packs
 - Edit icon and description
 - Shortcut (.lnk) support
 
 ## Planned
 
-- Save desktop layout to profile
-- Share profiles as files
+- Save desktop layout to a pack
+- Share icon packs as files
 - Folder and .url support
-- Sync desktop with profile
+- Sync desktop with selected packs
 - .png and .jpg support for icon selection
 
 ## Built With
