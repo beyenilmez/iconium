@@ -70,23 +70,25 @@ func (a App) domReady(ctx context.Context) {
 // either by clicking the window close button or calling runtime.Quit.
 // Returning true will cause the application to continue, false will continue shutdown as normal.
 func (a *App) beforeClose(ctx context.Context) (prevent bool) {
-	if runtime.WindowIsMaximised(a.ctx) {
-		var windowState = 2
-		config.WindowStartState = &windowState
-		runtime.LogInfo(a.ctx, "Setting window state to maximized")
-	} else {
-		var windowState = 0
-		config.WindowStartState = &windowState
-		runtime.LogInfo(a.ctx, "Setting window state to normal")
+	if *config.SaveWindowStatus {
+		if runtime.WindowIsMaximised(a.ctx) {
+			var windowState = 2
+			config.WindowStartState = &windowState
+			runtime.LogInfo(a.ctx, "Setting window state to maximized")
+		} else {
+			var windowState = 0
+			config.WindowStartState = &windowState
+			runtime.LogInfo(a.ctx, "Setting window state to normal")
+		}
+
+		windowPositionX, windowPositionY := runtime.WindowGetPosition(a.ctx)
+		config.WindowStartPositionX, config.WindowStartPositionY = &windowPositionX, &windowPositionY
+		runtime.LogInfo(a.ctx, fmt.Sprintf("Setting window position to %d,%d", windowPositionX, windowPositionY))
+
+		windowSizeX, windowSizeY := runtime.WindowGetSize(a.ctx)
+		config.WindowStartSizeX, config.WindowStartSizeY = &windowSizeX, &windowSizeY
+		runtime.LogInfo(a.ctx, fmt.Sprintf("Setting window size to %d,%d", windowSizeX, windowSizeY))
 	}
-
-	windowPositionX, windowPositionY := runtime.WindowGetPosition(a.ctx)
-	config.WindowStartPositionX, config.WindowStartPositionY = &windowPositionX, &windowPositionY
-	runtime.LogInfo(a.ctx, fmt.Sprintf("Setting window position to %d,%d", windowPositionX, windowPositionY))
-
-	windowSizeX, windowSizeY := runtime.WindowGetSize(a.ctx)
-	config.WindowStartSizeX, config.WindowStartSizeY = &windowSizeX, &windowSizeY
-	runtime.LogInfo(a.ctx, fmt.Sprintf("Setting window size to %d,%d", windowSizeX, windowSizeY))
 
 	runtime.LogInfo(a.ctx, "Saving config")
 	err := WriteConfig(configPath)

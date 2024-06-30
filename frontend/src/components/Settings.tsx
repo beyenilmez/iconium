@@ -11,6 +11,7 @@ import { LogLevelSetting } from "./SettingItems/LogLevelSetting";
 import { ImportExportSetting } from "./SettingItems/ImportExportSetting";
 import { WindowEffectSetting } from "./SettingItems/WindowEffectSetting";
 import { WindowOpacitySetting } from "./SettingItems/WindowOpacitySetting";
+import { SaveWindowStatusSetting } from "./SettingItems/SaveWindowStatusSetting";
 
 export default function Settings() {
   const { t } = useTranslation();
@@ -45,6 +46,7 @@ export default function Settings() {
           <WindowOpacitySetting />
           <WindowScaleSetting />
           <UseSystemTitleBarSetting />
+          <SaveWindowStatusSetting />
         </SettingsGroup>
       </TabsContent>
       <TabsContent value="system" className="w-full">

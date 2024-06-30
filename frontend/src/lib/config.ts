@@ -57,14 +57,16 @@ export async function InitConfigCache(): Promise<void> {
     "EnableFatal",
     "MaxLogFiles",
     "Language",
-    "WindowStartState",
+    "SaveWindowStatus",
     "WindowScale",
     "Opacity",
     "WindowEffect",
   ];
 
   // Array to store promises
-  const fetchPromises: Promise<string>[] = keys.map((key) => GetConfigField(key));
+  const fetchPromises: Promise<string>[] = keys.map((key) =>
+    GetConfigField(key)
+  );
 
   // Wait for all promises to resolve
   const results = await Promise.all(fetchPromises);

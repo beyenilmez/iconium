@@ -84,6 +84,11 @@
       "import_export": {
         "label": "Ayarları İçe/Dışa Aktar",
         "description": "Ayarlarınızı bir JSON dosyasından içe veya dışa aktarın."
+      },
+
+      "save_window_status": {
+        "label": "Pencere Durumunu Kaydet",
+        "description": "Pencere boyutunu, konumunu ve durumunu kaydet."
       }
     }
   }

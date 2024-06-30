@@ -84,6 +84,11 @@
       "import_export": {
         "label": "Import/Export Settings",
         "description": "Import or export settings your settings from/to a JSON file."
+      },
+
+      "save_window_status": {
+        "label": "Save Window Status",
+        "description": "Save window size, position, and state."
       }
     }
   }

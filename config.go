@@ -23,6 +23,7 @@ type Config struct {
 	EnableFatal          *bool   `json:"enableFatal"`          // true, false
 	MaxLogFiles          *int    `json:"maxLogFiles"`          // int
 	Language             *string `json:"language"`             // en-US, tr-TR
+	SaveWindowStatus     *bool   `json:"saveWindowStatus"`     // true, false
 	WindowStartState     *int    `json:"windowStartState"`     // 0 = Normal, 1 = Maximized, 2 = Minimized, 3 = Fullscreen
 	WindowStartPositionX *int    `json:"windowStartPositionX"` // x
 	WindowStartPositionY *int    `json:"windowStartPositionY"` // y
@@ -45,6 +46,7 @@ func GetDefaultConfig() Config {
 	defaultEnableFatal := true
 	defaultMaxLogFiles := 20
 	defaultLanguage := "en-US"
+	defaultSaveWindowStatus := true
 	defaultWindowStartState := 0
 	defaultWindowStartPositionX := -1
 	defaultWindowStartPositionY := -1
@@ -66,6 +68,7 @@ func GetDefaultConfig() Config {
 		EnableFatal:          &defaultEnableFatal,
 		MaxLogFiles:          &defaultMaxLogFiles,
 		Language:             &defaultLanguage,
+		SaveWindowStatus:     &defaultSaveWindowStatus,
 		WindowStartState:     &defaultWindowStartState,
 		WindowStartPositionX: &defaultWindowStartPositionX,
 		WindowStartPositionY: &defaultWindowStartPositionY,
