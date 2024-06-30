@@ -1,58 +1,15 @@
-import {
-  SettingsItem,
-  SettingContent,
-  SettingDescription,
-  SettingLabel,
-} from "../ui/settings-group";
-import { Switch } from "../ui/switch";
-import { useEffect, useState } from "react";
+import { SwitchConfig } from "./Presets/SwitchConfig";
 import { useTranslation } from "react-i18next";
-import { GetConfigField, SetConfigField } from "@/lib/config";
-import { useStorage } from "@/contexts/storage-provider";
 
 export function EnableLoggingSetting() {
   const { t } = useTranslation();
-  const { getValue, setValueIfUndefined } = useStorage();
-  const [isLoading, setIsLoading] = useState(true);
-  const [enableLogging, setEnableLogging] = useState(false);
-
-  useEffect(() => {
-    GetConfigField("EnableLogging").then((value) => {
-      setEnableLogging(value === "true");
-      setValueIfUndefined("initialEnableLogging", value);
-
-      setIsLoading(false);
-    });
-  }, []);
-
-  const handleEnableLoggingChange = (value: boolean) => {
-    SetConfigField("EnableLogging", String(value)).then(() => {
-      setEnableLogging(value);
-    });
-  };
 
   return (
-    <SettingsItem
-      loading={isLoading}
-      name="EnableLogging"
-      initialValue={getValue("initialEnableLogging")}
-      value={String(enableLogging)}
-    >
-      <div>
-        <SettingLabel>{t("settings.setting.logging.label")}</SettingLabel>
-        <SettingDescription>
-          {t("settings.setting.logging.description") +
-            " (" +
-            t("settings.restart_the_app_for_changes_to_take_effect") +
-            ")"}
-        </SettingDescription>
-      </div>
-      <SettingContent>
-        <Switch
-          checked={enableLogging}
-          onCheckedChange={() => handleEnableLoggingChange(!enableLogging)}
-        />
-      </SettingContent>
-    </SettingsItem>
+    <SwitchConfig
+      configValue="EnableLogging"
+      label={t("settings.setting.logging.label")}
+      description={t("settings.setting.logging.description")}
+      requiresRestart={true}
+    />
   );
 }
