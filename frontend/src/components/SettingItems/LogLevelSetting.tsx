@@ -10,71 +10,71 @@ import { useTranslation } from "react-i18next";
 import { GetConfigField, SetConfigField } from "@/lib/config";
 import { useStorage } from "@/contexts/storage-provider";
 
+type LogLevels = {
+  trace: boolean;
+  debug: boolean;
+  info: boolean;
+  warn: boolean;
+  error: boolean;
+  fatal: boolean;
+};
+
 export function LogLevelSetting() {
   const { t } = useTranslation();
   const { getValue, setValueIfUndefined } = useStorage();
-
   const [isLoading, setIsLoading] = useState(true);
-
-  const [enableTrace, setEnableTrace] = useState(false);
-  const [enableDebug, setEnableDebug] = useState(false);
-  const [enableInfo, setEnableInfo] = useState(false);
-  const [enableWarn, setEnableWarn] = useState(false);
-  const [enableError, setEnableError] = useState(false);
-  const [enableFatal, setEnableFatal] = useState(false);
+  const [logLevels, setLogLevels] = useState<LogLevels>({
+    trace: false,
+    debug: false,
+    info: false,
+    warn: false,
+    error: false,
+    fatal: false,
+  });
 
   useEffect(() => {
-    Promise.all([
-      GetConfigField("EnableTrace"),
-      GetConfigField("EnableDebug"),
-      GetConfigField("EnableInfo"),
-      GetConfigField("EnableWarn"),
-      GetConfigField("EnableError"),
-      GetConfigField("EnableFatal"),
-    ]).then(
-      ([
-        enableTrace,
-        enableDebug,
-        enableInfo,
-        enableWarn,
-        enableError,
-        enableFatal,
-      ]) => {
-        setEnableTrace(enableTrace === "true");
-        setEnableDebug(enableDebug === "true");
-        setEnableInfo(enableInfo === "true");
-        setEnableWarn(enableWarn === "true");
-        setEnableError(enableError === "true");
-        setEnableFatal(enableFatal === "true");
+    const fields = [
+      "EnableTrace",
+      "EnableDebug",
+      "EnableInfo",
+      "EnableWarn",
+      "EnableError",
+      "EnableFatal",
+    ];
+    Promise.all(fields.map(GetConfigField)).then((values) => {
+      const newLogLevels: LogLevels = {
+        trace: values[0] === "true",
+        debug: values[1] === "true",
+        info: values[2] === "true",
+        warn: values[3] === "true",
+        error: values[4] === "true",
+        fatal: values[5] === "true",
+      };
+      setLogLevels(newLogLevels);
+      setValueIfUndefined(
+        "initialLogLevels",
+        Object.values(newLogLevels).join("")
+      );
 
-        setValueIfUndefined(
-          "initialEnableLogLevel",
-          enableTrace +
-            enableDebug +
-            enableInfo +
-            enableWarn +
-            enableError +
-            enableFatal
-        );
-
-        setIsLoading(false);
-      }
-    );
+      setIsLoading(false);
+    });
   }, []);
+
+  const handleToggle = (level: keyof LogLevels) => {
+    SetConfigField(
+      `Enable${level.charAt(0).toUpperCase() + level.slice(1)}`,
+      String(!logLevels[level])
+    ).then(() => {
+      setLogLevels({ ...logLevels, [level]: !logLevels[level] });
+    });
+  };
 
   return (
     <SettingsItem
       loading={isLoading}
       name="LogLevels"
-      initialValue={getValue("initialEnableLogLevel")}
-      value={
-        String(enableTrace) +
-        String(enableDebug) +
-        String(enableInfo) +
-        String(enableWarn) +
-        String(enableError) +
-        String(enableFatal)
-      }
+      initialValue={getValue("initialLogLevels")}
+      value={Object.values(logLevels).join("")}
     >
       <div>
         <SettingLabel>{t("settings.setting.log_levels.label")}</SettingLabel>
@@ -85,86 +85,20 @@ export function LogLevelSetting() {
       <SettingContent>
         <ToggleGroup
           type="multiple"
-          value={[
-            enableTrace ? "trace" : "",
-            enableDebug ? "debug" : "",
-            enableInfo ? "info" : "",
-            enableWarn ? "warn" : "",
-            enableError ? "error" : "",
-            enableFatal ? "fatal" : "",
-          ]}
+          value={Object.entries(logLevels)
+            .filter(([, value]) => value)
+            .map(([key]) => key)}
         >
-          <ToggleGroupItem
-            value="trace"
-            aria-label="Enable trace logging"
-            onClick={() => {
-              SetConfigField("EnableTrace", String(!enableTrace)).then(() => {
-                setEnableTrace(!enableTrace);
-              });
-            }}
-          >
-            Trace
-          </ToggleGroupItem>
-
-          <ToggleGroupItem
-            value="debug"
-            aria-label="Enable debug logging"
-            onClick={() => {
-              SetConfigField("EnableDebug", String(!enableDebug)).then(() => {
-                setEnableDebug(!enableDebug);
-              });
-            }}
-          >
-            Debug
-          </ToggleGroupItem>
-
-          <ToggleGroupItem
-            value="info"
-            aria-label="Enable info logging"
-            onClick={() => {
-              SetConfigField("EnableInfo", String(!enableInfo)).then(() => {
-                setEnableInfo(!enableInfo);
-              });
-            }}
-          >
-            Info
-          </ToggleGroupItem>
-
-          <ToggleGroupItem
-            value="warn"
-            aria-label="Enable warn logging"
-            onClick={() => {
-              SetConfigField("EnableWarn", String(!enableWarn)).then(() => {
-                setEnableWarn(!enableWarn);
-              });
-            }}
-          >
-            Warn
-          </ToggleGroupItem>
-
-          <ToggleGroupItem
-            value="error"
-            aria-label="Enable error logging"
-            onClick={() => {
-              SetConfigField("EnableError", String(!enableError)).then(() => {
-                setEnableError(!enableError);
-              });
-            }}
-          >
-            Error
-          </ToggleGroupItem>
-
-          <ToggleGroupItem
-            value="fatal"
-            aria-label="Enable fatal logging"
-            onClick={() => {
-              SetConfigField("EnableFatal", String(!enableFatal)).then(() => {
-                setEnableFatal(!enableFatal);
-              });
-            }}
-          >
-            Fatal
-          </ToggleGroupItem>
+          {Object.entries(logLevels).map(([level, _]) => (
+            <ToggleGroupItem
+              key={level}
+              value={level}
+              aria-label={`Enable ${level} logging`}
+              onClick={() => handleToggle(level as keyof LogLevels)}
+            >
+              {level.charAt(0).toUpperCase() + level.slice(1)}
+            </ToggleGroupItem>
+          ))}
         </ToggleGroup>
       </SettingContent>
     </SettingsItem>

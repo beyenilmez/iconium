@@ -25,6 +25,12 @@ export function UseSystemTitleBarSetting() {
     });
   }, []);
 
+  const handleUseSystemTitleBarChange = (value: boolean) => {
+    SetConfigField("UseSystemTitleBar", String(value)).then(() => {
+      setUseSystemTitleBar(value);
+    });
+  };
+
   return (
     <SettingsItem
       loading={isLoading}
@@ -46,11 +52,7 @@ export function UseSystemTitleBarSetting() {
       <SettingContent>
         <Switch
           checked={useSystemTitleBar}
-          onCheckedChange={(value) => {
-            SetConfigField("UseSystemTitleBar", String(value)).then(() => {
-              setUseSystemTitleBar(value);
-            });
-          }}
+          onCheckedChange={(value) => handleUseSystemTitleBarChange(value)}
         />
       </SettingContent>
     </SettingsItem>

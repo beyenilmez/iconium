@@ -14,13 +14,26 @@ import { Button } from "../ui/button";
 import { AreYouSureDialog, AreYouSureDialogRef } from "../ui/are-you-sure";
 import { useRef, useState } from "react";
 import { LogDebug } from "wailsjs/runtime/runtime";
-import { InitConfigCache } from "@/lib/config";
 import { useTranslation } from "react-i18next";
 
 export function ImportExportSetting() {
   const { t } = useTranslation();
   const dialogRef = useRef<AreYouSureDialogRef>(null);
   const [usePath, setUsePath] = useState("");
+
+  const handleImportButtonClick = () => {
+    GetLoadConfigPath().then((path) => {
+      if (path !== "") {
+        setUsePath(path);
+        dialogRef.current?.openDialog();
+      }
+    });
+  };
+
+  const handleAcceptImport = () => {
+    LogDebug("Attempting to read config from " + usePath);
+    ReadConfig(usePath).then(RestartApplication);
+  };
 
   return (
     <SettingsItem vertical={false}>
@@ -32,34 +45,19 @@ export function ImportExportSetting() {
       </div>
       <SettingContent>
         <div className="flex gap-0.5">
-          <Button
-            onClick={() => {
-              GetLoadConfigPath().then((path) => {
-                if (path !== "") {
-                  setUsePath(path);
-                  dialogRef.current?.openDialog();
-                }
-              });
-            }}
-          >
-            {t("import")}
-          </Button>
+          <Button onClick={handleImportButtonClick}>{t("import")}</Button>
           <AreYouSureDialog
             ref={dialogRef}
+            onAccept={handleAcceptImport}
             title={t("settings.are_you_sure_you_want_to_import_this_config")}
-            description={t("settings.the_app_will_restart_to_load_the_new_config")}
+            description={t(
+              "settings.the_app_will_restart_to_load_the_new_config"
+            )}
             cancelText={t("cancel")}
             acceptText={t("yes")}
-            onAccept={() => {
-              LogDebug("Attempting to read config from " + usePath);
-              ReadConfig(usePath).then(() => {
-                InitConfigCache().then(() => {
-                  RestartApplication();
-                });
-              });
-            }}
           />
-          <Button onClick={() => SaveConfigDialog()}>{t("export")}</Button>
+
+          <Button onClick={SaveConfigDialog}>{t("export")}</Button>
         </div>
       </SettingContent>
     </SettingsItem>

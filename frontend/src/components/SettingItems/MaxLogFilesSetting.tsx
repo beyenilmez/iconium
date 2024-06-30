@@ -13,7 +13,6 @@ import { useStorage } from "@/contexts/storage-provider";
 export function MaxLogFilesSetting() {
   const { t } = useTranslation();
   const { getValue, setValueIfUndefined } = useStorage();
-
   const [isLoading, setIsLoading] = useState(true);
   const [maxLogFiles, setMaxLogFiles] = useState(-1);
 
@@ -24,6 +23,14 @@ export function MaxLogFilesSetting() {
       setIsLoading(false);
     });
   }, []);
+
+  const handleMaxLogFilesChange = (textValue: string) => {
+    const value = Math.max(1, Math.min(10000, parseInt(textValue)));
+    const targetValue = isNaN(parseInt(textValue)) ? 20 : value;
+    SetConfigField("MaxLogFiles", String(targetValue)).then(() => {
+      setMaxLogFiles(value);
+    });
+  };
 
   return (
     <SettingsItem
@@ -46,16 +53,7 @@ export function MaxLogFilesSetting() {
           type="number"
           placeholder="20"
           value={maxLogFiles}
-          onChange={(e) => {
-            const value = Math.max(
-              1,
-              Math.min(10000, parseInt(e.target.value))
-            );
-            const targetValue = isNaN(parseInt(e.target.value)) ? 20 : value;
-            SetConfigField("MaxLogFiles", String(targetValue)).then(() => {
-              setMaxLogFiles(value);
-            });
-          }}
+          onChange={(e) => handleMaxLogFilesChange(e.target.value)}
           min={1}
           max={10000}
         />

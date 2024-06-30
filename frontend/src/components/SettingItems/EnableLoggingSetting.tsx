@@ -26,6 +26,12 @@ export function EnableLoggingSetting() {
     });
   }, []);
 
+  const handleEnableLoggingChange = (value: boolean) => {
+    SetConfigField("EnableLogging", String(value)).then(() => {
+      setEnableLogging(value);
+    });
+  };
+
   return (
     <SettingsItem
       loading={isLoading}
@@ -45,11 +51,7 @@ export function EnableLoggingSetting() {
       <SettingContent>
         <Switch
           checked={enableLogging}
-          onCheckedChange={() => {
-            SetConfigField("EnableLogging", String(!enableLogging)).then(() => {
-              setEnableLogging(!enableLogging);
-            });
-          }}
+          onCheckedChange={() => handleEnableLoggingChange(!enableLogging)}
         />
       </SettingContent>
     </SettingsItem>

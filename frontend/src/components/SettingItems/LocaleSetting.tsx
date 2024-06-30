@@ -16,21 +16,18 @@ export function LocaleSetting() {
   const [language, setLanguage] = useState("en-US");
 
   useEffect(() => {
-    Promise.all([GetConfigField("Language")])
-      .then(([value]) => {
-        setLanguage(value);
-
-        setIsLoading(false); // Mark loading as complete
-      })
-      .catch((error) => {
-        console.error("Error fetching configuration:", error);
-        setIsLoading(false); // Handle loading error
-      });
+    GetConfigField("Language").then((value) => {
+      setLanguage(value);
+      setIsLoading(false);
+    });
   }, []);
 
-  useEffect(() => {
-    i18n.changeLanguage(language);
-  }, [language]);
+  const handleLanguageChange = (value: string) => {
+    SetConfigField("Language", value).then(() => {
+      setLanguage(value);
+      i18n.changeLanguage(value);
+    });
+  };
 
   return (
     <SettingsItem loading={isLoading}>
@@ -53,11 +50,7 @@ export function LocaleSetting() {
           nothingFoundMessage={t(
             "settings.setting.language.no_languages_found"
           )}
-          onChange={(value) => {
-            SetConfigField("Language", value).then(() => {
-              setLanguage(value);
-            });
-          }}
+          onChange={(value) => handleLanguageChange(value)}
         />
       </SettingContent>
     </SettingsItem>

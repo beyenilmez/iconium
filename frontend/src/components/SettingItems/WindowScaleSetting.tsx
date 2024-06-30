@@ -21,6 +21,12 @@ export function WindowScaleSetting() {
     });
   }, []);
 
+  const handleScaleSave = () => {
+    SetConfigField("WindowScale", String(useScale)).then(() => {
+      document.documentElement.style.fontSize = useScale * (16 / 100) + "px";
+    });
+  };
+
   return (
     <SettingsItem loading={isLoading} vertical={false}>
       <div>
@@ -33,15 +39,8 @@ export function WindowScaleSetting() {
         <div className="flex gap-2">
           <div>50%</div>
           <Slider
-            onValueChange={(value) => {
-              setUseScale(value[0]);
-            }}
-            onPointerUp={() => {
-              document.documentElement.style.fontSize =
-                useScale * (16 / 100) + "px";
-
-              SetConfigField("WindowScale", String(useScale));
-            }}
+            onValueChange={(value) => setUseScale(value[0])}
+            onPointerUp={handleScaleSave}
             defaultValue={[useScale]}
             min={50}
             max={150}
