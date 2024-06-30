@@ -1,4 +1,4 @@
-# Desktop Manager
+# Iconium
 
 Desktop icon and description manager, with a profile creation tool.
 
@@ -30,4 +30,4 @@ Desktop icon and description manager, with a profile creation tool.
 
 ## License
 
-Distributed under the MIT License. See [LICENSE](https://github.com/beyenilmez/desktop-manager/blob/main/LICENSE) for more information.
+Distributed under the MIT License. See [LICENSE](https://github.com/beyenilmez/iconium/blob/main/LICENSE) for more information.

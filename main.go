@@ -75,7 +75,7 @@ func main() {
 
 	// Create application with options
 	err = wails.Run(&options.App{
-		Title:             "Desktop Manager",
+		Title:             "Iconium",
 		Width:             1280,
 		Height:            800,
 		MinWidth:          1024,
@@ -111,7 +111,7 @@ func main() {
 			DisableWindowIcon:    false,
 			BackdropType:         windowEffect,
 			// DisableFramelessWindowDecorations: false,
-			WebviewUserDataPath: path.Join(os.Getenv("APPDATA"), "desktop-manager"),
+			WebviewUserDataPath: path.Join(os.Getenv("APPDATA"), "iconium"),
 			ZoomFactor:          1.0,
 			DisablePinchZoom:    true,
 		},

@@ -1,4 +1,4 @@
-module desktop-manager
+module iconium
 
 go 1.21
 

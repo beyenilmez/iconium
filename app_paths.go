@@ -24,7 +24,7 @@ func path_init() error {
 	}
 	runtime.LogDebug(appContext, "Found user config directory: "+appData)
 
-	appFolder := path.Join(appData, "desktop-manager")
+	appFolder := path.Join(appData, "iconium")
 	packsFolder = path.Join(appFolder, "packs")
 	logsFolder = path.Join(appFolder, "logs")
 	savedConfigFolder = path.Join(appFolder, "savedconfigs")
@@ -68,7 +68,7 @@ func path_init() error {
 }
 
 func get_logs_folder() (string, error) {
-	logsFolder = path.Join(os.Getenv("APPDATA"), "desktop-manager", "logs")
+	logsFolder = path.Join(os.Getenv("APPDATA"), "iconium", "logs")
 
 	// Create folder if it doesn't exist
 	if _, err := os.Stat(logsFolder); os.IsNotExist(err) {
@@ -81,7 +81,7 @@ func get_logs_folder() (string, error) {
 }
 
 func get_config_path() string {
-	configPath = path.Join(os.Getenv("APPDATA"), "desktop-manager", "config.json")
+	configPath = path.Join(os.Getenv("APPDATA"), "iconium", "config.json")
 
 	return configPath
 }

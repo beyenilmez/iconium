@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         platform: [windows-latest]
-        build-name: ["desktop-manager"]
+        build-name: ["iconium"]
         go-version: [1.22]
         node-version: [20]
     runs-on: ${{ matrix.platform }}
