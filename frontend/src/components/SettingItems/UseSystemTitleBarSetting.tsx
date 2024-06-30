@@ -13,7 +13,6 @@ import { useStorage } from "@/contexts/storage-provider";
 export function UseSystemTitleBarSetting() {
   const { t } = useTranslation();
   const { getValue, setValueIfUndefined } = useStorage();
-
   const [isLoading, setIsLoading] = useState(true);
   const [useSystemTitleBar, setUseSystemTitleBar] = useState(false);
 

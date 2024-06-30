@@ -13,9 +13,7 @@ import { useStorage } from "@/contexts/storage-provider";
 export function WindowOpacitySetting() {
   const { t } = useTranslation();
   const { getValue } = useStorage();
-
   const [isLoading, setIsLoading] = useState(true);
-
   const [useOpacity, setUseOpacity] = useState(-1);
 
   useEffect(() => {

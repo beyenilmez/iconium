@@ -28,7 +28,7 @@ export function WindowScaleSetting() {
   };
 
   return (
-    <SettingsItem loading={isLoading} vertical={false}>
+    <SettingsItem loading={isLoading}>
       <div>
         <SettingLabel>{t("settings.setting.window_scale.label")}</SettingLabel>
         <SettingDescription>

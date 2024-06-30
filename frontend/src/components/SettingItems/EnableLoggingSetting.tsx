@@ -13,7 +13,6 @@ import { useStorage } from "@/contexts/storage-provider";
 export function EnableLoggingSetting() {
   const { t } = useTranslation();
   const { getValue, setValueIfUndefined } = useStorage();
-
   const [isLoading, setIsLoading] = useState(true);
   const [enableLogging, setEnableLogging] = useState(false);
 

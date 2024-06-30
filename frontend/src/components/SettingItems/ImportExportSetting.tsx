@@ -36,7 +36,7 @@ export function ImportExportSetting() {
   };
 
   return (
-    <SettingsItem vertical={false}>
+    <SettingsItem>
       <div>
         <SettingLabel>{t("settings.setting.import_export.label")}</SettingLabel>
         <SettingDescription>
