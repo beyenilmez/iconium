@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CheckForUpdate, Update } from "wailsjs/go/main/App";
+import { CheckForUpdate, Update, UpdateAsAdmin } from "wailsjs/go/main/App";
 import { main } from "wailsjs/go/models";
 import { Button } from "../ui/button";
 import {
@@ -8,11 +8,14 @@ import {
   SettingLabel,
   SettingsItem,
 } from "../ui/settings-group";
-import { ArrowRight, RefreshCw, TriangleAlert } from "lucide-react";
+import { ArrowRight, RefreshCw } from "lucide-react";
 import { GetConfigField, NeedsAdminPrivileges } from "wailsjs/go/main/App";
 import { t } from "i18next";
+import { useStorage } from "@/contexts/storage-provider";
 
 export function UpdateSetting() {
+  const { getValue } = useStorage();
+
   const [updateInfo, setUpdateInfo] = useState<main.UpdateInfo>(
     {} as main.UpdateInfo
   );
@@ -23,23 +26,32 @@ export function UpdateSetting() {
   const [isUpdating, setIsUpdating] = useState(false);
 
   const handleCheckForUpdate = () => {
-    setIsChecking(true);
-    CheckForUpdate()
-      .then((updateInfoJSON) => {
-        setUpdateInfo(updateInfoJSON);
-      })
-      .finally(() => {
-        setTimeout(() => {
-          setIsChecking(false);
-        }, 200);
-      });
+    if (!isUpdating) {
+      setIsChecking(true);
+      CheckForUpdate()
+        .then((updateInfoJSON) => {
+          setUpdateInfo(updateInfoJSON);
+        })
+        .finally(() => {
+          setTimeout(() => {
+            setIsChecking(false);
+          }, 200);
+        });
+    }
   };
 
   const handleUpdate = () => {
     setIsUpdating(true);
-    Update(updateInfo.downloadUrl).finally(() => {
-      setIsUpdating(false);
-    });
+
+    if (needsAdmin) {
+      UpdateAsAdmin(updateInfo.downloadUrl).finally(() => {
+        setIsUpdating(false);
+      });
+    } else {
+      Update(updateInfo.downloadUrl).finally(() => {
+        setIsUpdating(false);
+      });
+    }
   };
 
   useEffect(() => {
@@ -56,6 +68,17 @@ export function UpdateSetting() {
     handleCheckForUpdate();
   }, []);
 
+  useEffect(() => {
+    if (getValue("update") === undefined) return;
+
+    while (isChecking) setTimeout(() => {}, 100);
+
+    setIsUpdating(true);
+    Update(getValue("update")).finally(() => {
+      setIsUpdating(false);
+    });
+  }, [getValue("update")]);
+
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp * 1000);
     const day = String(date.getDate()).padStart(2, "0");
@@ -69,12 +92,6 @@ export function UpdateSetting() {
 
   return (
     <SettingsItem disabled={isChecking || isUpdating} vertical>
-      {needsAdmin && (
-        <div className="flex gap-2 px-1.5 pt-2 text-warning">
-          <TriangleAlert className="w-6 h-6" />
-          {t("settings.setting.update.need_admin_privileges")}
-        </div>
-      )}
       <div className="flex justify-between">
         <SettingContent>
           <div className="flex flex-row te">
@@ -120,11 +137,7 @@ export function UpdateSetting() {
         </SettingContent>
         <div className="flex items-center gap-2">
           {updateInfo.updateAvailable && (
-            <Button
-              onClick={handleUpdate}
-              disabled={needsAdmin}
-              className={needsAdmin ? "select-none" : ""}
-            >
+            <Button onClick={handleUpdate}>
               {isUpdating
                 ? t("settings.setting.update.updating")
                 : t("settings.setting.update.update")}

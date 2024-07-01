@@ -27,3 +27,5 @@ export function SetConfigField(arg1:string,arg2:string):Promise<void>;
 export function SetTheme(arg1:string):Promise<void>;
 
 export function Update(arg1:string):Promise<void>;
+
+export function UpdateAsAdmin(arg1:string):Promise<void>;

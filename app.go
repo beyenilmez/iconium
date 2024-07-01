@@ -69,7 +69,18 @@ func (a *App) domReady(ctx context.Context) {
 		updateInfo := a.CheckForUpdate()
 
 		if updateInfo.UpdateAvailable {
-			a.SendNotification("settings.setting.update.update_available", "v"+updateInfo.CurrentVersion+" ⭢ "+updateInfo.LatestVersion, "", "")
+			a.SendNotification("settings.setting.update.update_available", "v"+updateInfo.CurrentVersion+" ⭢ "+updateInfo.LatestVersion, "__settings__update", "")
+		}
+	}
+
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--goto":
+			if i+1 < len(args) {
+				runtime.LogInfo(a.ctx, fmt.Sprintf("Goto: %s", args[i+1]))
+				runtime.WindowExecJS(a.ctx, fmt.Sprintf(`window.goto("%s");`, args[i+1]))
+				i++
+			}
 		}
 	}
 }

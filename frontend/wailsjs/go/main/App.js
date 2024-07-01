@@ -53,3 +53,7 @@ export function SetTheme(arg1) {
 export function Update(arg1) {
   return window['go']['main']['App']['Update'](arg1);
 }
+
+export function UpdateAsAdmin(arg1) {
+  return window['go']['main']['App']['UpdateAsAdmin'](arg1);
+}

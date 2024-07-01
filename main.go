@@ -27,6 +27,7 @@ var wailsJSON []byte
 
 var version string
 var NeedsAdminPrivileges bool
+var args []string
 
 func main() {
 	// Create an instance of the app structure
@@ -91,6 +92,9 @@ func main() {
 
 	// Check if admin privileges are needed
 	NeedsAdminPrivileges = checkAdminPrivileges()
+
+	// Get launch args
+	args = os.Args[1:]
 
 	// Create application with options
 	err = wails.Run(&options.App{

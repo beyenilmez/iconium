@@ -6,6 +6,7 @@
   "import": "Import",
   "export": "Export",
   "error": "Error",
+  "show": "Show",
 
   "nav": {
     "my_packs": "My Packs",
