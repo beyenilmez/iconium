@@ -5,7 +5,7 @@ import TitleBar from "./components/TitleBar";
 import Settings from "./components/Settings";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
-import {  useStorage } from "./contexts/storage-provider";
+import { useStorage } from "./contexts/storage-provider";
 import { Toaster } from "./components/ui/toaster";
 import { useToast } from "./components/ui/use-toast";
 import { ToastAction } from "@radix-ui/react-toast";
@@ -45,14 +45,19 @@ function App() {
       title: t(title),
       description: t(description),
       action: path ? (
-        <ToastAction altText={t(path.startsWith("__") ? "show" : "show_in_explorer")} asChild>
-          <Button onClick={() => {
-            if(path.startsWith("__")){
-              window.goto(path.substring(2));
-            } else {
-              OpenFileInExplorer(path);
-            }
-          }}>
+        <ToastAction
+          altText={t(path.startsWith("__") ? "show" : "show_in_explorer")}
+          asChild
+        >
+          <Button
+            onClick={() => {
+              if (path.startsWith("__")) {
+                window.goto(path.substring(2));
+              } else {
+                OpenFileInExplorer(path);
+              }
+            }}
+          >
             {t(path.startsWith("__") ? "show" : "show_in_explorer")}
           </Button>
         </ToastAction>
@@ -74,6 +79,10 @@ function App() {
   useEffect(() => {
     setTab(getValue("tab") || "packs");
   }, [getValue("tab")]);
+
+  useEffect(() => {
+    setValue("path1", tab);
+  }, [tab]);
 
   return (
     <React.Fragment>

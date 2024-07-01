@@ -20,28 +20,52 @@ import { useStorage } from "@/contexts/storage-provider";
 export default function Settings() {
   const { t } = useTranslation();
   const [tab, setTab] = useState("general");
-  const { getValue } = useStorage();
+  const { getValue, setValue } = useStorage();
 
   useEffect(() => {
     setTab(getValue("settings") || "general");
   }, [getValue("settings")]);
 
+  useEffect(() => {
+    setValue("path2", tab);
+  }, [tab]);
+
   return (
     <Tabs value={tab} className="flex flex-row w-full h-full">
       <TabsList className="flex-col justify-start px-2 rounded-none w-fit h-full">
-        <TabsTrigger value="general" onClick={() => setTab("general")}  className="px-12 py-2 w-full">
+        <TabsTrigger
+          value="general"
+          onClick={() => setTab("general")}
+          className="px-12 py-2 w-full"
+        >
           {t("settings.categories.general")}
         </TabsTrigger>
-        <TabsTrigger value="app" onClick={() => setTab("app")} className="px-12 py-2 w-full">
+        <TabsTrigger
+          value="app"
+          onClick={() => setTab("app")}
+          className="px-12 py-2 w-full"
+        >
           {t("settings.categories.application")}
         </TabsTrigger>
-        <TabsTrigger value="system" onClick={() => setTab("system")} className="px-12 py-2 w-full">
+        <TabsTrigger
+          value="system"
+          onClick={() => setTab("system")}
+          className="px-12 py-2 w-full"
+        >
           {t("settings.categories.system")}
         </TabsTrigger>
-        <TabsTrigger value="advanced" onClick={() => setTab("advanced")} className="px-12 py-2 w-full">
+        <TabsTrigger
+          value="advanced"
+          onClick={() => setTab("advanced")}
+          className="px-12 py-2 w-full"
+        >
           {t("settings.categories.advanced")}
         </TabsTrigger>
-        <TabsTrigger value="update" onClick={() => setTab("update")} className="px-12 py-2 w-full">
+        <TabsTrigger
+          value="update"
+          onClick={() => setTab("update")}
+          className="px-12 py-2 w-full"
+        >
           {t("settings.categories.update")}
         </TabsTrigger>
       </TabsList>

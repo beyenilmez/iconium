@@ -10,10 +10,12 @@ import { Button } from "@/components/ui/button";
 import icon from "../assets/appicon.png";
 import { useEffect, useState } from "react";
 import { useRestart } from "@/contexts/restart-provider";
+import { useStorage } from "@/contexts/storage-provider";
 
 export default function TitleBar() {
   const [useSystemTitleBar, setUseSystemTitleBar] = useState(false);
   const { restartRequired } = useRestart();
+  const { getValue } = useStorage();
 
   useEffect(() => {
     GetConfigField("UseSystemTitleBar").then((value) => {
@@ -50,7 +52,15 @@ export default function TitleBar() {
           </Button>
           <Button
             size={"icon"}
-            onClick={() => RestartApplication(false, [])}
+            onClick={() =>
+              RestartApplication(false, [
+                "--goto",
+                getValue("path1") +
+                  (getValue("path2") !== undefined
+                    ? "__" + getValue("path2")
+                    : ""),
+              ])
+            }
             variant={"ghost"}
             className={`${restartRequired ? "" : "w-0"} transition-all
               hover:dark:brightness-150 hover:brightness-75 rounded-none h-8 cursor-default`}
