@@ -10,6 +10,7 @@ import (
 	"github.com/gen2brain/beeep"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
+	"golang.org/x/sys/windows"
 )
 
 // App struct
@@ -169,40 +170,65 @@ func (a *App) RestartApplication(admin bool, args []string) error {
 	// Get the path to the current executable
 	executable, err := os.Executable()
 	if err != nil {
+		runtime.LogError(a.ctx, "failed to get executable path: "+err.Error())
 		return err
 	}
 
-	// Determine the command to execute
-	var cmd *exec.Cmd
 	if admin {
-		// Execute with administrative privileges using runas command
-		cmd = exec.Command("runas", "/user:Administrator", executable)
-	} else {
-		// Execute without administrative privileges
-		cmd = exec.Command(executable)
+		verb := "runas"
+		showCmd := 1 // SW_NORMAL
+		runtime.LogDebug(a.ctx, "Attempting to restart with elevated privileges")
+
+		executablePtr, err := windows.UTF16PtrFromString(executable)
+		if err != nil {
+			runtime.LogError(a.ctx, "failed to convert executable path to UTF16: "+err.Error())
+			return err
+		}
+
+		// Convert arguments to a single string
+		argStr := strings.Join(args, " ")
+
+		argPtr, err := windows.UTF16PtrFromString(argStr)
+		if err != nil {
+			runtime.LogError(a.ctx, "failed to convert arguments to UTF16: "+err.Error())
+			return err
+		}
+
+		// Execute with elevated privileges
+		err = windows.ShellExecute(0, windows.StringToUTF16Ptr(verb), executablePtr, argPtr, nil, int32(showCmd))
+		if err != nil {
+			runtime.LogError(a.ctx, "ShellExecute failed: "+err.Error())
+			return fmt.Errorf("ShellExecute failed: %w", err)
+		}
+
+		runtime.LogDebug(a.ctx, "Successfully requested elevated privileges")
+		a.beforeClose(a.ctx)
+
+		// Exit the current process
+		os.Exit(0)
+		return nil
 	}
 
-	// Append additional arguments if provided
+	// Create the new process with the same arguments as the current process
+	cmd := exec.Command(executable)
 	cmd.Args = append(cmd.Args, args...)
-
-	// Pass along the environment variables
 	cmd.Env = os.Environ()
-
-	// Set up standard input, output, and error streams
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
+	runtime.LogDebug(a.ctx, "Attempting to restart without elevated privileges")
+
 	// Start the new process
 	if err := cmd.Start(); err != nil {
+		runtime.LogError(a.ctx, "failed to start new process: "+err.Error())
 		return err
 	}
 
+	runtime.LogDebug(a.ctx, "Successfully started new process")
 	a.beforeClose(a.ctx)
 
 	// Exit the current process
 	os.Exit(0)
-
-	// This code is unreachable due to os.Exit(0), but included for clarity
 	return nil
 }
