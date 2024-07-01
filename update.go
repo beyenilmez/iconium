@@ -54,6 +54,7 @@ func (app *App) CheckForUpdate() UpdateInfo {
 	resp, err := http.Get(apiUrl)
 	if err != nil {
 		runtime.LogError(app.ctx, "Error sending request: "+err.Error())
+		app.SendNotification("settings.setting.update.failed_to_check_for_updates", "", "", "error")
 		return updateInfo
 	}
 	defer resp.Body.Close()
@@ -61,7 +62,7 @@ func (app *App) CheckForUpdate() UpdateInfo {
 
 	// Check if response was successful
 	if resp.StatusCode != http.StatusOK {
-		app.SendNotification("error", "settings.setting.update.failed_to_check_for_updates", "", "destructive")
+		app.SendNotification("settings.setting.update.failed_to_check_for_updates", "", "", "error")
 		return updateInfo
 	}
 
@@ -111,7 +112,7 @@ func (app *App) CheckForUpdate() UpdateInfo {
 	runtime.LogDebug(app.ctx, fmt.Sprintf("Download URL: %s", downloadUrl))
 
 	// Check if a new version is available
-	if parsedVersion.Compare(parsedLatestVersion) < 0 && !prerelease {
+	if parsedVersion.Compare(parsedLatestVersion) <= 0 && !prerelease {
 		runtime.LogInfo(app.ctx, fmt.Sprintf("A new version (%s) is available.", latestVersion))
 		updateInfo.UpdateAvailable = true
 		updateInfo.LatestVersion = latestVersion
@@ -132,7 +133,7 @@ func (app *App) Update(downloadUrl string) error {
 	resp, err := http.Get(downloadUrl)
 	if err != nil {
 		runtime.LogError(app.ctx, "Error downloading update: "+err.Error())
-		app.SendNotification("error", "settings.setting.update.failed_to_download_update", "", "destructive")
+		app.SendNotification("settings.setting.update.failed_to_download_update", "", "", "error")
 		return err
 	}
 	defer resp.Body.Close()
@@ -142,7 +143,7 @@ func (app *App) Update(downloadUrl string) error {
 
 	// Check if the response was successful
 	if resp.StatusCode != http.StatusOK {
-		app.SendNotification("error", "settings.setting.update.failed_to_download_update", "", "destructive")
+		app.SendNotification("settings.setting.update.failed_to_download_update", "", "", "error")
 		return err
 	}
 
@@ -150,12 +151,12 @@ func (app *App) Update(downloadUrl string) error {
 	err = selfupdate.Apply(resp.Body, selfupdate.Options{})
 	if err != nil {
 		runtime.LogError(app.ctx, "Error applying update: "+err.Error())
-		app.SendNotification("settings.setting.update.failed_to_apply_update", err.Error(), "", "destructive")
+		app.SendNotification("settings.setting.update.failed_to_apply_update", err.Error(), "", "error")
 		return err
 	}
 
 	runtime.LogInfo(app.ctx, "Update applied successfully. Restarting.")
-	app.SendNotification("settings.setting.update.update_applied", "settings.setting.update.restarting", "", "")
+	app.SendNotification("settings.setting.update.update_applied", "settings.setting.update.restarting", "", "success")
 
 	// Restart the application
 	app.RestartApplication(false, []string{})

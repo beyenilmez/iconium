@@ -34,13 +34,13 @@ func (a *App) SaveConfigDialog() {
 			return
 		}
 		runtime.LogWarning(a.ctx, err.Error())
-		a.SendNotification("", "settings.there_was_an_error_saving_the_config", "", "destructive")
+		a.SendNotification("", "settings.there_was_an_error_saving_the_config", "", "error")
 		return
 	}
 
 	runtime.LogInfo(a.ctx, "Config saved to "+path)
 	path = strings.ReplaceAll(path, "\\", "\\\\")
-	a.SendNotification("", "settings.config_saved", path, "")
+	a.SendNotification("", "settings.config_saved", path, "success")
 }
 
 func (a *App) GetLoadConfigPath() string {

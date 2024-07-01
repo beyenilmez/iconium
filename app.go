@@ -69,7 +69,7 @@ func (a *App) domReady(ctx context.Context) {
 		updateInfo := a.CheckForUpdate()
 
 		if updateInfo.UpdateAvailable {
-			a.SendNotification("settings.setting.update.update_available", "v"+updateInfo.CurrentVersion+" ⭢ "+updateInfo.LatestVersion, "__settings__update", "")
+			a.SendNotification("settings.setting.update.update_available", "v"+updateInfo.CurrentVersion+" ⭢ "+updateInfo.LatestVersion, "__settings__update", "info")
 		}
 	}
 

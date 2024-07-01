@@ -6,16 +6,13 @@ import Settings from "./components/Settings";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { useStorage } from "./contexts/storage-provider";
-import { Toaster } from "./components/ui/toaster";
-import { useToast } from "./components/ui/use-toast";
-import { ToastAction } from "@radix-ui/react-toast";
-import { Button } from "./components/ui/button";
+import { Toaster } from "./components/ui/sonner";
+import { toast } from "sonner";
 import { OpenFileInExplorer } from "wailsjs/go/main/App";
 import React from "react";
 
 function App() {
   const { t } = useTranslation();
-  const { toast } = useToast();
   const { setValue, getValue } = useStorage();
   const [tab, setTab] = useState("packs");
 
@@ -41,29 +38,43 @@ function App() {
   }, []);
 
   window.toast = ({ title, description, path, variant }: any) => {
-    toast({
-      title: t(title),
+    const props = {
       description: t(description),
-      action: path ? (
-        <ToastAction
-          altText={t(path.startsWith("__") ? "show" : "show_in_explorer")}
-          asChild
-        >
-          <Button
-            onClick={() => {
-              if (path.startsWith("__")) {
-                window.goto(path.substring(2));
-              } else {
-                OpenFileInExplorer(path);
-              }
-            }}
-          >
-            {t(path.startsWith("__") ? "show" : "show_in_explorer")}
-          </Button>
-        </ToastAction>
-      ) : undefined,
-      variant: variant,
-    });
+      action: path
+        ? {
+            label: path.startsWith("__") ? t("show") : t("show_in_explorer"),
+            onClick: () => handleToastGotoPath(path),
+          }
+        : undefined,
+    };
+    switch (variant) {
+      case "message":
+        toast.message(t(title), props);
+        break;
+      case "success":
+        toast.success(t(title), props);
+        break;
+      case "info":
+        toast.info(t(title), props);
+        break;
+      case "warning":
+        toast.warning(t(title), props);
+        break;
+      case "error":
+        toast.error(t(title), props);
+        break;
+      default:
+        toast(t(title), props);
+        break;
+    }
+  };
+
+  const handleToastGotoPath = (path: string) => {
+    if (path.startsWith("__")) {
+      window.goto(path.substring(2));
+    } else {
+      OpenFileInExplorer(path);
+    }
   };
 
   window.goto = (path: string) => {
@@ -115,7 +126,7 @@ function App() {
           </TabsContent>
         </Tabs>
       </div>
-      <Toaster />
+      <Toaster expand />
     </React.Fragment>
   );
 }
