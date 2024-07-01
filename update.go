@@ -112,7 +112,7 @@ func (app *App) CheckForUpdate() UpdateInfo {
 	runtime.LogDebug(app.ctx, fmt.Sprintf("Download URL: %s", downloadUrl))
 
 	// Check if a new version is available
-	if parsedVersion.Compare(parsedLatestVersion) <= 0 && !prerelease {
+	if parsedVersion.Compare(parsedLatestVersion) < 0 && !prerelease {
 		runtime.LogInfo(app.ctx, fmt.Sprintf("A new version (%s) is available.", latestVersion))
 		updateInfo.UpdateAvailable = true
 		updateInfo.LatestVersion = latestVersion
