@@ -62,8 +62,15 @@ func (a *App) startup(ctx context.Context) {
 }
 
 // domReady is called after front-end resources have been loaded
-func (a App) domReady(ctx context.Context) {
-	// Add your action here
+func (a *App) domReady(ctx context.Context) {
+	// Check updates
+	if *config.CheckForUpdates {
+		updateInfo := a.CheckForUpdate()
+
+		if updateInfo.UpdateAvailable {
+			a.SendNotification("settings.setting.update.update_available", "v"+updateInfo.CurrentVersion+" ⭢ "+updateInfo.LatestVersion, "", "")
+		}
+	}
 }
 
 // beforeClose is called when the application is about to quit,
@@ -127,6 +134,10 @@ func onFirstRun() {
 	set_system_language()
 }
 
+func (a *App) GetVersion() string {
+	return version
+}
+
 // Send notification
 func (a *App) SendNotification(title string, message string, path string, variant string) {
 	runtime.LogInfo(a.ctx, "Sending notification")
@@ -154,15 +165,25 @@ func (a *App) SendNotification(title string, message string, path string, varian
 	}
 }
 
-func (a *App) RestartApplication() error {
+func (a *App) RestartApplication(admin bool, args []string) error {
 	// Get the path to the current executable
 	executable, err := os.Executable()
 	if err != nil {
 		return err
 	}
 
-	// Create a command to execute the current executable with its arguments
-	cmd := exec.Command(executable, os.Args[1:]...)
+	// Determine the command to execute
+	var cmd *exec.Cmd
+	if admin {
+		// Execute with administrative privileges using runas command
+		cmd = exec.Command("runas", "/user:Administrator", executable)
+	} else {
+		// Execute without administrative privileges
+		cmd = exec.Command(executable)
+	}
+
+	// Append additional arguments if provided
+	cmd.Args = append(cmd.Args, args...)
 
 	// Pass along the environment variables
 	cmd.Env = os.Environ()

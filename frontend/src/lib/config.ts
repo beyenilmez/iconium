@@ -61,6 +61,7 @@ export async function InitConfigCache(): Promise<void> {
     "WindowScale",
     "Opacity",
     "WindowEffect",
+    "CheckForUpdates",
   ];
 
   // Array to store promises

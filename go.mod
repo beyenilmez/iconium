@@ -7,11 +7,14 @@ toolchain go1.22.0
 require (
 	github.com/gen2brain/beeep v0.0.0-20240516210008-9c006672e7f4
 	github.com/jeandeaual/go-locale v0.0.0-20240223122105-ce5225dcaa49
+	github.com/minio/selfupdate v0.6.0
 	github.com/wailsapp/wails/v2 v2.9.1
 )
 
 require (
+	aead.dev/minisign v0.2.0 // indirect
 	github.com/bep/debounce v1.2.1 // indirect
+	github.com/blang/semver v3.5.1+incompatible
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-toast/toast v0.0.0-20190211030409-01e6764cf0a4 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect

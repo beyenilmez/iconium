@@ -50,7 +50,7 @@ export default function TitleBar() {
           </Button>
           <Button
             size={"icon"}
-            onClick={() => RestartApplication()}
+            onClick={() => RestartApplication(false, [])}
             variant={"ghost"}
             className={`${restartRequired ? "" : "w-0"} transition-all
               hover:dark:brightness-150 hover:brightness-75 rounded-none h-8 cursor-default`}

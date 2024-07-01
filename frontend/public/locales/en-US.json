@@ -5,6 +5,7 @@
   "show_in_explorer": "Show in Explorer",
   "import": "Import",
   "export": "Export",
+  "error": "Error",
 
   "nav": {
     "my_packs": "My Packs",
@@ -23,7 +24,8 @@
       "general": "General",
       "application": "Application",
       "system": "System",
-      "advanced": "Advanced"
+      "advanced": "Advanced",
+      "update": "Update"
     },
 
     "setting": {
@@ -89,6 +91,26 @@
       "save_window_status": {
         "label": "Save Window Status",
         "description": "Save window size, position, and state."
+      },
+
+      "check_for_updates": {
+        "label": "Check For Updates On Startup",
+        "description": "Check for updates on startup."
+      },
+
+      "update": {
+        "update_available": "Update available",
+        "no_updates_available": "No updates available",
+        "last_checked": "Last checked",
+        "check_for_updates": "Check for updates",
+        "update": "Update",
+        "updating": "Updating...",
+        "failed_to_check_for_updates": "Failed to check for updates. Please try again later.",
+        "failed_to_download_update": "Failed to download update. Please try again later.",
+        "failed_to_apply_update" : "Failed to apply update.",
+        "update_applied": "Update applied successfully.",
+        "restarting": "Restarting...",
+        "need_admin_privileges": "Administration privileges are needed to update the application."
       }
     }
   }

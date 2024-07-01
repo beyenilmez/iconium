@@ -32,7 +32,9 @@ export function ImportExportSetting() {
 
   const handleAcceptImport = () => {
     LogDebug("Attempting to read config from " + usePath);
-    ReadConfig(usePath).then(RestartApplication);
+    ReadConfig(usePath).then(() => {
+      RestartApplication(false, []);
+    });
   };
 
   return (

@@ -32,6 +32,8 @@ type Config struct {
 	WindowScale          *int    `json:"windowScale"`          // %
 	Opacity              *int    `json:"opacity"`              // %
 	WindowEffect         *int    `json:"windowEffect"`         // 0 = Auto, 1 = None, 2 = Mica, 3 = Acrylic, 4 = Tabbed
+	CheckForUpdates      *bool   `json:"checkForUpdates"`      // true, false
+	LastUpdateCheck      *int    `json:"lastUpdateCheck"`      // unix timestamp
 }
 
 func GetDefaultConfig() Config {
@@ -55,6 +57,8 @@ func GetDefaultConfig() Config {
 	defaultWindowScale := 100
 	defaultOpacity := 90
 	defaultWindowEffect := 0
+	defaultCheckForUpdates := true
+	defaultLastUpdateCheck := 0
 
 	return Config{
 		Theme:                &defaultTheme,
@@ -77,6 +81,8 @@ func GetDefaultConfig() Config {
 		WindowScale:          &defaultWindowScale,
 		Opacity:              &defaultOpacity,
 		WindowEffect:         &defaultWindowEffect,
+		CheckForUpdates:      &defaultCheckForUpdates,
+		LastUpdateCheck:      &defaultLastUpdateCheck,
 	}
 }
 

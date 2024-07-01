@@ -5,6 +5,7 @@
   "show_in_explorer": "Klasörü aç",
   "import": "İçe Aktar",
   "export": "Dışa Aktar",
+  "error": "Hata",
 
   "nav": {
     "my_packs": "Paketlerim",
@@ -23,7 +24,8 @@
       "general": "Genel",
       "application": "Uygulama",
       "system": "Sistem",
-      "advanced": "Gelişmiş"
+      "advanced": "Gelişmiş",
+      "update": "Güncelleme"
     },
 
     "setting": {
@@ -89,6 +91,26 @@
       "save_window_status": {
         "label": "Pencere Durumunu Kaydet",
         "description": "Pencere boyutunu, konumunu ve durumunu kaydet."
+      },
+
+      "check_for_updates": {
+        "label": "Başlangıçta Güncellemeleri Kontrol Et",
+        "description": "Başlangıçta güncellemeleri kontrol et."
+      },
+
+      "update": {
+        "update_available": "Güncelleme mevcut",
+        "no_updates_available": "Güncelleme yok",
+        "last_checked": "Son kontrol",
+        "check_for_updates": "Güncellemeleri kontrol et",
+        "update": "Güncelle",
+        "updating": "Güncelleniyor...",
+        "failed_to_check_for_updates": "Güncellemeler kontrol edilemedi. Lütfen daha sonra tekrar deneyin.",
+        "failed_to_download_update": "Güncelleme indirilemedi. Lütfen daha sonra tekrar deneyin.",
+        "failed_to_apply_update" : "Güncelleme uygulanamadı.",
+        "update_applied": "Güncelleme uygulandı.",
+        "restarting": "Yeniden başlatılıyor...",
+        "need_admin_privileges": "Uygulamayı güncellemek için yönetici yetkileri gereklidir."
       }
     }
   }
