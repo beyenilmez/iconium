@@ -159,7 +159,7 @@ func (app *App) Update(downloadUrl string) error {
 	app.SendNotification("settings.setting.update.update_applied", "settings.setting.update.restarting", "", "success")
 
 	// Restart the application
-	app.RestartApplication(false, []string{})
+	app.RestartApplication(false, []string{"--goto", "settings__update"})
 
 	return nil
 }
