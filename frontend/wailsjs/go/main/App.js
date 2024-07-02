@@ -6,6 +6,10 @@ export function CheckForUpdate() {
   return window['go']['main']['App']['CheckForUpdate']();
 }
 
+export function GetConfig() {
+  return window['go']['main']['App']['GetConfig']();
+}
+
 export function GetConfigField(arg1) {
   return window['go']['main']['App']['GetConfigField'](arg1);
 }

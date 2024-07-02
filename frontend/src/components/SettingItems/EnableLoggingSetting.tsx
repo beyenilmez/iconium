@@ -6,10 +6,10 @@ export function EnableLoggingSetting() {
 
   return (
     <SwitchConfig
-      configValue="EnableLogging"
+      configKey="enableLogging"
       label={t("settings.setting.logging.label")}
       description={t("settings.setting.logging.description")}
-      requiresRestart={true}
+      requiresRestart
     />
   );
 }

@@ -1,4 +1,3 @@
-import { GetConfigField, SetConfigField } from "@/lib/config";
 import {
   SettingsItem,
   SettingContent,
@@ -8,23 +7,25 @@ import {
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Slider } from "../ui/my-slider";
+import { useConfig } from "@/contexts/config-provider";
 
 export function WindowScaleSetting() {
+  const { config, setConfigField } = useConfig();
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(true);
   const [useScale, setUseScale] = useState(-1);
 
   useEffect(() => {
-    GetConfigField("WindowScale").then((value) => {
-      setUseScale(parseInt(value));
+    if (config && config.windowScale !== undefined && isLoading) {
+      setUseScale(config.windowScale);
+
       setIsLoading(false);
-    });
-  }, []);
+    }
+  }, [config?.windowScale]);
 
   const handleScaleSave = () => {
-    SetConfigField("WindowScale", String(useScale)).then(() => {
-      document.documentElement.style.fontSize = useScale * (16 / 100) + "px";
-    });
+    setConfigField("windowScale", useScale);
+    document.documentElement.style.fontSize = useScale * (16 / 100) + "px";
   };
 
   return (

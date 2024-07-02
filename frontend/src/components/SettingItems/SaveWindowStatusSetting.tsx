@@ -6,7 +6,7 @@ export function SaveWindowStatusSetting() {
 
   return (
     <SwitchConfig
-      configValue="SaveWindowStatus"
+      configKey="saveWindowStatus"
       label={t("settings.setting.save_window_status.label")}
       description={t("settings.setting.save_window_status.description")}
     />

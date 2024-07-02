@@ -1,4 +1,3 @@
-import { GetConfigField } from "@/lib/config";
 import { RestartApplication } from "wailsjs/go/main/App";
 import {
   WindowMinimise,
@@ -11,17 +10,19 @@ import icon from "../assets/appicon.png";
 import { useEffect, useState } from "react";
 import { useRestart } from "@/contexts/restart-provider";
 import { useStorage } from "@/contexts/storage-provider";
+import { useConfig } from "@/contexts/config-provider";
 
 export default function TitleBar() {
+  const { config } = useConfig();
   const [useSystemTitleBar, setUseSystemTitleBar] = useState(false);
   const { restartRequired } = useRestart();
   const { getValue } = useStorage();
 
   useEffect(() => {
-    GetConfigField("UseSystemTitleBar").then((value) => {
-      setUseSystemTitleBar(value === "true");
-    });
-  }, []);
+    if (config && config.useSystemTitleBar !== undefined) {
+      setUseSystemTitleBar(config.useSystemTitleBar);
+    }
+  }, [config?.useSystemTitleBar]);
 
   return (
     !useSystemTitleBar && (

@@ -50,10 +50,10 @@ func GetDefaultConfig() Config {
 	defaultLanguage := "en-US"
 	defaultSaveWindowStatus := true
 	defaultWindowStartState := 0
-	defaultWindowStartPositionX := -1
-	defaultWindowStartPositionY := -1
-	defaultWindowStartSizeX := -1
-	defaultWindowStartSizeY := -1
+	defaultWindowStartPositionX := -100000
+	defaultWindowStartPositionY := -100000
+	defaultWindowStartSizeX := -100000
+	defaultWindowStartSizeY := -100000
 	defaultWindowScale := 100
 	defaultOpacity := 90
 	defaultWindowEffect := 0
@@ -124,6 +124,10 @@ func merge_defaults() {
 	}
 }
 
+func (app *App) GetConfig() Config {
+	return config
+}
+
 func (app *App) GetConfigField(fieldName string) string {
 	runtime.LogDebug(app.ctx, fmt.Sprintf("Attempting to get config field %s", fieldName))
 
@@ -155,8 +159,8 @@ func (app *App) GetConfigField(fieldName string) string {
 	return fmt.Sprintf("%v", fieldValue.Interface())
 }
 
-func (app *App) SetConfigField(fieldName string, value string) {
-	runtime.LogDebug(app.ctx, fmt.Sprintf("Attempting to set config field %s to %s", fieldName, value))
+func (app *App) SetConfigField(fieldName string, value interface{}) {
+	runtime.LogDebug(app.ctx, fmt.Sprintf("Attempting to set config field %s to %v", fieldName, value))
 
 	v := reflect.ValueOf(&config).Elem()
 	t := v.Type()
@@ -169,32 +173,62 @@ func (app *App) SetConfigField(fieldName string, value string) {
 
 	fieldValue := v.FieldByName(fieldName)
 
+	if !fieldValue.IsValid() {
+		runtime.LogWarning(app.ctx, fmt.Sprintf("Invalid field: %s", fieldName))
+		return
+	}
+
 	if fieldValue.Kind() == reflect.Ptr {
-		if fieldValue.IsNil() {
-			fieldValue.Set(reflect.New(fieldValue.Type().Elem()))
-		}
+		runtime.LogDebug(app.ctx, fmt.Sprintf("Dereferencing config field %s", fieldName))
 		fieldValue = fieldValue.Elem()
 	}
 
+	runtime.LogDebug(app.ctx, fmt.Sprintf("Config field %s type: %v", fieldName, fieldValue.Kind()))
+
 	switch fieldValue.Kind() {
 	case reflect.String:
-		fieldValue.SetString(value)
+		strVal, ok := value.(string)
+		if !ok {
+			runtime.LogWarning(app.ctx, fmt.Sprintf("Invalid value type for string field %s: %v", fieldName, value))
+			return
+		}
+		fieldValue.SetString(strVal)
+
 	case reflect.Bool:
-		boolVal, err := strconv.ParseBool(value)
-		if err != nil {
-			runtime.LogError(app.ctx, fmt.Sprintf("Invalid value for boolean field %s: %s", fieldName, value))
+		boolVal, ok := value.(bool)
+		if !ok {
+			runtime.LogWarning(app.ctx, fmt.Sprintf("Invalid value type for boolean field %s: %v", fieldName, value))
 			return
 		}
 		fieldValue.SetBool(boolVal)
-	case reflect.Int:
-		intVal, err := strconv.Atoi(value)
+
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		intVal, err := strconv.Atoi(fmt.Sprintf("%v", value))
 		if err != nil {
-			runtime.LogError(app.ctx, fmt.Sprintf("Invalid value for integer field %s: %s", fieldName, value))
+			runtime.LogWarning(app.ctx, fmt.Sprintf("Invalid value type for integer field %s: %v", fieldName, value))
 			return
 		}
 		fieldValue.SetInt(int64(intVal))
+
+	case reflect.Float32, reflect.Float64:
+		floatVal, ok := value.(float64)
+		if !ok {
+			runtime.LogWarning(app.ctx, fmt.Sprintf("Invalid value type for float field %s: %v", fieldName, value))
+			return
+		}
+		fieldValue.SetFloat(floatVal)
+
+	case reflect.Slice:
+		sliceVal, ok := value.([]string)
+		if !ok {
+			runtime.LogWarning(app.ctx, fmt.Sprintf("Invalid value type for slice field %s: %v", fieldName, value))
+			return
+		}
+		slice := reflect.ValueOf(sliceVal)
+		fieldValue.Set(slice)
+
 	default:
-		runtime.LogError(app.ctx, fmt.Sprintf("Unsupported field type for field %s", fieldName))
+		runtime.LogWarning(app.ctx, fmt.Sprintf("Unsupported field type for field %s of type %s", fieldName, fieldValue.Kind()))
 		return
 	}
 

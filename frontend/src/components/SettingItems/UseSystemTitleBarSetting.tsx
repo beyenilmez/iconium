@@ -6,7 +6,7 @@ export function UseSystemTitleBarSetting() {
 
   return (
     <SwitchConfig
-      configValue="UseSystemTitleBar"
+      configKey="useSystemTitleBar"
       label={t("settings.setting.use_system_title_bar.label")}
       description={t("settings.setting.use_system_title_bar.description")}
       requiresRestart={true}

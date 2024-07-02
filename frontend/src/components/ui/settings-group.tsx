@@ -1,6 +1,8 @@
 import React, { ReactNode, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton"
 import { useRestart } from "@/contexts/restart-provider";
+import { main } from "wailsjs/go/models";
+import { useConfig } from "@/contexts/config-provider";
 
 interface SettingsComponentProps extends React.HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
@@ -15,23 +17,39 @@ interface SettingsItemProps extends React.HTMLAttributes<HTMLDivElement> {
   vertical?: boolean;
   disabled?: boolean;
   children: ReactNode;
-  initialValue?: any;
-  value?: any;
-  name?: string;
+  configKey?: keyof main.Config | (keyof main.Config)[];
 }
 
-export const SettingsItem: React.FC<SettingsItemProps> = ({ children, className, disabled, loading, vertical, initialValue, name, value, ...rest }) => {
+export const SettingsItem: React.FC<SettingsItemProps> = ({ children, className, disabled, loading, vertical, configKey, ...rest }) => {
   const { addRestartRequired, removeRestartRequired } = useRestart();
+  const {config, initialConfig} = useConfig();
 
   useEffect(() => {
-    if(initialValue && value && name && !loading){
-      if(value === initialValue){
-        removeRestartRequired(name);
-      }else{
-        addRestartRequired(name);
+    if (configKey && config && initialConfig && !loading) {
+      if (Array.isArray(configKey)) {
+        // Handle array of keys
+        configKey.forEach((k) => {
+          const configValue = config[k as keyof main.Config];
+          const initialValue = initialConfig[k as keyof main.Config];
+          if (configValue === initialValue) {
+            removeRestartRequired(k as keyof main.Config);
+          } else {
+            addRestartRequired(k as keyof main.Config);
+          }
+        });
+      } else {
+        // Handle single key
+        const k = configKey as keyof main.Config;
+        const configValue = config[k];
+        const initialValue = initialConfig[k];
+        if (configValue === initialValue) {
+          removeRestartRequired(k);
+        } else {
+          addRestartRequired(k);
+        }
       }
     }
-  }, [initialValue, value]);
+  }, [config]);
 
   if (loading) {
     return <SettingsItemSkeleton className={className} {...rest} />

@@ -1,4 +1,3 @@
-import { SetConfigField, GetConfigField } from "@/lib/config";
 import {
   SettingsItem,
   SettingContent,
@@ -9,24 +8,24 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Combobox } from "../ui/combobox";
 import locales from "@/locales.json";
+import { useConfig } from "@/contexts/config-provider";
 
 export function LocaleSetting() {
+  const { config, setConfigField } = useConfig();
   const { t, i18n } = useTranslation();
   const [isLoading, setIsLoading] = useState(true);
   const [language, setLanguage] = useState("en-US");
 
   useEffect(() => {
-    GetConfigField("Language").then((value) => {
-      setLanguage(value);
+    if (config && config.language !== undefined && isLoading) {
+      setLanguage(config.language);
       setIsLoading(false);
-    });
-  }, []);
+    }
+  }, [config?.language]);
 
   const handleLanguageChange = (value: string) => {
-    SetConfigField("Language", value).then(() => {
-      setLanguage(value);
-      i18n.changeLanguage(value);
-    });
+    setConfigField("language", value);
+    i18n.changeLanguage(value);
   };
 
   return (

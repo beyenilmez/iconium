@@ -1,7 +1,7 @@
 import { SetTheme } from "wailsjs/go/main/App";
-import { LogError, LogInfo, LogWarning } from "wailsjs/runtime/runtime";
+import { LogError, LogInfo } from "wailsjs/runtime/runtime";
 import { createContext, useContext, useEffect, useState } from "react";
-import { GetConfigField, SetConfigField } from "@/lib/config";
+import { useConfig } from "./config-provider";
 
 type Theme = "dark" | "light" | "system";
 
@@ -12,12 +12,12 @@ type ThemeProviderProps = {
 
 type ThemeProviderState = {
   theme: Theme;
-  setTheme: (theme: Theme) => void;
+  setTheme: (theme: Theme) => Promise<void>; // Ensure setTheme is async
 };
 
 const initialState: ThemeProviderState = {
   theme: "system",
-  setTheme: () => null,
+  setTheme: async () => {}, // Initial no-op async function
 };
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
@@ -27,22 +27,14 @@ export function ThemeProvider({
   defaultTheme = "system",
   ...props
 }: ThemeProviderProps) {
+  const { config, setConfigField } = useConfig();
   const [theme, setThemeState] = useState<Theme>(defaultTheme);
 
   useEffect(() => {
-    const fetchTheme = async () => {
-      try {
-        const storedTheme = await GetConfigField("Theme");
-        if (storedTheme) {
-          setThemeState(storedTheme as Theme);
-        }
-      } catch (error) {
-        LogWarning("Failed to fetch theme");
-      }
-    };
-
-    fetchTheme();
-  }, []);
+    if (config) {
+      setThemeState(config.theme as Theme);
+    }
+  }, [config?.theme]); // Update theme state when config changes
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -62,18 +54,20 @@ export function ThemeProvider({
     root.classList.add(theme);
   }, [theme]);
 
+  const setTheme = async (newTheme: Theme) => {
+    try {
+      await setConfigField("theme", newTheme);
+      setThemeState(newTheme);
+      SetTheme(newTheme);
+      LogInfo(`Set theme to ${newTheme}`);
+    } catch (error) {
+      LogError("Failed to set theme");
+    }
+  };
+
   const value = {
     theme,
-    setTheme: async (theme: Theme) => {
-      try {
-        await SetConfigField("Theme", theme);
-        setThemeState(theme);
-        SetTheme(theme);
-        LogInfo(`Setted theme to ${theme}`);
-      } catch (error) {
-        LogError("Failed to set theme");
-      }
-    },
+    setTheme,
   };
 
   return (
@@ -86,8 +80,9 @@ export function ThemeProvider({
 export const useTheme = () => {
   const context = useContext(ThemeProviderContext);
 
-  if (context === undefined)
+  if (context === undefined) {
     throw new Error("useTheme must be used within a ThemeProvider");
+  }
 
   return context;
 };

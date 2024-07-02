@@ -1,41 +1,42 @@
-import { GetConfigField, InitConfigCache } from "@/lib/config";
 import ModeToggle from "@/components/ModeToggle";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TitleBar from "./components/TitleBar";
 import Settings from "./components/Settings";
 import { useTranslation } from "react-i18next";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useStorage } from "./contexts/storage-provider";
 import { Toaster } from "./components/ui/sonner";
 import { toast } from "sonner";
 import { OpenFileInExplorer } from "wailsjs/go/main/App";
 import React from "react";
+import { useConfig } from "./contexts/config-provider";
+import { LogDebug } from "wailsjs/runtime/runtime";
 
 function App() {
+  const { config, initialConfig } = useConfig();
   const { t } = useTranslation();
   const { setValue, getValue } = useStorage();
   const [tab, setTab] = useState("packs");
 
-  useEffect(() => {
-    InitConfigCache();
+  useLayoutEffect(() => {
+    if (
+      config &&
+      initialConfig &&
+      config.windowScale !== undefined &&
+      config.opacity !== undefined &&
+      initialConfig.windowEffect !== undefined
+    ) {
+      document.documentElement.style.fontSize =
+        config.windowScale * (16 / 100) + "px";
 
-    Promise.all([
-      GetConfigField("WindowScale"),
-      GetConfigField("Opacity"),
-      GetConfigField("WindowEffect"),
-    ])
-      .then(([windowScaleValue, opacityValue, windowEffectValue]) => {
-        document.documentElement.style.fontSize =
-          Number(windowScaleValue) * (16 / 100) + "px";
-        document.documentElement.style.setProperty(
-          "--opacity",
-          String(Number(windowEffectValue === "1" ? "100" : opacityValue) / 100)
-        );
-      })
-      .catch((error) => {
-        console.error("Error fetching configuration:", error);
-      });
-  }, []);
+      document.documentElement.style.setProperty(
+        "--opacity",
+        (
+          (initialConfig.windowEffect === 1 ? 100 : config.opacity) / 100
+        ).toString()
+      );
+    }
+  }, [config?.windowScale, config?.opacity, initialConfig?.windowEffect]);
 
   window.toast = ({ title, description, path, variant }: any) => {
     const props = {
@@ -78,6 +79,7 @@ function App() {
   };
 
   window.goto = (path: string) => {
+    LogDebug("window.goto: " + path);
     const pathArray = path.split("__");
 
     setValue("tab", pathArray[0]);

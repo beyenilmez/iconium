@@ -6,7 +6,7 @@ export function CheckForUpdatesSetting() {
 
   return (
     <SwitchConfig
-      configValue="CheckForUpdates"
+      configKey="checkForUpdates"
       label={t("settings.setting.check_for_updates.label")}
       description={t("settings.setting.check_for_updates.description")}
     />
