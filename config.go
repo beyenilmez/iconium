@@ -128,7 +128,7 @@ func (app *App) GetConfig() Config {
 	return config
 }
 
-func (app *App) GetConfigField(fieldName string) string {
+func (app *App) GetConfigField(fieldName string) interface{} {
 	runtime.LogDebug(app.ctx, fmt.Sprintf("Attempting to get config field %s", fieldName))
 
 	// Get the reflection Type and Value of the Config struct
@@ -156,7 +156,7 @@ func (app *App) GetConfigField(fieldName string) string {
 	}
 
 	runtime.LogDebug(app.ctx, fmt.Sprintf("Config field %s has value: %v", fieldName, fieldValue.Interface()))
-	return fmt.Sprintf("%v", fieldValue.Interface())
+	return fieldValue.Interface()
 }
 
 func (app *App) SetConfigField(fieldName string, value interface{}) {

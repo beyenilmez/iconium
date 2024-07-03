@@ -6,7 +6,7 @@ export function CheckForUpdate():Promise<main.UpdateInfo>;
 
 export function GetConfig():Promise<main.Config>;
 
-export function GetConfigField(arg1:string):Promise<string>;
+export function GetConfigField(arg1:string):Promise<any>;
 
 export function GetLoadConfigPath():Promise<string>;
 

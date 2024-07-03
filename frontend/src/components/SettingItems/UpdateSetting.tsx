@@ -35,18 +35,18 @@ export function UpdateSetting() {
   useEffect(() => {
     // Update last update check timestamp from config
     GetConfigField("LastUpdateCheck").then((value) =>
-      setLastUpdateCheck(parseInt(value))
+      setLastUpdateCheck(value as number)
     );
   }, [updateInfo]);
 
   useEffect(() => {
     // Automatic update trigger from argument
     const storedUpdate = getValue("update");
-    if (storedUpdate && !isChecking) {
+    if (storedUpdate && !isChecking && !isUpdating) {
       setIsUpdating(true);
       Update(storedUpdate).finally(() => setIsUpdating(false));
     }
-  }, [getValue, isChecking]);
+  }, [getValue, isChecking, isUpdating]);
 
   const handleCheckForUpdate = () => {
     // Check for updates and update state accordingly
