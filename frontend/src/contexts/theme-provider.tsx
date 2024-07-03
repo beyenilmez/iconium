@@ -4,7 +4,7 @@ import {
   WindowSetDarkTheme,
   WindowSetLightTheme,
   WindowSetSystemDefaultTheme,
-} from "wailsjs/runtime/runtime";
+} from "@/wailsjs/runtime/runtime";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useConfig } from "./config-provider";
 

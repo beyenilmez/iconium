@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/settings-group";
 import { Switch } from "@/components/ui/switch";
 import { useConfig } from "@/contexts/config-provider";
-import { main } from "wailsjs/go/models";
+import { main } from "@/wailsjs/go/models";
 
 interface SwitchConfigProps {
   configKey: keyof main.Config;

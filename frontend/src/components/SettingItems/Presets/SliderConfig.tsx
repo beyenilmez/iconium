@@ -7,7 +7,7 @@ import {
   SettingLabel,
 } from "@/components/ui/settings-group";
 import { useConfig } from "@/contexts/config-provider";
-import { main } from "wailsjs/go/models";
+import { main } from "@/wailsjs/go/models";
 import { Slider } from "@/components/ui/my-slider";
 
 interface SliderConfigProps {

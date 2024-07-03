@@ -1,7 +1,7 @@
 import React, { ReactNode, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRestart } from "@/contexts/restart-provider";
-import { main } from "wailsjs/go/models";
+import { main } from "@/wailsjs/go/models";
 import { useConfig } from "@/contexts/config-provider";
 
 interface SettingsComponentProps extends React.HTMLAttributes<HTMLDivElement> {

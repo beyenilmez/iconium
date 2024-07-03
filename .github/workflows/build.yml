@@ -41,9 +41,6 @@ jobs:
         run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
 
       - name: Build Wails app
-        run: wails build
-
-      - name: Build NSIS installer
         run: wails build -nsis
 
       - name: Sign Windows binaries

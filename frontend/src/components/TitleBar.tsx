@@ -1,9 +1,9 @@
-import { RestartApplication } from "wailsjs/go/main/App";
+import { RestartApplication } from "@/wailsjs/go/main/App";
 import {
   WindowMinimise,
   WindowToggleMaximise,
   Quit,
-} from "wailsjs/runtime/runtime";
+} from "@/wailsjs/runtime/runtime";
 import { Minus, Copy, X, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import icon from "../assets/appicon.png";

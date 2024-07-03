@@ -5,7 +5,7 @@ import {
   ReadConfig,
   RestartApplication,
   SaveConfigDialog,
-} from "wailsjs/go/main/App";
+} from "@/wailsjs/go/main/App";
 import {
   SettingsItem,
   SettingContent,
@@ -17,7 +17,7 @@ import {
   AreYouSureDialog,
   AreYouSureDialogRef,
 } from "@/components/ui/are-you-sure";
-import { LogDebug } from "wailsjs/runtime/runtime";
+import { LogDebug } from "@/wailsjs/runtime/runtime";
 
 export function ImportExportSetting() {
   const { t } = useTranslation();

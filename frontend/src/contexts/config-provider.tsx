@@ -5,12 +5,12 @@ import React, {
   useState,
   ReactNode,
 } from "react";
-import { main } from "wailsjs/go/models";
+import { main } from "@/wailsjs/go/models";
 import {
   GetConfig,
   SetConfigField as SetConfigField_backend,
-} from "wailsjs/go/main/App";
-import { LogError } from "wailsjs/runtime/runtime";
+} from "@/wailsjs/go/main/App";
+import { LogError } from "@/wailsjs/runtime/runtime";
 
 interface ConfigContextType {
   config: main.Config | null;

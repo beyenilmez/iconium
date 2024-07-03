@@ -7,10 +7,10 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import { useStorage } from "./contexts/storage-provider";
 import { Toaster } from "./components/ui/sonner";
 import { toast } from "sonner";
-import { OpenFileInExplorer } from "wailsjs/go/main/App";
+import { OpenFileInExplorer } from "@/wailsjs/go/main/App";
 import React from "react";
 import { useConfig } from "./contexts/config-provider";
-import { LogDebug } from "wailsjs/runtime/runtime";
+import { LogDebug } from "@/wailsjs/runtime/runtime";
 
 function App() {
   const { config, initialConfig } = useConfig();

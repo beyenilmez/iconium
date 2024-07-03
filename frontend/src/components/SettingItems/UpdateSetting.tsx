@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { CheckForUpdate, Update, UpdateAsAdmin } from "wailsjs/go/main/App";
-import { main } from "wailsjs/go/models";
+import { CheckForUpdate, Update, UpdateAsAdmin } from "@/wailsjs/go/main/App";
+import { main } from "@/wailsjs/go/models";
 import { Button } from "@/components/ui/button";
 import {
   SettingContent,
@@ -9,7 +9,7 @@ import {
   SettingsItem,
 } from "@/components/ui/settings-group";
 import { ArrowRight, RefreshCw } from "lucide-react";
-import { GetConfigField, NeedsAdminPrivileges } from "wailsjs/go/main/App";
+import { GetConfigField, NeedsAdminPrivileges } from "@/wailsjs/go/main/App";
 import { useTranslation } from "react-i18next";
 import { useStorage } from "@/contexts/storage-provider";
 
@@ -46,7 +46,7 @@ export function UpdateSetting() {
       setIsUpdating(true);
       Update(storedUpdate).finally(() => setIsUpdating(false));
     }
-  }, [getValue, isChecking, isUpdating]);
+  }, [getValue]);
 
   const handleCheckForUpdate = () => {
     // Check for updates and update state accordingly
