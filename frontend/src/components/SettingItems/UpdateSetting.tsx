@@ -10,14 +10,15 @@ import {
 } from "../ui/settings-group";
 import { ArrowRight, RefreshCw } from "lucide-react";
 import { GetConfigField, NeedsAdminPrivileges } from "wailsjs/go/main/App";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 import { useStorage } from "@/contexts/storage-provider";
 
 export function UpdateSetting() {
+  const { t } = useTranslation();
   const { getValue } = useStorage();
 
   const [updateInfo, setUpdateInfo] = useState<main.UpdateInfo>(
-    {} as main.UpdateInfo
+    main.UpdateInfo.createFrom({})
   );
 
   const [lastUpdateCheck, setLastUpdateCheck] = useState(0);
@@ -25,76 +26,56 @@ export function UpdateSetting() {
   const [isChecking, setIsChecking] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const handleCheckForUpdate = () => {
-    if (!isUpdating) {
-      setIsChecking(true);
-      CheckForUpdate()
-        .then((updateInfoJSON) => {
-          setUpdateInfo(updateInfoJSON);
-        })
-        .finally(() => {
-          setTimeout(() => {
-            setIsChecking(false);
-          }, 200);
-        });
-    }
-  };
-
-  const handleUpdate = () => {
-    setIsUpdating(true);
-
-    if (needsAdmin) {
-      UpdateAsAdmin(updateInfo.downloadUrl).finally(() => {
-        setIsUpdating(false);
-      });
-    } else {
-      Update(updateInfo.downloadUrl).finally(() => {
-        setIsUpdating(false);
-      });
-    }
-  };
-
   useEffect(() => {
-    GetConfigField("LastUpdateCheck").then((value) => {
-      setLastUpdateCheck(parseInt(value));
-    });
-  }, [updateInfo]);
-
-  useEffect(() => {
-    NeedsAdminPrivileges().then((value) => {
-      setNeedsAdmin(value);
-    });
-
+    // Initial check for admin privileges and update availability
+    NeedsAdminPrivileges().then(setNeedsAdmin);
     handleCheckForUpdate();
   }, []);
 
   useEffect(() => {
-    if (getValue("update") === undefined) return;
+    // Update last update check timestamp from config
+    GetConfigField("LastUpdateCheck").then((value) =>
+      setLastUpdateCheck(parseInt(value))
+    );
+  }, [updateInfo]);
 
-    while (isChecking) setTimeout(() => {}, 100);
+  useEffect(() => {
+    // Automatic update trigger from argument
+    const storedUpdate = getValue("update");
+    if (storedUpdate && !isChecking) {
+      setIsUpdating(true);
+      Update(storedUpdate).finally(() => setIsUpdating(false));
+    }
+  }, [getValue, isChecking]);
 
+  const handleCheckForUpdate = () => {
+    // Check for updates and update state accordingly
+    if (!isUpdating) {
+      setIsChecking(true);
+      CheckForUpdate()
+        .then(setUpdateInfo)
+        .finally(() => setTimeout(() => setIsChecking(false), 200));
+    }
+  };
+
+  const handleUpdate = () => {
+    // Perform update based on admin privileges
     setIsUpdating(true);
-    Update(getValue("update")).finally(() => {
-      setIsUpdating(false);
-    });
-  }, [getValue("update")]);
+    const updater = needsAdmin ? UpdateAsAdmin : Update;
+    updater(updateInfo.downloadUrl).finally(() => setIsUpdating(false));
+  };
 
   const formatDate = (timestamp: number) => {
+    // Format timestamp into readable date string
     const date = new Date(timestamp * 1000);
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const seconds = String(date.getSeconds()).padStart(2, "0");
-    return `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
+    return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
   };
 
   return (
     <SettingsItem disabled={isChecking || isUpdating} vertical>
       <div className="flex justify-between">
         <SettingContent>
-          <div className="flex flex-row te">
+          <div className="flex items-center gap-2">
             <RefreshCw
               className={`p-3 -ml-1.5 w-14 h-14 ${
                 isChecking || isUpdating ? "animate-spin" : ""

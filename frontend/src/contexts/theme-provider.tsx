@@ -3,7 +3,7 @@ import { LogError, LogInfo } from "wailsjs/runtime/runtime";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useConfig } from "./config-provider";
 
-type Theme = "dark" | "light" | "system";
+export type Theme = "dark" | "light" | "system";
 
 type ThemeProviderProps = {
   children: React.ReactNode;

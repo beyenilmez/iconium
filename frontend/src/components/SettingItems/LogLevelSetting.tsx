@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   SettingsItem,
   SettingContent,
@@ -5,8 +7,6 @@ import {
   SettingLabel,
 } from "../ui/settings-group";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { useConfig } from "@/contexts/config-provider";
 
 type LogLevels = {
@@ -21,67 +21,71 @@ type LogLevels = {
 export function LogLevelSetting() {
   const { config, setConfigField } = useConfig();
   const { t } = useTranslation();
-  const [isLoading, setIsLoading] = useState(true);
-  const [logLevels, setLogLevels] = useState<LogLevels>({
-    enableTrace: false,
-    enableDebug: false,
-    enableInfo: false,
-    enableWarn: false,
-    enableError: false,
-    enableFatal: false,
+  const [state, setState] = useState<{
+    isLoading: boolean;
+    logLevels: LogLevels;
+  }>({
+    isLoading: true,
+    logLevels: {
+      enableTrace: false,
+      enableDebug: false,
+      enableInfo: false,
+      enableWarn: false,
+      enableError: false,
+      enableFatal: false,
+    },
   });
 
   useEffect(() => {
-    if (
-      config &&
-      config.enableTrace !== undefined &&
-      config.enableDebug !== undefined &&
-      config.enableInfo !== undefined &&
-      config.enableWarn !== undefined &&
-      config.enableError !== undefined &&
-      config.enableFatal !== undefined &&
-      isLoading
-    ) {
-      setLogLevels({
-        enableTrace: config.enableTrace,
-        enableDebug: config.enableDebug,
-        enableInfo: config.enableInfo,
-        enableWarn: config.enableWarn,
-        enableError: config.enableError,
-        enableFatal: config.enableFatal,
-      });
-
-      setIsLoading(false);
+    if (state.isLoading && config) {
+      const {
+        enableTrace,
+        enableDebug,
+        enableInfo,
+        enableWarn,
+        enableError,
+        enableFatal,
+      } = config;
+      if (
+        enableTrace !== undefined &&
+        enableDebug !== undefined &&
+        enableInfo !== undefined &&
+        enableWarn !== undefined &&
+        enableError !== undefined &&
+        enableFatal !== undefined
+      ) {
+        setState({
+          isLoading: false,
+          logLevels: {
+            enableTrace,
+            enableDebug,
+            enableInfo,
+            enableWarn,
+            enableError,
+            enableFatal,
+          },
+        });
+      }
     }
-  }, [
-    config?.enableTrace,
-    config?.enableDebug,
-    config?.enableInfo,
-    config?.enableWarn,
-    config?.enableError,
-    config?.enableFatal,
-  ]);
+  }, [config, state.isLoading]);
 
   const handleToggle = (level: keyof LogLevels) => {
-    setConfigField(level, !logLevels[level]);
-
-    setLogLevels({
-      ...logLevels,
-      [level]: !logLevels[level],
-    });
+    const newLogLevels = {
+      ...state.logLevels,
+      [level]: !state.logLevels[level],
+    };
+    setConfigField(level, newLogLevels[level]);
+    setState({ ...state, logLevels: newLogLevels });
   };
+
+  const activeLogLevels = Object.entries(state.logLevels)
+    .filter(([, value]) => value)
+    .map(([key]) => key);
 
   return (
     <SettingsItem
-      loading={isLoading}
-      configKey={[
-        "enableTrace",
-        "enableDebug",
-        "enableInfo",
-        "enableWarn",
-        "enableError",
-        "enableFatal",
-      ]}
+      loading={state.isLoading}
+      configKey={Object.keys(state.logLevels) as (keyof LogLevels)[]}
       requiresRestart
     >
       <div>
@@ -91,13 +95,8 @@ export function LogLevelSetting() {
         </SettingDescription>
       </div>
       <SettingContent>
-        <ToggleGroup
-          type="multiple"
-          value={Object.entries(logLevels)
-            .filter(([, value]) => value)
-            .map(([key]) => key)}
-        >
-          {Object.entries(logLevels).map(([level, _]) => (
+        <ToggleGroup type="multiple" value={activeLogLevels}>
+          {Object.keys(state.logLevels).map((level) => (
             <ToggleGroupItem
               key={level}
               value={level}
