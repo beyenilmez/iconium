@@ -1,5 +1,10 @@
-import { SetTheme } from "wailsjs/go/main/App";
-import { LogError, LogInfo } from "wailsjs/runtime/runtime";
+import {
+  LogError,
+  LogInfo,
+  WindowSetDarkTheme,
+  WindowSetLightTheme,
+  WindowSetSystemDefaultTheme,
+} from "wailsjs/runtime/runtime";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useConfig } from "./config-provider";
 
@@ -58,7 +63,14 @@ export function ThemeProvider({
     try {
       await setConfigField("theme", newTheme);
       setThemeState(newTheme);
-      SetTheme(newTheme);
+      if (newTheme === "system") {
+        WindowSetSystemDefaultTheme();
+      } else if (newTheme === "light") {
+        WindowSetLightTheme();
+      } else {
+        WindowSetDarkTheme();
+      }
+
       LogInfo(`Set theme to ${newTheme}`);
     } catch (error) {
       LogError("Failed to set theme");
