@@ -108,10 +108,11 @@
         "updating": "Updating...",
         "failed_to_check_for_updates": "Failed to check for updates. Please try again later.",
         "failed_to_download_update": "Failed to download update. Please try again later.",
-        "failed_to_apply_update" : "Failed to apply update.",
+        "failed_to_apply_update": "Failed to apply update.",
         "update_applied": "Update applied successfully.",
         "restarting": "Restarting...",
-        "need_admin_privileges": "Administration privileges are needed to update the application."
+        "need_admin_privileges": "Administration privileges are needed to update the application.",
+        "update_successful": "Update was successfully applied."
       }
     }
   }

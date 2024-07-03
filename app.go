@@ -81,6 +81,12 @@ func (a *App) domReady(ctx context.Context) {
 				runtime.WindowExecJS(a.ctx, fmt.Sprintf(`window.goto("%s");`, args[i+1]))
 				i++
 			}
+		case "--notify":
+			if i+4 < len(args) {
+				runtime.LogInfo(a.ctx, "Notify: "+args[i+1]+" "+args[i+2]+" "+args[i+3]+" "+args[i+4])
+				a.SendNotification(args[i+1], args[i+2], args[i+3], args[i+4])
+				i += 4
+			}
 		}
 	}
 }

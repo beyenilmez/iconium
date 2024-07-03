@@ -108,10 +108,11 @@
         "updating": "Güncelleniyor...",
         "failed_to_check_for_updates": "Güncellemeler kontrol edilemedi. Lütfen daha sonra tekrar deneyin.",
         "failed_to_download_update": "Güncelleme indirilemedi. Lütfen daha sonra tekrar deneyin.",
-        "failed_to_apply_update" : "Güncelleme uygulanamadı.",
+        "failed_to_apply_update": "Güncelleme uygulanamadı.",
         "update_applied": "Güncelleme uygulandı.",
         "restarting": "Yeniden başlatılıyor...",
-        "need_admin_privileges": "Uygulamayı güncellemek için yönetici yetkileri gereklidir."
+        "need_admin_privileges": "Uygulamayı güncellemek için yönetici yetkileri gereklidir.",
+        "update_successful": "Güncelleme başarıyla uygulandı."
       }
     }
   }
