@@ -5,8 +5,8 @@ import {
   SettingContent,
   SettingDescription,
   SettingLabel,
-} from "../ui/settings-group";
-import { Input } from "../ui/input";
+} from "@/components/ui/settings-group";
+import { Input } from "@/components/ui/input";
 import { useConfig } from "@/contexts/config-provider";
 
 export function MaxLogFilesSetting() {

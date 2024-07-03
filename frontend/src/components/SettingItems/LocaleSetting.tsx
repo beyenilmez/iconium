@@ -5,8 +5,8 @@ import {
   SettingContent,
   SettingDescription,
   SettingLabel,
-} from "../ui/settings-group";
-import { Combobox } from "../ui/combobox";
+} from "@/components/ui/settings-group";
+import { Combobox } from "@/components/ui/combobox";
 import locales from "@/locales.json";
 import { useConfig } from "@/contexts/config-provider";
 

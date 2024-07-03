@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { CheckForUpdate, Update, UpdateAsAdmin } from "wailsjs/go/main/App";
 import { main } from "wailsjs/go/models";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import {
   SettingContent,
   SettingDescription,
   SettingLabel,
   SettingsItem,
-} from "../ui/settings-group";
+} from "@/components/ui/settings-group";
 import { ArrowRight, RefreshCw } from "lucide-react";
 import { GetConfigField, NeedsAdminPrivileges } from "wailsjs/go/main/App";
 import { useTranslation } from "react-i18next";

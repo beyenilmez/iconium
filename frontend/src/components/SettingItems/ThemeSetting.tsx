@@ -4,8 +4,8 @@ import {
   SettingContent,
   SettingDescription,
   SettingLabel,
-} from "../ui/settings-group";
-import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
+} from "@/components/ui/settings-group";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Monitor, Moon, Sun } from "lucide-react";
 import { Theme, useTheme } from "@/contexts/theme-provider";
 

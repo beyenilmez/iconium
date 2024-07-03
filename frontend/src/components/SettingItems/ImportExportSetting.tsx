@@ -11,9 +11,12 @@ import {
   SettingContent,
   SettingDescription,
   SettingLabel,
-} from "../ui/settings-group";
-import { Button } from "../ui/button";
-import { AreYouSureDialog, AreYouSureDialogRef } from "../ui/are-you-sure";
+} from "@/components/ui/settings-group";
+import { Button } from "@/components/ui/button";
+import {
+  AreYouSureDialog,
+  AreYouSureDialogRef,
+} from "@/components/ui/are-you-sure";
 import { LogDebug } from "wailsjs/runtime/runtime";
 
 export function ImportExportSetting() {

@@ -5,7 +5,7 @@ import {
   SettingContent,
   SettingDescription,
   SettingLabel,
-} from "../ui/settings-group";
+} from "@/components/ui/settings-group";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useConfig } from "@/contexts/config-provider";
 
