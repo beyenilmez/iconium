@@ -15,7 +15,7 @@ import { LogDebug } from "wailsjs/runtime/runtime";
 function App() {
   const { config, initialConfig } = useConfig();
   const { t } = useTranslation();
-  const { setValue, getValue } = useStorage();
+  const { setValue } = useStorage();
   const [tab, setTab] = useState("packs");
 
   useLayoutEffect(() => {
@@ -82,16 +82,12 @@ function App() {
     LogDebug("window.goto: " + path);
     const pathArray = path.split("__");
 
-    setValue("tab", pathArray[0]);
+    setTab(pathArray[0]);
 
     for (let i = 0; i < pathArray.length - 1; i++) {
       setValue(pathArray[i], pathArray[i + 1]);
     }
   };
-
-  useEffect(() => {
-    setTab(getValue("tab") || "packs");
-  }, [getValue("tab")]);
 
   useEffect(() => {
     setValue("path1", tab);
