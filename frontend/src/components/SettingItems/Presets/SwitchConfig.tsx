@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   SettingsItem,
   SettingContent,
@@ -5,8 +7,6 @@ import {
   SettingLabel,
 } from "@/components/ui/settings-group";
 import { Switch } from "@/components/ui/switch";
-import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { useConfig } from "@/contexts/config-provider";
 import { main } from "wailsjs/go/models";
 
@@ -20,43 +20,40 @@ interface SwitchConfigProps {
 export function SwitchConfig({
   configKey,
   label,
-  description,
-  requiresRestart,
+  description = "",
+  requiresRestart = false,
 }: SwitchConfigProps) {
   const { config, setConfigField } = useConfig();
   const { t } = useTranslation();
-  const [isLoading, setIsLoading] = useState(true);
-  const [switchValue, setSwitchValue] = useState(false);
+  const [{ isLoading, switchValue }, setState] = useState({
+    isLoading: true,
+    switchValue: false,
+  });
 
   useEffect(() => {
-    if (config && config[configKey] !== undefined && isLoading) {
-      const value = config[configKey] as boolean;
-      setSwitchValue(value);
-
-      setIsLoading(false);
+    if (isLoading && config?.[configKey] !== undefined) {
+      setState({ switchValue: config[configKey] as boolean, isLoading: false });
     }
-  }, [config]);
+  }, [isLoading, config, configKey]);
 
   const handleSwitch = (value: boolean) => {
     setConfigField(configKey, value);
-    setSwitchValue(value);
+    setState((prevState) => ({ ...prevState, switchValue: value }));
   };
 
   return (
     <SettingsItem
       loading={isLoading}
-      configKey={requiresRestart ? configKey : undefined}
+      configKey={configKey}
+      requiresRestart={requiresRestart}
     >
       <div>
         <SettingLabel>{label}</SettingLabel>
         {description && (
           <SettingDescription>
-            {description +
-              (requiresRestart
-                ? " (" +
-                  t("settings.restart_the_app_for_changes_to_take_effect") +
-                  ")"
-                : "")}
+            {description}
+            {requiresRestart &&
+              ` (${t("settings.restart_the_app_for_changes_to_take_effect")})`}
           </SettingDescription>
         )}
       </div>

@@ -33,7 +33,7 @@ export function MaxLogFilesSetting() {
   };
 
   return (
-    <SettingsItem loading={isLoading} configKey="maxLogFiles">
+    <SettingsItem loading={isLoading} configKey="maxLogFiles" requiresRestart>
       <div>
         <SettingLabel>{t("settings.setting.max_log_files.label")}</SettingLabel>
         <SettingDescription>

@@ -13,16 +13,16 @@ import { useStorage } from "@/contexts/storage-provider";
 import { useConfig } from "@/contexts/config-provider";
 
 export default function TitleBar() {
-  const { config } = useConfig();
+  const { initialConfig } = useConfig();
   const [useSystemTitleBar, setUseSystemTitleBar] = useState(false);
   const { restartRequired } = useRestart();
   const { getValue } = useStorage();
 
   useEffect(() => {
-    if (config && config.useSystemTitleBar !== undefined) {
-      setUseSystemTitleBar(config.useSystemTitleBar);
+    if (initialConfig && initialConfig.useSystemTitleBar !== undefined) {
+      setUseSystemTitleBar(initialConfig.useSystemTitleBar);
     }
-  }, [config?.useSystemTitleBar]);
+  }, [initialConfig?.useSystemTitleBar]);
 
   return (
     !useSystemTitleBar && (

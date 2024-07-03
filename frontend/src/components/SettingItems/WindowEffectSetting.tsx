@@ -62,7 +62,7 @@ export function WindowEffectSetting() {
   ];
 
   return (
-    <SettingsItem loading={isLoading} configKey="windowEffect">
+    <SettingsItem loading={isLoading} configKey="windowEffect" requiresRestart>
       <div>
         <SettingLabel>{t("settings.setting.window_effect.label")}</SettingLabel>
         <SettingDescription>

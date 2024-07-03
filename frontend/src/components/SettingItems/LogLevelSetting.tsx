@@ -82,6 +82,7 @@ export function LogLevelSetting() {
         "enableError",
         "enableFatal",
       ]}
+      requiresRestart
     >
       <div>
         <SettingLabel>{t("settings.setting.log_levels.label")}</SettingLabel>
