@@ -1,5 +1,5 @@
-import { SwitchConfig } from "./Presets/SwitchConfig";
 import { useTranslation } from "react-i18next";
+import { SwitchConfig } from "./Presets/SwitchConfig";
 
 export function SaveWindowStatusSetting() {
   const { t } = useTranslation();

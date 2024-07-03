@@ -1,3 +1,5 @@
+import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   GetLoadConfigPath,
   ReadConfig,
@@ -12,29 +14,25 @@ import {
 } from "../ui/settings-group";
 import { Button } from "../ui/button";
 import { AreYouSureDialog, AreYouSureDialogRef } from "../ui/are-you-sure";
-import { useRef, useState } from "react";
 import { LogDebug } from "wailsjs/runtime/runtime";
-import { useTranslation } from "react-i18next";
 
 export function ImportExportSetting() {
   const { t } = useTranslation();
   const dialogRef = useRef<AreYouSureDialogRef>(null);
   const [usePath, setUsePath] = useState("");
 
-  const handleImportButtonClick = () => {
-    GetLoadConfigPath().then((path) => {
-      if (path !== "") {
-        setUsePath(path);
-        dialogRef.current?.openDialog();
-      }
-    });
+  const handleImportButtonClick = async () => {
+    const path = await GetLoadConfigPath();
+    if (path) {
+      setUsePath(path);
+      dialogRef.current?.openDialog();
+    }
   };
 
-  const handleAcceptImport = () => {
-    LogDebug("Attempting to read config from " + usePath);
-    ReadConfig(usePath).then(() => {
-      RestartApplication(false, ["--goto", "settings__advanced"]);
-    });
+  const handleAcceptImport = async () => {
+    LogDebug(`Attempting to read config from ${usePath}`);
+    await ReadConfig(usePath);
+    RestartApplication(false, ["--goto", "settings__advanced"]);
   };
 
   return (
@@ -58,7 +56,6 @@ export function ImportExportSetting() {
             cancelText={t("cancel")}
             acceptText={t("yes")}
           />
-
           <Button onClick={SaveConfigDialog}>{t("export")}</Button>
         </div>
       </SettingContent>
