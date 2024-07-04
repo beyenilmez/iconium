@@ -2,11 +2,9 @@ package main
 
 import (
 	"embed"
-	"encoding/json"
 	"log"
 	"os"
 	"path"
-	"path/filepath"
 	"time"
 
 	"github.com/wailsapp/wails/v2"
@@ -82,20 +80,6 @@ func main() {
 		windowEffect = windows.Tabbed
 	}
 
-	// Get version from wails.json
-	var wailsDeccodedJSON map[string]interface{}
-	err = json.Unmarshal(wailsJSON, &wailsDeccodedJSON)
-	if err != nil {
-		log.Println(err)
-	}
-	version = wailsDeccodedJSON["info"].(map[string]interface{})["productVersion"].(string)
-
-	// Check if admin privileges are needed
-	NeedsAdminPrivileges = checkAdminPrivileges()
-
-	// Get launch args
-	args = os.Args[1:]
-
 	// Create application with options
 	err = wails.Run(&options.App{
 		Title:             "Iconium",
@@ -105,7 +89,7 @@ func main() {
 		MinHeight:         768,
 		DisableResize:     false,
 		Frameless:         !*config.UseSystemTitleBar,
-		StartHidden:       false,
+		StartHidden:       true,
 		HideWindowOnClose: false,
 		BackgroundColour:  &options.RGBA{R: 255, G: 255, B: 255, A: 255},
 		AssetServer: &assetserver.Options{
@@ -143,27 +127,4 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-func checkAdminPrivileges() bool {
-	executable, err := os.Executable()
-	if err != nil {
-		return false
-	}
-
-	directory := filepath.Dir(executable)
-
-	// Try to create a temporary file in the directory
-	tempFile, err := os.CreateTemp(directory, "test")
-	if err != nil {
-		return os.IsPermission(err)
-	}
-	tempFile.Close()
-	os.Remove(tempFile.Name())
-
-	return false
-}
-
-func (app *App) NeedsAdminPrivileges() bool {
-	return NeedsAdminPrivileges
 }

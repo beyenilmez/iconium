@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"github.com/gen2brain/beeep"
@@ -64,6 +66,23 @@ func (a *App) startup(ctx context.Context) {
 
 // domReady is called after front-end resources have been loaded
 func (a *App) domReady(ctx context.Context) {
+	// Show window
+	runtime.WindowShow(appContext)
+
+	// Get version from wails.json
+	var wailsDeccodedJSON map[string]interface{}
+	err := json.Unmarshal(wailsJSON, &wailsDeccodedJSON)
+	if err != nil {
+		runtime.LogError(appContext, "Failed to decode wails.json: "+err.Error())
+	}
+	version = wailsDeccodedJSON["info"].(map[string]interface{})["productVersion"].(string)
+
+	// Check if admin privileges are needed
+	NeedsAdminPrivileges = checkAdminPrivileges()
+
+	// Get launch args
+	args = os.Args[1:]
+
 	// Check updates
 	if *config.CheckForUpdates {
 		updateInfo := a.CheckForUpdate()
@@ -248,4 +267,27 @@ func (a *App) RestartApplication(admin bool, args []string) error {
 	// Exit the current process
 	os.Exit(0)
 	return nil
+}
+
+func checkAdminPrivileges() bool {
+	executable, err := os.Executable()
+	if err != nil {
+		return false
+	}
+
+	directory := filepath.Dir(executable)
+
+	// Try to create a temporary file in the directory
+	tempFile, err := os.CreateTemp(directory, "test")
+	if err != nil {
+		return os.IsPermission(err)
+	}
+	tempFile.Close()
+	os.Remove(tempFile.Name())
+
+	return false
+}
+
+func (app *App) NeedsAdminPrivileges() bool {
+	return NeedsAdminPrivileges
 }
