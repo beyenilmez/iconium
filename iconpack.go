@@ -220,7 +220,7 @@ func CreateFileInfo(path string) (FileInfo, error) {
 	var fileInfo FileInfo
 	fileInfo.Id = uuid.NewString()
 	fileInfo.Name = strings.TrimSuffix(filepath.Base(path), filepath.Ext(path))
-	fileInfo.Path = path
+	fileInfo.Path = ConvertToGeneralPath(path)
 	fileInfo.Extension = strings.ToLower(filepath.Ext(path))
 
 	if fileInfo.Extension == ".lnk" {
@@ -239,6 +239,7 @@ func CreateFileInfo(path string) (FileInfo, error) {
 		if link.LinkInfo.LocalBasePathUnicode != "" {
 			fileInfo.Destination = link.LinkInfo.LocalBasePathUnicode
 		}
+		fileInfo.Destination = ConvertToGeneralPath(fileInfo.Destination)
 
 		if strings.ToLower(filepath.Ext(link.StringData.IconLocation)) == ".ico" {
 			fileInfo.Icon = GenerateBase64PngFromPath(link.StringData.IconLocation)
@@ -346,10 +347,10 @@ func (a *App) AddFilesToIconPackFromFolder(id string, path string, save bool) {
 }
 
 func (a *App) AddFilesToIconPackFromDesktop(id string) {
-	desktopPaths := get_desktop_paths()
+	desktop, public := get_desktop_paths()
 
-	a.AddFilesToIconPackFromFolder(id, desktopPaths[0], false)
-	a.AddFilesToIconPackFromFolder(id, desktopPaths[1], true)
+	a.AddFilesToIconPackFromFolder(id, desktop, false)
+	a.AddFilesToIconPackFromFolder(id, public, true)
 }
 
 func (a *App) Test() {

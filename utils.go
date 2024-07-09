@@ -105,3 +105,32 @@ func GenerateBase64PngFromPath(filePath string) string {
 
 	return ""
 }
+
+func ConvertToGeneralPath(path string) string {
+	desktop, public := get_desktop_paths()
+
+	if strings.HasPrefix(strings.ToLower(path), strings.ToLower(desktop)) {
+		return strings.ReplaceAll(path, desktop, "<desktop>")
+	} else if strings.HasPrefix(strings.ToLower(path), strings.ToLower(public)) {
+		return strings.ReplaceAll(path, public, "<desktop>")
+	} else {
+		return path
+	}
+}
+
+func ConvertToFullPath(path string) string {
+	if strings.Contains(path, "<desktop>") {
+		desktop, public := get_desktop_paths()
+
+		path1 := strings.ReplaceAll(path, "<desktop>", desktop)
+		path2 := strings.ReplaceAll(path, "<desktop>", public)
+
+		if _, err := os.Stat(path1); os.IsNotExist(err) {
+			return path2
+		} else {
+			return path1
+		}
+	} else {
+		return path
+	}
+}

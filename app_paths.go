@@ -95,11 +95,11 @@ func get_config_path() string {
 }
 
 // Returns the desktop paths
-func get_desktop_paths() []string {
+func get_desktop_paths() (string, string) {
 	userDir, err := user.Current()
 
 	if err != nil {
-		return []string{}
+		return "", ""
 	}
 
 	homedir := userDir.HomeDir
@@ -107,5 +107,5 @@ func get_desktop_paths() []string {
 
 	public := "C:\\Users\\Public\\Desktop"
 
-	return []string{desktop, public}
+	return desktop, public
 }
