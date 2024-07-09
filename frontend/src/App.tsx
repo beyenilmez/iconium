@@ -11,6 +11,7 @@ import { OpenFileInExplorer } from "@/wailsjs/go/main/App";
 import React from "react";
 import { useConfig } from "./contexts/config-provider";
 import { LogDebug } from "@/wailsjs/runtime/runtime";
+import Packs from "./components/Packs";
 
 function App() {
   const { config, initialConfig } = useConfig();
@@ -98,7 +99,7 @@ function App() {
       <div className="flex flex-col h-dvh">
         <TitleBar />
         <Tabs value={tab} className="flex flex-col w-full h-full">
-          <TabsList className="shadow-bottom-xs z-10 justify-between px-3 py-7 rounded-none w-full s">
+          <TabsList className="shadow-bottom-xs z-10 justify-between px-3 py-7 rounded-none w-full h-12">
             <div>
               <TabsTrigger value="packs" onClick={() => setTab("packs")}>
                 {t("nav.my_packs")}
@@ -114,7 +115,7 @@ function App() {
           </TabsList>
 
           <TabsContent value="packs" className="w-ful h-full">
-            View your packs here.
+            <Packs />
           </TabsContent>
           <TabsContent value="edit" className="w-ful h-full">
             Edit your packs here.

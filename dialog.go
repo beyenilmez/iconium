@@ -64,6 +64,68 @@ func (a *App) GetLoadConfigPath() string {
 	return path
 }
 
+func (a *App) GetBase64Png() string {
+	path, err := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
+		Title:                "Select image",
+		CanCreateDirectories: true,
+		Filters: []runtime.FileFilter{
+			{
+				DisplayName: "PNG",
+				Pattern:     "*.png",
+			},
+		},
+	})
+
+	if err != nil {
+		runtime.LogWarning(a.ctx, err.Error())
+		return ""
+	}
+
+	if path == "" {
+		return ""
+	}
+
+	base64Png := GenerateBase64PngFromPath(path)
+
+	runtime.LogInfo(a.ctx, "Image selected: "+path)
+
+	return base64Png
+}
+
+func (a *App) GetIconFolder() string {
+	path, err := runtime.OpenDirectoryDialog(a.ctx, runtime.OpenDialogOptions{
+		Title:                "Select folder",
+		CanCreateDirectories: true,
+	})
+
+	if err != nil {
+		runtime.LogWarning(a.ctx, err.Error())
+		return ""
+	}
+
+	return path
+}
+
+func (a *App) GetIconFile() string {
+	path, err := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
+		Title:                "Select file",
+		CanCreateDirectories: true,
+		Filters: []runtime.FileFilter{
+			{
+				DisplayName: "Shortcut",
+				Pattern:     "*.lnk",
+			},
+		},
+	})
+
+	if err != nil {
+		runtime.LogWarning(a.ctx, err.Error())
+		return ""
+	}
+
+	return path
+}
+
 func (a *App) OpenFileInExplorer(path string) {
 	runtime.LogInfo(a.ctx, "Opening file in explorer: "+path)
 

@@ -3,7 +3,9 @@ package main
 import (
 	"errors"
 	"os"
+	"os/user"
 	"path"
+	"path/filepath"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -92,18 +94,18 @@ func get_config_path() string {
 	return configPath
 }
 
-// Create folder if it doesn't exist, return error
-func create_folder(folder string) error {
-	if _, err := os.Stat(folder); os.IsNotExist(err) {
-		err = os.MkdirAll(folder, 0o755)
-		if err != nil {
-			return err
-		}
-	} else {
-		runtime.LogDebug(appContext, "Folder already exists: "+folder)
-		return nil
-	}
-	runtime.LogDebug(appContext, "Created folder: "+folder)
+// Returns the desktop paths
+func get_desktop_paths() []string {
+	userDir, err := user.Current()
 
-	return nil
+	if err != nil {
+		return []string{}
+	}
+
+	homedir := userDir.HomeDir
+	desktop := filepath.Join(homedir, "Desktop")
+
+	public := "C:\\Users\\Public\\Desktop"
+
+	return []string{desktop, public}
 }

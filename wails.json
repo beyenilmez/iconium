@@ -2,7 +2,7 @@
   "$schema": "https://wails.io/schemas/config.v2.json",
   "name": "iconium",
   "outputfilename": "iconium",
-  "@/wailsjsdir": "./frontend/src",
+  "wailsjsdir": "./frontend/src",
   "frontend:install": "yarn",
   "frontend:build": "yarn build",
   "frontend:dev:watcher": "yarn dev",
