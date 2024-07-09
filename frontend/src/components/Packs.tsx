@@ -37,6 +37,7 @@ import {
   DeleteIconPack,
   GetIconFile,
   GetIconFolder,
+  GetIconPack,
   GetIconPackInfo,
   SetIconPackInfo,
   Test,
@@ -55,9 +56,24 @@ import {
   SettingLabel,
   SettingsItem,
 } from "./ui/settings-group";
+import Base64Image from "./Base64Image";
 
 export default function Packs() {
   const [pack, setPack] = useState("");
+  const [selectedPack, setSelectedPack] = useState<main.IconPack>(
+    main.IconPack.createFrom({
+      metadata: {
+        id: "",
+        name: "",
+        description: "",
+        icon: "",
+      },
+      files: [],
+      settings: {
+        enabled: false,
+      },
+    })
+  );
   const [packInfos, setPackInfos] = useState<main.IconPack[]>();
 
   const dialogCloseRef = useRef(null);
@@ -70,6 +86,12 @@ export default function Packs() {
   useEffect(() => {
     loadPackInfo();
   }, []);
+
+  useEffect(() => {
+    if (pack) {
+      GetIconPack(pack).then(setSelectedPack);
+    }
+  }, [pack]);
 
   return (
     <Tabs value={pack} className="flex flex-row w-full h-full">
@@ -105,9 +127,7 @@ export default function Packs() {
 
       {pack && (
         <PackContent
-          iconPack={
-            packInfos?.find((found_pack) => found_pack.metadata.id === pack)!
-          }
+          iconPack={selectedPack}
           setPack={setPack}
           loadPackInfo={loadPackInfo}
         />
@@ -251,7 +271,7 @@ function PackContent({ iconPack, setPack, loadPackInfo }: PackContentProps) {
   return (
     <TabsContent
       value={iconPack.metadata.id}
-      className="flex flex-col gap-4 p-6 w-full h-full"
+      className="flex flex-col gap-4 p-6 w-full h-[calc(100vh-5.5rem)] overflow-y-auto"
     >
       <div className="bg-card p-4 rounded-md w-full">
         <div className="mb-3 pb-1 border-b font-medium text-xl">
@@ -341,7 +361,12 @@ function PackContent({ iconPack, setPack, loadPackInfo }: PackContentProps) {
                     iconPack.metadata.id,
                     folder,
                     true
-                  ).then(loadPackInfo);
+                  ).then(() => {
+                    loadPackInfo();
+                    GetIconPack(iconPack.metadata.id).then((iconPack) => {
+                      setIconPackInfo(iconPack);
+                    });
+                  });
                 }
               });
             }}
@@ -352,9 +377,12 @@ function PackContent({ iconPack, setPack, loadPackInfo }: PackContentProps) {
             variant={"secondary"}
             className="flex gap-2.5"
             onClick={() => {
-              AddFilesToIconPackFromDesktop(iconPack.metadata.id).then(
-                loadPackInfo
-              );
+              AddFilesToIconPackFromDesktop(iconPack.metadata.id).then(() => {
+                loadPackInfo();
+                GetIconPack(iconPack.metadata.id).then((iconPack) => {
+                  setIconPackInfo(iconPack);
+                });
+              });
             }}
           >
             <Monitor className="w-6 h-6" /> Add Icons From Desktop
@@ -369,7 +397,12 @@ function PackContent({ iconPack, setPack, loadPackInfo }: PackContentProps) {
                     iconPack.metadata.id,
                     file,
                     true
-                  ).then(loadPackInfo);
+                  ).then(() => {
+                    loadPackInfo();
+                    GetIconPack(iconPack.metadata.id).then((iconPack) => {
+                      setIconPackInfo(iconPack);
+                    });
+                  });
                 }
               });
             }}
@@ -394,6 +427,23 @@ function PackContent({ iconPack, setPack, loadPackInfo }: PackContentProps) {
             />
           </SettingContent>
         </SettingsItem>
+      </div>
+
+      <div className="bg-card p-4 rounded-md w-full">
+        <div className="mb-3 pb-1 border-b font-medium text-xl">Icons</div>
+        <div className="flex flex-wrap gap-2">
+          {iconPackInfo.files?.map((file) =>
+            file.hasIcon ? (
+              <Base64Image
+                key={file.id}
+                packId={iconPack.metadata.id}
+                icon={file.id}
+                alt={file.name}
+                className="w-8 h-8"
+              />
+            ) : null
+          )}
+        </div>
       </div>
     </TabsContent>
   );

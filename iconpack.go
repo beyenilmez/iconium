@@ -22,7 +22,7 @@ type FileInfo struct {
 	Path        string `json:"path"`
 	Destination string `json:"destinationPath"`
 	Extension   string `json:"extension"`
-	Icon        string `json:"icon"`
+	HasIcon     bool   `json:"hasIcon"`
 }
 
 type Metadata struct {
@@ -132,8 +132,6 @@ func (a *App) GetIconPack(id string) IconPack {
 }
 
 func GetIconPackInfo() ([]IconPack, error) {
-	var iconPacks []IconPack
-
 	files, err := os.ReadDir(packsFolder)
 	if err != nil {
 		return nil, err
@@ -216,7 +214,7 @@ func (a *App) SetIconPackInfo(iconPack IconPack) {
 	}
 }
 
-func CreateFileInfo(path string) (FileInfo, error) {
+func CreateFileInfo(packId string, path string) (FileInfo, error) {
 	var fileInfo FileInfo
 	fileInfo.Id = uuid.NewString()
 	fileInfo.Name = strings.TrimSuffix(filepath.Base(path), filepath.Ext(path))
@@ -242,7 +240,19 @@ func CreateFileInfo(path string) (FileInfo, error) {
 		fileInfo.Destination = ConvertToGeneralPath(fileInfo.Destination)
 
 		if strings.ToLower(filepath.Ext(link.StringData.IconLocation)) == ".ico" {
-			fileInfo.Icon = GenerateBase64PngFromPath(link.StringData.IconLocation)
+			base64Image := GenerateBase64PngFromPath(link.StringData.IconLocation)
+
+			if base64Image == "" {
+				return FileInfo{}, errors.New("failed to generate base64 image")
+			}
+
+			fileInfo.HasIcon = true
+			// Save to file
+			iconPath := filepath.Join(packsFolder, packId, "icons", fileInfo.Id)
+			err := os.WriteFile(iconPath, []byte(base64Image), 0644)
+			if err != nil {
+				return FileInfo{}, err
+			}
 		}
 	}
 
@@ -303,7 +313,7 @@ func (a *App) DeleteIconPack(id string) error {
 }
 
 func (a *App) AddFileToIconPackFromPath(id string, path string, save bool) {
-	fileInfo, err := CreateFileInfo(path)
+	fileInfo, err := CreateFileInfo(id, path)
 
 	if err != nil {
 		runtime.LogError(a.ctx, err.Error())
