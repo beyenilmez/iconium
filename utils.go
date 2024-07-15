@@ -134,11 +134,3 @@ func ConvertToFullPath(path string) string {
 		return path
 	}
 }
-
-func (app *App) GetBase64Image(packId string, fileId string) string {
-	bytes, err := os.ReadFile(filepath.Join(packsFolder, packId, "icons", fileId))
-	if err != nil {
-		runtime.LogError(appContext, "Error reading file: "+err.Error())
-	}
-	return string(bytes)
-}

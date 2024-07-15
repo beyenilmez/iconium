@@ -20,12 +20,12 @@ lerna-debug.log*
 
 # Wails
 *.exe~
-*.exe
 *.syso
 *.local
 node_modules
 /build/bin
 /build/windows/installer/wails_tools.nsh
+/build/windows/installer/tmp
 /frontend/dist
 /frontend/dist-ssr
 /frontend/package.json.md5

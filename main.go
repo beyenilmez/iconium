@@ -2,9 +2,13 @@ package main
 
 import (
 	"embed"
+	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"path"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/wailsapp/wails/v2"
@@ -26,6 +30,27 @@ var wailsJSON []byte
 var version string
 var NeedsAdminPrivileges bool
 var args []string
+
+type FileLoader struct {
+	http.Handler
+}
+
+func NewFileLoader() *FileLoader {
+	return &FileLoader{}
+}
+
+func (h *FileLoader) ServeHTTP(res http.ResponseWriter, req *http.Request) {
+	var err error
+	requestedFilename := strings.TrimPrefix(filepath.Join("C:\\Users\\bedoy\\AppData\\Roaming\\iconium", req.URL.Path), "/")
+	println("Requesting file:", requestedFilename)
+	fileData, err := os.ReadFile(requestedFilename)
+	if err != nil {
+		res.WriteHeader(http.StatusBadRequest)
+		res.Write([]byte(fmt.Sprintf("Could not load file %s", requestedFilename)))
+	}
+
+	res.Write(fileData)
+}
 
 func main() {
 	// Create an instance of the app structure
@@ -93,7 +118,8 @@ func main() {
 		HideWindowOnClose: false,
 		BackgroundColour:  &options.RGBA{R: 255, G: 255, B: 255, A: 255},
 		AssetServer: &assetserver.Options{
-			Assets: assets,
+			Assets:  assets,
+			Handler: NewFileLoader(),
 		},
 		Menu:               nil,
 		Logger:             fileLogger,

@@ -26,10 +26,6 @@ export function DeleteIconPack(arg1) {
   return window['go']['main']['App']['DeleteIconPack'](arg1);
 }
 
-export function GetBase64Image(arg1, arg2) {
-  return window['go']['main']['App']['GetBase64Image'](arg1, arg2);
-}
-
 export function GetBase64Png() {
   return window['go']['main']['App']['GetBase64Png']();
 }

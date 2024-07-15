@@ -14,8 +14,12 @@ var packsFolder string
 var logsFolder string
 var savedConfigFolder string
 var activeIconFolder string
+var tempFolder string
 var configPath string
 var appIconPath string
+
+var installationDirectory string
+var imageMagickPath string
 
 func path_init() error {
 	appData, err := os.UserConfigDir()
@@ -28,10 +32,12 @@ func path_init() error {
 	runtime.LogDebug(appContext, "Found user config directory: "+appData)
 
 	appFolder := path.Join(appData, "iconium")
+
 	packsFolder = path.Join(appFolder, "packs")
 	logsFolder = path.Join(appFolder, "logs")
 	savedConfigFolder = path.Join(appFolder, "savedconfigs")
 	activeIconFolder = path.Join(appFolder, "icons")
+	tempFolder = path.Join(appFolder, "temp")
 
 	configPath = path.Join(appFolder, "config.json")
 	appIconPath = path.Join(appFolder, "appicon.png")
@@ -58,6 +64,10 @@ func path_init() error {
 	if err != nil {
 		return err
 	}
+	err = create_folder(tempFolder)
+	if err != nil {
+		return err
+	}
 
 	runtime.LogTrace(appContext, "Creating folders complete")
 
@@ -71,6 +81,19 @@ func path_init() error {
 			return err
 		}
 	}
+
+	runtime.LogTrace(appContext, "Creating appicon complete")
+
+	ex, err := os.Executable()
+	if err != nil {
+		return err
+	}
+
+	installationDirectory = filepath.Dir(ex)
+	imageMagickPath = filepath.Join(installationDirectory, "ImageMagick-7.1.1-35-portable-Q16-x64", "magick.exe")
+	runtime.LogDebugf(appContext, "ImageMagick path: %s", imageMagickPath)
+
+	runtime.LogTrace(appContext, "Path initialization complete")
 
 	return nil
 }

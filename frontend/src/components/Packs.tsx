@@ -56,7 +56,7 @@ import {
   SettingLabel,
   SettingsItem,
 } from "./ui/settings-group";
-import Base64Image from "./Base64Image";
+import Image from "./Image";
 
 export default function Packs() {
   const [pack, setPack] = useState("");
@@ -83,14 +83,18 @@ export default function Packs() {
     setPackInfos(packInfos);
   };
 
+  const reloadSelectedPack = () => {
+    if (pack) {
+      GetIconPack(pack).then(setSelectedPack);
+    }
+  };
+
   useEffect(() => {
     loadPackInfo();
   }, []);
 
   useEffect(() => {
-    if (pack) {
-      GetIconPack(pack).then(setSelectedPack);
-    }
+    reloadSelectedPack();
   }, [pack]);
 
   return (
@@ -102,7 +106,7 @@ export default function Packs() {
             key={pack.metadata.id}
             iconPack={pack}
             setPack={setPack}
-            loadPackInfo={loadPackInfo}
+            reloadSelectedPack={reloadSelectedPack}
           />
         ))}
 
@@ -139,18 +143,27 @@ export default function Packs() {
 interface PackTriggerProps {
   iconPack: main.IconPack;
   setPack: (pack: string) => void;
-  loadPackInfo: () => void;
+  reloadSelectedPack: () => void;
 }
 
 function PackTrigger({
   iconPack,
   setPack,
-  loadPackInfo,
+  reloadSelectedPack,
   ...props
 }: PackTriggerProps) {
+  const [enabledState, setEnabledState] = useState(iconPack.settings.enabled);
+
+  useEffect(() => {
+    setEnabledState(iconPack.settings.enabled);
+  }, [iconPack]);
+
   const handleEnable = () => {
     iconPack.settings.enabled = !iconPack.settings.enabled;
-    SetIconPackInfo(iconPack).then(loadPackInfo);
+    SetIconPackInfo(iconPack).then(() => {
+      setEnabledState(!enabledState);
+      reloadSelectedPack();
+    });
   };
 
   return (
@@ -177,10 +190,7 @@ function PackTrigger({
           <div className="opacity-50 ml-1">{iconPack.metadata.version}</div>
         </div>
       </div>
-      <Switch
-        checked={iconPack.settings.enabled}
-        onCheckedChange={handleEnable}
-      />
+      <Switch checked={enabledState} onCheckedChange={handleEnable} onClick={(e) => e.stopPropagation()} />
     </TabsTrigger>
   );
 }
@@ -420,7 +430,7 @@ function PackContent({ iconPack, setPack, loadPackInfo }: PackContentProps) {
           <SettingLabel>Enabled</SettingLabel>
           <SettingContent>
             <Switch
-              checked={iconPack.settings.enabled}
+              checked={iconPackInfo.settings.enabled}
               onCheckedChange={(enabled) =>
                 handleSettingChange("enabled", enabled)
               }
@@ -434,12 +444,16 @@ function PackContent({ iconPack, setPack, loadPackInfo }: PackContentProps) {
         <div className="flex flex-wrap gap-2">
           {iconPackInfo.files?.map((file) =>
             file.hasIcon ? (
-              <Base64Image
+              <Image
                 key={file.id}
-                packId={iconPack.metadata.id}
-                icon={file.id}
-                alt={file.name}
-                className="w-8 h-8"
+                src={
+                  "packs\\" +
+                  iconPack.metadata.id +
+                  "\\icons\\" +
+                  file.id +
+                  ".png"
+                }
+                className="w-10 h-10"
               />
             ) : null
           )}

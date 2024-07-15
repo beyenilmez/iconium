@@ -240,20 +240,16 @@ func CreateFileInfo(packId string, path string) (FileInfo, error) {
 		fileInfo.Destination = ConvertToGeneralPath(fileInfo.Destination)
 
 		if strings.ToLower(filepath.Ext(link.StringData.IconLocation)) == ".ico" {
-			base64Image := GenerateBase64PngFromPath(link.StringData.IconLocation)
-
-			if base64Image == "" {
-				return FileInfo{}, errors.New("failed to generate base64 image")
-			}
-
-			fileInfo.HasIcon = true
-			// Save to file
-			iconPath := filepath.Join(packsFolder, packId, "icons", fileInfo.Id)
-			err := os.WriteFile(iconPath, []byte(base64Image), 0644)
+			iconPath := filepath.Join(packsFolder, packId, "icons", fileInfo.Id+".png")
+			err = ConvertToPng(link.StringData.IconLocation, iconPath)
 			if err != nil {
-				return FileInfo{}, err
+				runtime.LogError(appContext, err.Error())
+			} else {
+				fileInfo.HasIcon = true
 			}
 		}
+
+		return fileInfo, nil
 	}
 
 	file, err := os.Open(path)
