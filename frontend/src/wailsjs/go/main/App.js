@@ -18,6 +18,10 @@ export function AddIconPack(arg1, arg2, arg3, arg4) {
   return window['go']['main']['App']['AddIconPack'](arg1, arg2, arg3, arg4);
 }
 
+export function ApplyIconPack(arg1) {
+  return window['go']['main']['App']['ApplyIconPack'](arg1);
+}
+
 export function CheckForUpdate() {
   return window['go']['main']['App']['CheckForUpdate']();
 }

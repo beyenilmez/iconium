@@ -359,6 +359,51 @@ func (a *App) AddFilesToIconPackFromDesktop(id string) {
 	a.AddFilesToIconPackFromFolder(id, public, true)
 }
 
+func (a *App) ApplyIconPack(id string) {
+	pack, err := ReadIconPack(id)
+
+	if err != nil {
+		runtime.LogError(appContext, err.Error())
+		return
+	}
+
+	err = pack.Apply()
+
+	if err != nil {
+		runtime.LogError(appContext, err.Error())
+	}
+}
+
+func (pack *IconPack) Apply() error {
+	for _, file := range pack.Files {
+
+		if file.HasIcon {
+			iconPath := filepath.Join(packsFolder, pack.Metadata.Id, "icons", file.Id+".png")
+			if _, err := os.Stat(iconPath); err != nil {
+				runtime.LogError(appContext, err.Error())
+				continue
+			}
+
+			// Copy to icons folder
+			targetFolder := filepath.Join(activeIconFolder, pack.Metadata.Id)
+			err := create_folder(targetFolder)
+			if err != nil {
+				runtime.LogError(appContext, err.Error())
+				continue
+			}
+			targetPath := filepath.Join(targetFolder, file.Id+".ico")
+			err = ConvertToIco(iconPath, targetPath)
+
+			if err != nil {
+				runtime.LogError(appContext, err.Error())
+				continue
+			}
+		}
+	}
+
+	return nil
+}
+
 func (a *App) Test() {
 	a.AddFilesToIconPackFromFolder("02edc52e-152a-4224-b63f-1282cb9cfc53", "C:\\Users\\bedoy\\Desktop", true)
 }

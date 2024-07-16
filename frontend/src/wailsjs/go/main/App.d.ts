@@ -10,6 +10,8 @@ export function AddFilesToIconPackFromFolder(arg1:string,arg2:string,arg3:boolea
 
 export function AddIconPack(arg1:string,arg2:string,arg3:string,arg4:string):Promise<void>;
 
+export function ApplyIconPack(arg1:string):Promise<void>;
+
 export function CheckForUpdate():Promise<main.UpdateInfo>;
 
 export function DeleteIconPack(arg1:string):Promise<void>;

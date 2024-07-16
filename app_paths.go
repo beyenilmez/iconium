@@ -15,6 +15,7 @@ var logsFolder string
 var savedConfigFolder string
 var activeIconFolder string
 var tempFolder string
+var maskFolder string
 var configPath string
 var appIconPath string
 
@@ -38,6 +39,7 @@ func path_init() error {
 	savedConfigFolder = path.Join(appFolder, "savedconfigs")
 	activeIconFolder = path.Join(appFolder, "icons")
 	tempFolder = path.Join(appFolder, "temp")
+	maskFolder = path.Join(appFolder, "masks")
 
 	configPath = path.Join(appFolder, "config.json")
 	appIconPath = path.Join(appFolder, "appicon.png")
@@ -65,6 +67,10 @@ func path_init() error {
 		return err
 	}
 	err = create_folder(tempFolder)
+	if err != nil {
+		return err
+	}
+	err = create_folder(maskFolder)
 	if err != nil {
 		return err
 	}

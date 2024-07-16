@@ -34,6 +34,7 @@ import {
   AddFilesToIconPackFromFolder,
   AddFileToIconPackFromPath,
   AddIconPack,
+  ApplyIconPack,
   DeleteIconPack,
   GetIconFile,
   GetIconFolder,
@@ -190,7 +191,11 @@ function PackTrigger({
           <div className="opacity-50 ml-1">{iconPack.metadata.version}</div>
         </div>
       </div>
-      <Switch checked={enabledState} onCheckedChange={handleEnable} onClick={(e) => e.stopPropagation()} />
+      <Switch
+        checked={enabledState}
+        onCheckedChange={handleEnable}
+        onClick={(e) => e.stopPropagation()}
+      />
     </TabsTrigger>
   );
 }
@@ -355,7 +360,11 @@ function PackContent({ iconPack, setPack, loadPackInfo }: PackContentProps) {
           Pack Actions
         </div>
         <div className="flex flex-wrap gap-1.5 mb-2">
-          <Button variant={"default"} className="flex gap-2.5">
+          <Button
+            variant={"default"}
+            className="flex gap-2.5"
+            onClick={() => ApplyIconPack(iconPack.metadata.id)}
+          >
             Apply Icon Pack
           </Button>
         </div>
