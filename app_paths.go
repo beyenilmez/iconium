@@ -134,7 +134,8 @@ func get_desktop_paths() (string, string) {
 	homedir := userDir.HomeDir
 	desktop := filepath.Join(homedir, "Desktop")
 
-	public := "C:\\Users\\Public\\Desktop"
+	publicDir := os.Getenv("PUBLIC")
+	public := filepath.Join(publicDir, "Desktop")
 
 	return desktop, public
 }

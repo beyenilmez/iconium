@@ -412,6 +412,7 @@ func (pack *IconPack) Apply() error {
 
 func (a *App) Test() {
 	runtime.LogDebugf(a.ctx, ConvertToFullPath("${HOMEDRIVE}\\a\\Discord.lnk"))
+	runtime.LogDebug(a.ctx, "Desktop paths: "+fmt.Sprint(get_desktop_paths()))
 }
 
 func (a *App) Test2() {
