@@ -49,6 +49,8 @@ var allowedFileExtensions = []string{".lnk"}
 
 var iconPacks []IconPack
 
+var iconPackCache map[string]IconPack = map[string]IconPack{}
+
 func CreateIconPack(name string, version string, author string, icon string) (IconPack, error) {
 	var iconPack IconPack
 	iconPack.Metadata.Id = uuid.NewString()
@@ -97,6 +99,8 @@ func WriteIconPack(iconPack IconPack) error {
 		return err
 	}
 
+	iconPackCache[iconPack.Metadata.Id] = iconPack
+
 	return nil
 }
 
@@ -123,10 +127,16 @@ func ReadIconPack(id string) (IconPack, error) {
 		return IconPack{}, err
 	}
 
+	iconPackCache[id] = iconPack
+
 	return iconPack, nil
 }
 
 func (a *App) GetIconPack(id string) IconPack {
+	if iconPack, ok := iconPackCache[id]; ok {
+		return iconPack
+	}
+
 	iconPack, err := ReadIconPack(id)
 
 	if err != nil {
@@ -187,6 +197,13 @@ func GetIconPackInfo() ([]IconPack, error) {
 				Metadata: metadata,
 				Settings: settings,
 			})
+
+			cachedPack := iconPackCache[metadata.Id]
+			if cachedPack.Metadata.Id == metadata.Id {
+				cachedPack.Metadata = metadata
+				cachedPack.Settings = settings
+				iconPackCache[metadata.Id] = cachedPack
+			}
 		}
 	}
 
@@ -215,6 +232,12 @@ func (a *App) SetIconPackInfo(iconPack IconPack) {
 	for i, pack := range iconPacks {
 		if pack.Metadata.Id == iconPack.Metadata.Id {
 			iconPacks[i] = iconPack
+			cachedPack := iconPackCache[iconPack.Metadata.Id]
+			if cachedPack.Metadata.Id == iconPack.Metadata.Id {
+				cachedPack.Metadata = iconPack.Metadata
+				cachedPack.Settings = iconPack.Settings
+				iconPackCache[iconPack.Metadata.Id] = cachedPack
+			}
 			break
 		}
 	}
@@ -307,6 +330,7 @@ func (a *App) DeleteIconPack(id string) error {
 	for i, pack := range iconPacks {
 		if pack.Metadata.Id == id {
 			iconPacks = append(iconPacks[:i], iconPacks[i+1:]...)
+			iconPackCache[id] = IconPack{}
 			break
 		}
 	}
@@ -322,18 +346,33 @@ func (a *App) AddFileToIconPackFromPath(id string, path string, save bool) {
 		return
 	}
 
-	for i, pack := range iconPacks {
-		if pack.Metadata.Id == id {
-			iconPacks[i].Files = append(iconPacks[i].Files, fileInfo)
-			if save {
-				WriteIconPack(iconPacks[i])
-			}
-
+	cachedPack := iconPackCache[id]
+	if cachedPack.Metadata.Id != id {
+		cachedPack, err = ReadIconPack(id)
+		if err != nil {
+			runtime.LogError(a.ctx, fmt.Sprintf("Failed to read icon pack: %s", err.Error()))
 			return
 		}
 	}
+	cachedPack.Files = append(cachedPack.Files, fileInfo)
+	iconPackCache[id] = cachedPack
+
+	if save {
+		WriteIconPack(iconPackCache[id])
+		return
+	}
 
 	runtime.LogError(a.ctx, "icon pack not found")
+}
+
+func (a *App) AddFilesToIconPackFromPath(id string, path []string, save bool) {
+	for _, p := range path {
+		a.AddFileToIconPackFromPath(id, p, false)
+	}
+
+	if save {
+		WriteIconPack(iconPackCache[id])
+	}
 }
 
 func (a *App) AddFilesToIconPackFromFolder(id string, path string, save bool) {
@@ -349,12 +388,7 @@ func (a *App) AddFilesToIconPackFromFolder(id string, path string, save bool) {
 	}
 
 	if save {
-		for i, pack := range iconPacks {
-			if pack.Metadata.Id == id {
-				WriteIconPack(iconPacks[i])
-				break
-			}
-		}
+		WriteIconPack(iconPackCache[id])
 	}
 }
 

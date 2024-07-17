@@ -14,6 +14,10 @@ export function AddFilesToIconPackFromFolder(arg1, arg2, arg3) {
   return window['go']['main']['App']['AddFilesToIconPackFromFolder'](arg1, arg2, arg3);
 }
 
+export function AddFilesToIconPackFromPath(arg1, arg2, arg3) {
+  return window['go']['main']['App']['AddFilesToIconPackFromPath'](arg1, arg2, arg3);
+}
+
 export function AddIconPack(arg1, arg2, arg3, arg4) {
   return window['go']['main']['App']['AddIconPack'](arg1, arg2, arg3, arg4);
 }
@@ -44,6 +48,10 @@ export function GetConfigField(arg1) {
 
 export function GetIconFile() {
   return window['go']['main']['App']['GetIconFile']();
+}
+
+export function GetIconFiles() {
+  return window['go']['main']['App']['GetIconFiles']();
 }
 
 export function GetIconFolder() {

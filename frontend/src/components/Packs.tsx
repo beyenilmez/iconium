@@ -11,7 +11,6 @@ import { Switch } from "@/components/ui/switch";
 import {
   CircleHelp,
   Edit,
-  FolderSearch,
   Loader2,
   Monitor,
   Trash,
@@ -32,13 +31,11 @@ import {
 import SelectImage from "./SelectImage";
 import {
   AddFilesToIconPackFromDesktop,
-  AddFilesToIconPackFromFolder,
-  AddFileToIconPackFromPath,
+  AddFilesToIconPackFromPath,
   AddIconPack,
   ApplyIconPack,
   DeleteIconPack,
-  GetIconFile,
-  GetIconFolder,
+  GetIconFiles,
   GetIconPack,
   GetIconPackInfo,
   SetIconPackInfo,
@@ -211,16 +208,11 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
   const [opacity, setOpacity] = useState(-1);
 
   const [applyRunning, setApplyRunning] = useState(false);
-  const [addIconsFromFolderRunning, setAddIconsFromFolderRunning] =
-    useState(false);
+  useState(false);
   const [addIconsFromDesktopRunning, setAddIconsFromDesktopRunning] =
     useState(false);
   const [addIconsRunning, setAddIconsRunning] = useState(false);
-  const running =
-    applyRunning ||
-    addIconsFromFolderRunning ||
-    addIconsFromDesktopRunning ||
-    addIconsRunning;
+  const running = applyRunning || addIconsFromDesktopRunning || addIconsRunning;
 
   useEffect(() => {
     GetIconPack(iconPackId).then((iconPack) => {
@@ -309,28 +301,6 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
     });
   };
 
-  const handleAddIconsFromFolder = () => {
-    GetIconFolder().then((folder) => {
-      if (folder) {
-        setAddIconsFromFolderRunning(true);
-
-        AddFilesToIconPackFromFolder(
-          iconPackInfo.metadata.id,
-          folder,
-          true
-        ).then(() => {
-          GetIconPack(iconPackInfo.metadata.id)
-            .then((iconPack) => {
-              setIconPackInfo(iconPack);
-            })
-            .finally(() => {
-              setAddIconsFromFolderRunning(false);
-            });
-        });
-      }
-    });
-  };
-
   const handleAddIconsFromDesktop = () => {
     setAddIconsFromDesktopRunning(true);
 
@@ -346,11 +316,11 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
   };
 
   const handleAddIcon = () => {
-    GetIconFile().then((file) => {
-      if (file) {
+    GetIconFiles().then((files) => {
+      if (files) {
         setAddIconsRunning(true);
 
-        AddFileToIconPackFromPath(iconPackInfo.metadata.id, file, true).then(
+        AddFilesToIconPackFromPath(iconPackInfo.metadata.id, files, true).then(
           () => {
             GetIconPack(iconPackInfo.metadata.id)
               .then((iconPack) => {
@@ -482,19 +452,6 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
           <Button
             variant={"secondary"}
             className="flex gap-2.5"
-            onClick={handleAddIconsFromFolder}
-            disabled={running}
-          >
-            {addIconsFromFolderRunning ? (
-              <Loader2 className="w-6 h-6 animate-spin" />
-            ) : (
-              <FolderSearch className="w-6 h-6" />
-            )}
-            Add Icons From Folder
-          </Button>
-          <Button
-            variant={"secondary"}
-            className="flex gap-2.5"
             onClick={handleAddIconsFromDesktop}
             disabled={running}
           >
@@ -516,7 +473,7 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
             ) : (
               <Upload className="w-6 h-6" />
             )}
-            Add Icon
+            Add Icons
           </Button>
         </div>
       </div>

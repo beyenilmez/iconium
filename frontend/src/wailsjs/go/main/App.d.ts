@@ -8,6 +8,8 @@ export function AddFilesToIconPackFromDesktop(arg1:string):Promise<void>;
 
 export function AddFilesToIconPackFromFolder(arg1:string,arg2:string,arg3:boolean):Promise<void>;
 
+export function AddFilesToIconPackFromPath(arg1:string,arg2:Array<string>,arg3:boolean):Promise<void>;
+
 export function AddIconPack(arg1:string,arg2:string,arg3:string,arg4:string):Promise<void>;
 
 export function ApplyIconPack(arg1:string):Promise<void>;
@@ -23,6 +25,8 @@ export function GetConfig():Promise<main.Config>;
 export function GetConfigField(arg1:string):Promise<any>;
 
 export function GetIconFile():Promise<string>;
+
+export function GetIconFiles():Promise<Array<string>>;
 
 export function GetIconFolder():Promise<string>;
 
