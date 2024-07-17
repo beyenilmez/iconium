@@ -111,8 +111,8 @@ func ConvertToGeneralPath(path string) string {
 
 	// List of common environment variables to replace
 	envVars := []string{
-		"PROGRAMFILES",
 		"PROGRAMFILES(X86)",
+		"PROGRAMFILES",
 		"APPDATA",
 		"LOCALAPPDATA",
 		"PROGRAMDATA",
