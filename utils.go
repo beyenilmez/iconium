@@ -160,12 +160,17 @@ func ConvertToFullPath(path string) string {
 		paths = []string{path1, path2}
 	}
 
-	for _, p := range paths {
-		if _, err := os.Stat(p); !os.IsNotExist(err) {
-			path = p
-			break
+	for _, path := range paths {
+		matches, err := filepath.Glob(path)
+		if err != nil {
+			runtime.LogErrorf(appContext, "Error globbing path: %s", err)
+			continue
+		}
+
+		if len(matches) > 0 {
+			return matches[0]
 		}
 	}
 
-	return path
+	return ""
 }
