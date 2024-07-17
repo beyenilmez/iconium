@@ -12,10 +12,7 @@ import {
   CircleHelp,
   Edit,
   FolderSearch,
-  Loader,
   Loader2,
-  LoaderCircleIcon,
-  LoaderPinwheel,
   Monitor,
   Trash,
   Upload,
@@ -375,13 +372,13 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
   }, []);
 
   if (loading) {
-    var skeletons = [];
-
-    for (let i = 0; i < 4; i++) {
-      skeletons.push(<Skeleton className="w-full h-full" />);
-    }
     return (
-      <div className="flex flex-col gap-4 p-4 w-full h-full">{skeletons}</div>
+      <div className="flex flex-col gap-4 p-4 w-full h-full">
+        <Skeleton className="w-full h-1/3" />
+        <Skeleton className="w-full h-1/3" />
+        <Skeleton className="w-full h-1/2" />
+        <Skeleton className="w-full h-1/2" />
+      </div>
     );
   }
 

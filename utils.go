@@ -109,13 +109,38 @@ func GenerateBase64PngFromPath(filePath string) string {
 func ConvertToGeneralPath(path string) string {
 	desktop, public := get_desktop_paths()
 
-	if strings.HasPrefix(strings.ToLower(path), strings.ToLower(desktop)) {
-		return strings.ReplaceAll(path, desktop, "<desktop>")
-	} else if strings.HasPrefix(strings.ToLower(path), strings.ToLower(public)) {
-		return strings.ReplaceAll(path, public, "<desktop>")
-	} else {
-		return path
+	// List of common environment variables to replace
+	envVars := []string{
+		"PROGRAMFILES",
+		"PROGRAMFILES(X86)",
+		"APPDATA",
+		"LOCALAPPDATA",
+		"PROGRAMDATA",
+		"USERPROFILE",
+		"PUBLIC",
+		"WINDIR",
+		"SYSTEMROOT",
+		"HOMEDRIVE",
+		"SYSTEMDRIVE",
 	}
+
+	if strings.HasPrefix(strings.ToLower(path), strings.ToLower(desktop)) {
+		path = strings.ReplaceAll(path, desktop, "<desktop>")
+	} else if strings.HasPrefix(strings.ToLower(path), strings.ToLower(public)) {
+		path = strings.ReplaceAll(path, public, "<desktop>")
+	}
+
+	// Replace environment variables
+	for _, envVar := range envVars {
+		placeholder := "${" + envVar + "}"
+		envValue := os.Getenv(envVar)
+
+		if strings.Contains(strings.ToLower(path), strings.ToLower(envValue)) {
+			path = strings.ReplaceAll(path, envValue, placeholder)
+		}
+	}
+
+	return path
 }
 
 func ConvertToFullPath(path string) string {
@@ -125,12 +150,17 @@ func ConvertToFullPath(path string) string {
 		path1 := strings.ReplaceAll(path, "<desktop>", desktop)
 		path2 := strings.ReplaceAll(path, "<desktop>", public)
 
+		// Convert the env variable path
+		path1 = os.ExpandEnv(path1)
+		path2 = os.ExpandEnv(path2)
+
 		if _, err := os.Stat(path1); os.IsNotExist(err) {
 			return path2
 		} else {
 			return path1
 		}
 	} else {
+		path = os.ExpandEnv(path)
 		return path
 	}
 }

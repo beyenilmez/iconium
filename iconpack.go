@@ -411,7 +411,7 @@ func (pack *IconPack) Apply() error {
 }
 
 func (a *App) Test() {
-	a.AddFilesToIconPackFromFolder("02edc52e-152a-4224-b63f-1282cb9cfc53", "C:\\Users\\bedoy\\Desktop", true)
+	runtime.LogDebugf(a.ctx, ConvertToFullPath("${HOMEDRIVE}\\a\\Discord.lnk"))
 }
 
 func (a *App) Test2() {
