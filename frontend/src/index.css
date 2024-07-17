@@ -82,7 +82,7 @@
     overflow: hidden;
   }
   * {
-    @apply border-border;
+    @apply border-border scrollbar-thin scrollbar-thumb-primary scrollbar-track-transparent;
   }
   body {
     @apply bg-background text-foreground;
