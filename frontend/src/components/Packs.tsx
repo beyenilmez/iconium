@@ -12,6 +12,10 @@ import {
   CircleHelp,
   Edit,
   FolderSearch,
+  Loader,
+  Loader2,
+  LoaderCircleIcon,
+  LoaderPinwheel,
   Monitor,
   Trash,
   Upload,
@@ -209,6 +213,18 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
   const [cornerRadius, setCornerRadius] = useState(-1);
   const [opacity, setOpacity] = useState(-1);
 
+  const [applyRunning, setApplyRunning] = useState(false);
+  const [addIconsFromFolderRunning, setAddIconsFromFolderRunning] =
+    useState(false);
+  const [addIconsFromDesktopRunning, setAddIconsFromDesktopRunning] =
+    useState(false);
+  const [addIconsRunning, setAddIconsRunning] = useState(false);
+  const running =
+    applyRunning ||
+    addIconsFromFolderRunning ||
+    addIconsFromDesktopRunning ||
+    addIconsRunning;
+
   useEffect(() => {
     GetIconPack(iconPackId).then((iconPack) => {
       setIconPackInfo(iconPack);
@@ -289,6 +305,69 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
     "author",
   ];
 
+  const handleApplyIconPack = () => {
+    setApplyRunning(true);
+    ApplyIconPack(iconPackInfo.metadata.id).finally(() => {
+      setApplyRunning(false);
+    });
+  };
+
+  const handleAddIconsFromFolder = () => {
+    GetIconFolder().then((folder) => {
+      if (folder) {
+        setAddIconsFromFolderRunning(true);
+
+        AddFilesToIconPackFromFolder(
+          iconPackInfo.metadata.id,
+          folder,
+          true
+        ).then(() => {
+          GetIconPack(iconPackInfo.metadata.id)
+            .then((iconPack) => {
+              setIconPackInfo(iconPack);
+            })
+            .finally(() => {
+              setAddIconsFromFolderRunning(false);
+            });
+        });
+      }
+    });
+  };
+
+  const handleAddIconsFromDesktop = () => {
+    setAddIconsFromDesktopRunning(true);
+
+    AddFilesToIconPackFromDesktop(iconPackInfo.metadata.id).then(() => {
+      GetIconPack(iconPackInfo.metadata.id)
+        .then((iconPack) => {
+          setIconPackInfo(iconPack);
+        })
+        .finally(() => {
+          setAddIconsFromDesktopRunning(false);
+        });
+    });
+  };
+
+  const handleAddIcon = () => {
+    GetIconFile().then((file) => {
+      if (file) {
+        setAddIconsRunning(true);
+
+        AddFileToIconPackFromPath(iconPackInfo.metadata.id, file, true).then(
+          () => {
+            GetIconPack(iconPackInfo.metadata.id)
+              .then((iconPack) => {
+                setIconPackInfo(iconPack);
+              })
+              .finally(() => {
+                setAddIconsRunning(false);
+              });
+          }
+        );
+      }
+    });
+  };
+
   const openDialog = useCallback(() => {
     if (dialogRef.current) {
       dialogRef.current.openDialog();
@@ -299,7 +378,7 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
     var skeletons = [];
 
     for (let i = 0; i < 4; i++) {
-      skeletons.push(<Skeleton className="w-full h-full"/>)
+      skeletons.push(<Skeleton className="w-full h-full" />);
     }
     return (
       <div className="flex flex-col gap-4 p-4 w-full h-full">{skeletons}</div>
@@ -394,8 +473,10 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
           <Button
             variant={"default"}
             className="flex gap-2.5"
-            onClick={() => ApplyIconPack(iconPackInfo.metadata.id)}
+            onClick={handleApplyIconPack}
+            disabled={running}
           >
+            {applyRunning && <Loader2 className="w-6 h-6 animate-spin" />}
             Apply Icon Pack
           </Button>
         </div>
@@ -404,62 +485,41 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
           <Button
             variant={"secondary"}
             className="flex gap-2.5"
-            onClick={() => {
-              GetIconFolder().then((folder) => {
-                if (folder) {
-                  AddFilesToIconPackFromFolder(
-                    iconPackInfo.metadata.id,
-                    folder,
-                    true
-                  ).then(() => {
-                    loadPackInfo();
-                    GetIconPack(iconPackInfo.metadata.id).then((iconPack) => {
-                      setIconPackInfo(iconPack);
-                    });
-                  });
-                }
-              });
-            }}
+            onClick={handleAddIconsFromFolder}
+            disabled={running}
           >
-            <FolderSearch className="w-6 h-6" /> Add Icons From Folder
+            {addIconsFromFolderRunning ? (
+              <Loader2 className="w-6 h-6 animate-spin" />
+            ) : (
+              <FolderSearch className="w-6 h-6" />
+            )}
+            Add Icons From Folder
           </Button>
           <Button
             variant={"secondary"}
             className="flex gap-2.5"
-            onClick={() => {
-              AddFilesToIconPackFromDesktop(iconPackInfo.metadata.id).then(
-                () => {
-                  loadPackInfo();
-                  GetIconPack(iconPackInfo.metadata.id).then((iconPack) => {
-                    setIconPackInfo(iconPack);
-                  });
-                }
-              );
-            }}
+            onClick={handleAddIconsFromDesktop}
+            disabled={running}
           >
-            <Monitor className="w-6 h-6" /> Add Icons From Desktop
+            {addIconsFromDesktopRunning ? (
+              <Loader2 className="w-6 h-6 animate-spin" />
+            ) : (
+              <Monitor className="w-6 h-6" />
+            )}
+            Add Icons From Desktop
           </Button>
           <Button
             variant={"secondary"}
             className="flex gap-2.5"
-            onClick={() => {
-              GetIconFile().then((file) => {
-                if (file) {
-                  AddFileToIconPackFromPath(
-                    iconPackInfo.metadata.id,
-                    file,
-                    true
-                  ).then(() => {
-                    loadPackInfo();
-                    GetIconPack(iconPackInfo.metadata.id).then((iconPack) => {
-                      setIconPackInfo(iconPack);
-                    });
-                  });
-                }
-              });
-            }}
+            onClick={handleAddIcon}
+            disabled={running}
           >
-            <Upload className="w-6 h-6" /> Add Icon
+            {addIconsRunning ? (
+              <Loader2 className="w-6 h-6 animate-spin" />
+            ) : (
+              <Upload className="w-6 h-6" />
+            )}
+            Add Icon
           </Button>
         </div>
       </div>
