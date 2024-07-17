@@ -80,6 +80,8 @@ export namespace main {
 	}
 	export class IconPackSettings {
 	    enabled: boolean;
+	    cornerRadius: number;
+	    opacity: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new IconPackSettings(source);
@@ -88,6 +90,8 @@ export namespace main {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.enabled = source["enabled"];
+	        this.cornerRadius = source["cornerRadius"];
+	        this.opacity = source["opacity"];
 	    }
 	}
 	export class Metadata {

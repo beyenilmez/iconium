@@ -54,10 +54,12 @@ import {
 } from "@/components/ui/form";
 import {
   SettingContent,
+  SettingDescription,
   SettingLabel,
   SettingsItem,
 } from "./ui/settings-group";
 import Image from "./Image";
+import { Slider } from "./ui/my-slider";
 
 export default function Packs() {
   const [pack, setPack] = useState("");
@@ -76,6 +78,7 @@ export default function Packs() {
     })
   );
   const [packInfos, setPackInfos] = useState<main.IconPack[]>();
+  const [selectedPackKeyCount, setSelectedPackKeyCount] = useState(0);
 
   const dialogCloseRef = useRef(null);
 
@@ -97,6 +100,10 @@ export default function Packs() {
   useEffect(() => {
     reloadSelectedPack();
   }, [pack]);
+
+  useEffect(() => {
+    setSelectedPackKeyCount(selectedPackKeyCount + 1);
+  }, [selectedPack]);
 
   return (
     <Tabs value={pack} className="flex flex-row w-full h-full">
@@ -132,6 +139,7 @@ export default function Packs() {
 
       {pack && (
         <PackContent
+          key={selectedPackKeyCount}
           iconPack={selectedPack}
           setPack={setPack}
           loadPackInfo={loadPackInfo}
@@ -211,10 +219,17 @@ function PackContent({ iconPack, setPack, loadPackInfo }: PackContentProps) {
   const [iconPackInfo, setIconPackInfo] = useState(iconPack);
   const dialogRef = useRef<AreYouSureDialogRef>(null);
 
+  const [loading, setLoading] = useState(true);
+  const [cornerRadius, setCornerRadius] = useState(
+    iconPack.settings.cornerRadius
+  );
+  const [opacity, setOpacity] = useState(iconPack.settings.opacity);
+
   // Reset the icon pack when the pack changes
   useEffect(() => {
-    handleCancel();
+    setLoading(true);
     setIconPackInfo(iconPack);
+    setLoading(false);
   }, [iconPack]);
 
   const handleChange = (
@@ -257,7 +272,7 @@ function PackContent({ iconPack, setPack, loadPackInfo }: PackContentProps) {
 
   const handleSettingChange = (
     field: keyof main.IconPack["settings"],
-    value: boolean
+    value: boolean | number
   ) => {
     const newIconPackInfo = {
       ...iconPackInfo,
@@ -435,7 +450,7 @@ function PackContent({ iconPack, setPack, loadPackInfo }: PackContentProps) {
         <div className="mb-3 pb-1 border-b font-medium text-xl">
           Pack Settings
         </div>
-        <SettingsItem className="border-none">
+        <SettingsItem className="border-none" loading={loading}>
           <SettingLabel>Enabled</SettingLabel>
           <SettingContent>
             <Switch
@@ -444,6 +459,60 @@ function PackContent({ iconPack, setPack, loadPackInfo }: PackContentProps) {
                 handleSettingChange("enabled", enabled)
               }
             />
+          </SettingContent>
+        </SettingsItem>
+
+        <SettingsItem className="border-none" loading={loading}>
+          <div>
+            <SettingLabel>Corner Radius</SettingLabel>
+            <SettingDescription>
+              Change the corner radius of the icons in this pack.
+            </SettingDescription>
+          </div>
+          <SettingContent>
+            <div className="flex gap-2">
+            <div className="text-right w-8">0%</div>
+            <Slider
+                onValueChange={(value) => setCornerRadius(value[0] as number)}
+                onPointerUp={() =>
+                  handleSettingChange("cornerRadius", cornerRadius)
+                }
+                defaultValue={[iconPackInfo.settings.cornerRadius]}
+                min={0}
+                max={50}
+                step={1}
+                className={"w-56 cursor-pointer"}
+              />
+              <div className="w-8">50%</div>
+              <div className="w-16 font-bold text-center">
+                ({cornerRadius}%)
+              </div>
+            </div>
+          </SettingContent>
+        </SettingsItem>
+
+        <SettingsItem className="border-none" loading={loading}>
+          <div>
+            <SettingLabel>Opacity</SettingLabel>
+            <SettingDescription>
+              Change the opacity of the icons in this pack.
+            </SettingDescription>
+          </div>
+          <SettingContent>
+            <div className="flex gap-2">
+              <div className="text-right w-8">10%</div>
+              <Slider
+                onValueChange={(value) => setOpacity(value[0] as number)}
+                onPointerUp={() => handleSettingChange("opacity", opacity)}
+                defaultValue={[iconPackInfo.settings.opacity]}
+                min={10}
+                max={100}
+                step={1}
+                className={"w-56 cursor-pointer"}
+              />
+              <div className="w-8">100%</div>
+              <div className="w-16 font-bold text-center">({opacity}%)</div>
+            </div>
           </SettingContent>
         </SettingsItem>
       </div>
@@ -463,6 +532,8 @@ function PackContent({ iconPack, setPack, loadPackInfo }: PackContentProps) {
                   ".png"
                 }
                 className="w-10 h-10"
+                cornerRadius={cornerRadius}
+                opacity={opacity}
               />
             ) : null
           )}

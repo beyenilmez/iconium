@@ -17,15 +17,20 @@ var allowedImageExtensionsPng = []string{".ico"}
 
 var allowedImageExtensionsIco = []string{".png", ".jpg", ".jpeg"}
 
-func GetMaskPath(radius int) (string, error) {
+func GetMaskPath(radius, opacity int) (string, error) {
 	if radius <= 0 {
 		radius = 1
 	} else if radius > 100 {
 		radius = 100
 	}
+	if opacity < 0 {
+		opacity = 0
+	} else if opacity > 100 {
+		opacity = 100
+	}
 
 	// Create a rounded rectangle mask
-	maskPath := filepath.Join(maskFolder, fmt.Sprintf("mask_%d.png", radius))
+	maskPath := filepath.Join(maskFolder, fmt.Sprintf("mask_r%d_o%d.png", radius, opacity))
 
 	// Check if the mask already exists
 	if _, err := os.Stat(maskPath); err == nil {
@@ -33,21 +38,22 @@ func GetMaskPath(radius int) (string, error) {
 	}
 
 	// Round the corner radius to the closest integer
-	roundedRadius := int(math.Round(float64(radius) * 1.28))
+	roundedRadius := int(math.Round(float64(radius) * 2.56))
+	opacityPercent := fmt.Sprintf("%.2f", float64(opacity)/100.0)
 
 	maskArgs := []string{
 		"-size", "256x256",
 		"xc:none",
-		"-draw", fmt.Sprintf("roundrectangle 0,0,255,255,%d,%d", roundedRadius, roundedRadius),
+		"-draw", fmt.Sprintf("fill rgba(0,0,0,%s) roundrectangle 0,0,255,255,%d,%d", opacityPercent, roundedRadius, roundedRadius),
 		maskPath,
 	}
 
 	// Execute ImageMagick command to create mask
-	maskCmd := exec.Command(imageMagickPath, maskArgs...)
+	cmd = exec.Command(imageMagickPath, maskArgs...)
 	var maskStderr bytes.Buffer
-	maskCmd.Stderr = &maskStderr
+	cmd.Stderr = &maskStderr
 
-	err := maskCmd.Run()
+	err := cmd.Run()
 	if err != nil {
 		return "", fmt.Errorf("error creating mask: %w\n%s", err, maskStderr.String())
 	}
@@ -56,7 +62,7 @@ func GetMaskPath(radius int) (string, error) {
 }
 
 // ConvertToIco converts an image to an ICO file with specified corner radius
-func ConvertToIco(path string, destination string) error {
+func ConvertToIco(path string, destination string, settings IconPackSettings) error {
 	extension := filepath.Ext(path)
 
 	// Check if the input file has a valid image extension
@@ -64,7 +70,7 @@ func ConvertToIco(path string, destination string) error {
 		return fmt.Errorf("invalid image extension: %s", extension)
 	}
 
-	maskPath, err := GetMaskPath(0)
+	maskPath, err := GetMaskPath(settings.CornerRadius, settings.Opacity)
 
 	if err != nil {
 		return err
@@ -81,7 +87,7 @@ func ConvertToIco(path string, destination string) error {
 	}
 
 	// Execute ImageMagick command silently
-	cmd := exec.Command(imageMagickPath, args...)
+	cmd = exec.Command(imageMagickPath, args...)
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 
@@ -112,7 +118,7 @@ func ConvertToPng(path string, destination string) error {
 	args := []string{path, "-alpha", "on", "-background", "none", tempIconPath}
 
 	// Execute magick command silently
-	cmd := exec.Command(imageMagickPath, args...)
+	cmd = exec.Command(imageMagickPath, args...)
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 
@@ -161,7 +167,7 @@ func GetImageWidth(path string) (int, error) {
 	args := []string{"identify", "-ping", "-format", "%w", path}
 
 	// Execute magick command silently
-	cmd := exec.Command(imageMagickPath, args...)
+	cmd = exec.Command(imageMagickPath, args...)
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 

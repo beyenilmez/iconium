@@ -40,7 +40,9 @@ type IconPack struct {
 }
 
 type IconPackSettings struct {
-	Enabled bool `json:"enabled"`
+	Enabled      bool `json:"enabled"`
+	CornerRadius int  `json:"cornerRadius"`
+	Opacity      int  `json:"opacity"`
 }
 
 var allowedFileExtensions = []string{".lnk"}
@@ -55,6 +57,10 @@ func CreateIconPack(name string, version string, author string, icon string) (Ic
 	iconPack.Metadata.Author = author
 	iconPack.Metadata.Icon = icon
 	iconPack.Files = []FileInfo{}
+
+	iconPack.Settings.Enabled = false
+	iconPack.Settings.CornerRadius = 0
+	iconPack.Settings.Opacity = 100
 
 	err := WriteIconPack(iconPack)
 
@@ -392,7 +398,7 @@ func (pack *IconPack) Apply() error {
 				continue
 			}
 			targetPath := filepath.Join(targetFolder, file.Id+".ico")
-			err = ConvertToIco(iconPath, targetPath)
+			err = ConvertToIco(iconPath, targetPath, pack.Settings)
 
 			if err != nil {
 				runtime.LogError(appContext, err.Error())
