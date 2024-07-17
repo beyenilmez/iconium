@@ -125,9 +125,9 @@ func ConvertToGeneralPath(path string) string {
 	}
 
 	if strings.HasPrefix(strings.ToLower(path), strings.ToLower(desktop)) {
-		path = strings.ReplaceAll(path, desktop, "<desktop>")
+		path = strings.ReplaceAll(path, desktop, "${DESKTOP}")
 	} else if strings.HasPrefix(strings.ToLower(path), strings.ToLower(public)) {
-		path = strings.ReplaceAll(path, public, "<desktop>")
+		path = strings.ReplaceAll(path, public, "${DESKTOP}")
 	}
 
 	// Replace environment variables
@@ -144,23 +144,28 @@ func ConvertToGeneralPath(path string) string {
 }
 
 func ConvertToFullPath(path string) string {
-	if strings.Contains(path, "<desktop>") {
+	path = filepath.Clean(path)
+
+	os.Setenv("DESKTOP", "<DESKTOP>")
+	path = os.ExpandEnv(path)
+
+	paths := []string{path}
+
+	if strings.Contains(strings.ToUpper(path), "<DESKTOP>") {
 		desktop, public := get_desktop_paths()
 
-		path1 := strings.ReplaceAll(path, "<desktop>", desktop)
-		path2 := strings.ReplaceAll(path, "<desktop>", public)
+		path1 := strings.ReplaceAll(path, "<DESKTOP>", desktop)
+		path2 := strings.ReplaceAll(path, "<DESKTOP>", public)
 
-		// Convert the env variable path
-		path1 = os.ExpandEnv(path1)
-		path2 = os.ExpandEnv(path2)
-
-		if _, err := os.Stat(path1); os.IsNotExist(err) {
-			return path2
-		} else {
-			return path1
-		}
-	} else {
-		path = os.ExpandEnv(path)
-		return path
+		paths = []string{path1, path2}
 	}
+
+	for _, p := range paths {
+		if _, err := os.Stat(p); !os.IsNotExist(err) {
+			path = p
+			break
+		}
+	}
+
+	return path
 }
