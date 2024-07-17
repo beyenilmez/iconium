@@ -60,23 +60,10 @@ import {
 } from "./ui/settings-group";
 import Image from "./Image";
 import { Slider } from "./ui/my-slider";
+import { Skeleton } from "./ui/skeleton";
 
 export default function Packs() {
   const [pack, setPack] = useState("");
-  const [selectedPack, setSelectedPack] = useState<main.IconPack>(
-    main.IconPack.createFrom({
-      metadata: {
-        id: "",
-        name: "",
-        description: "",
-        icon: "",
-      },
-      files: [],
-      settings: {
-        enabled: false,
-      },
-    })
-  );
   const [packInfos, setPackInfos] = useState<main.IconPack[]>();
   const [selectedPackKeyCount, setSelectedPackKeyCount] = useState(0);
 
@@ -88,9 +75,7 @@ export default function Packs() {
   };
 
   const reloadSelectedPack = () => {
-    if (pack) {
-      GetIconPack(pack).then(setSelectedPack);
-    }
+    setSelectedPackKeyCount(selectedPackKeyCount + 1);
   };
 
   useEffect(() => {
@@ -100,10 +85,6 @@ export default function Packs() {
   useEffect(() => {
     reloadSelectedPack();
   }, [pack]);
-
-  useEffect(() => {
-    setSelectedPackKeyCount(selectedPackKeyCount + 1);
-  }, [selectedPack]);
 
   return (
     <Tabs value={pack} className="flex flex-row w-full h-full">
@@ -140,7 +121,7 @@ export default function Packs() {
       {pack && (
         <PackContent
           key={selectedPackKeyCount}
-          iconPack={selectedPack}
+          iconPackId={pack}
           setPack={setPack}
           loadPackInfo={loadPackInfo}
         />
@@ -209,62 +190,73 @@ function PackTrigger({
 }
 
 interface PackContentProps {
-  iconPack: main.IconPack;
+  iconPackId: string;
   setPack: (pack: string) => void;
   loadPackInfo: () => void;
 }
 
-function PackContent({ iconPack, setPack, loadPackInfo }: PackContentProps) {
+function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
+  const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
-  const [iconPackInfo, setIconPackInfo] = useState(iconPack);
+  const [iconPackInfo, setIconPackInfo] = useState(
+    main.IconPack.createFrom({})
+  );
+  const [editedIconPackInfo, setEditedIconPackInfo] = useState(
+    main.IconPack.createFrom({})
+  );
   const dialogRef = useRef<AreYouSureDialogRef>(null);
 
-  const [loading, setLoading] = useState(true);
-  const [cornerRadius, setCornerRadius] = useState(
-    iconPack.settings.cornerRadius
-  );
-  const [opacity, setOpacity] = useState(iconPack.settings.opacity);
+  const [cornerRadius, setCornerRadius] = useState(-1);
+  const [opacity, setOpacity] = useState(-1);
 
-  // Reset the icon pack when the pack changes
   useEffect(() => {
-    setLoading(true);
-    setIconPackInfo(iconPack);
-    setLoading(false);
-  }, [iconPack]);
+    GetIconPack(iconPackId).then((iconPack) => {
+      setIconPackInfo(iconPack);
+      setCornerRadius(iconPack.settings.cornerRadius);
+      setOpacity(iconPack.settings.opacity);
+      setLoading(false);
+    });
+  }, []);
 
   const handleChange = (
     field: keyof main.IconPack["metadata"],
-    value: string
+    value: string,
+    editMode?: boolean
   ) => {
-    setIconPackInfo(
-      (prev) =>
-        ({
-          ...prev,
-          metadata: {
-            ...prev.metadata,
-            [field]: value,
-          },
-        } as main.IconPack)
-    );
+    const newIconPackInfo = {
+      ...iconPackInfo,
+      metadata: {
+        ...iconPackInfo.metadata,
+        [field]: value,
+      },
+    } as main.IconPack;
+
+    if (editMode) {
+      setEditedIconPackInfo(newIconPackInfo);
+    } else {
+      setIconPackInfo(newIconPackInfo);
+    }
   };
 
   const handleEdit = () => {
-    setIconPackInfo(iconPack);
+    setEditedIconPackInfo(iconPackInfo);
     setEditMode(true);
   };
 
   const handleSave = () => {
-    SetIconPackInfo(iconPackInfo).then(loadPackInfo);
+    setIconPackInfo(editedIconPackInfo);
+    SetIconPackInfo(editedIconPackInfo).then(() => {
+      loadPackInfo();
+    });
     setEditMode(false);
   };
 
   const handleCancel = () => {
-    setIconPackInfo(iconPack);
     setEditMode(false);
   };
 
   const handleDelete = () => {
-    DeleteIconPack(iconPack.metadata.id).then(() => {
+    DeleteIconPack(iconPackId).then(() => {
       setPack("");
       loadPackInfo();
     });
@@ -272,7 +264,8 @@ function PackContent({ iconPack, setPack, loadPackInfo }: PackContentProps) {
 
   const handleSettingChange = (
     field: keyof main.IconPack["settings"],
-    value: boolean | number
+    value: boolean | number,
+    editMode?: boolean
   ) => {
     const newIconPackInfo = {
       ...iconPackInfo,
@@ -282,8 +275,12 @@ function PackContent({ iconPack, setPack, loadPackInfo }: PackContentProps) {
       },
     } as main.IconPack;
 
-    setIconPackInfo(newIconPackInfo);
-    SetIconPackInfo(newIconPackInfo).then(loadPackInfo);
+    if (editMode) {
+      setEditedIconPackInfo(newIconPackInfo);
+    } else {
+      setIconPackInfo(newIconPackInfo);
+      SetIconPackInfo(newIconPackInfo).then(loadPackInfo);
+    }
   };
 
   const fields: (keyof main.IconPack["metadata"])[] = [
@@ -298,9 +295,20 @@ function PackContent({ iconPack, setPack, loadPackInfo }: PackContentProps) {
     }
   }, []);
 
+  if (loading) {
+    var skeletons = [];
+
+    for (let i = 0; i < 4; i++) {
+      skeletons.push(<Skeleton className="w-full h-full"/>)
+    }
+    return (
+      <div className="flex flex-col gap-4 p-4 w-full h-full">{skeletons}</div>
+    );
+  }
+
   return (
     <TabsContent
-      value={iconPack.metadata.id}
+      value={iconPackId}
       className="flex flex-col gap-4 p-6 w-full h-[calc(100vh-5.5rem)] overflow-y-auto"
     >
       <div className="bg-card p-4 rounded-md w-full">
@@ -310,8 +318,12 @@ function PackContent({ iconPack, setPack, loadPackInfo }: PackContentProps) {
         <div className="flex flex-row justify-between items-end gap-6">
           <div className="flex items-center gap-6">
             <SelectImage
-              icon={iconPackInfo.metadata.icon}
-              onIconChange={(icon) => handleChange("icon", icon)}
+              icon={
+                editMode
+                  ? editedIconPackInfo.metadata.icon
+                  : iconPackInfo.metadata.icon
+              }
+              onIconChange={(icon) => handleChange("icon", icon, true)}
               sizeClass="w-12 h-12"
               editSizeClass="w-7 h-7"
               editable={editMode}
@@ -324,11 +336,15 @@ function PackContent({ iconPack, setPack, loadPackInfo }: PackContentProps) {
                   </div>
                   {editMode ? (
                     <Input
-                      value={iconPackInfo.metadata[field]}
-                      onChange={(e) => handleChange(field, e.target.value)}
+                      value={editedIconPackInfo.metadata[field]}
+                      onChange={(e) =>
+                        handleChange(field, e.target.value, true)
+                      }
                     />
                   ) : (
-                    <div className="opacity-60">{iconPack.metadata[field]}</div>
+                    <div className="opacity-60">
+                      {iconPackInfo.metadata[field]}
+                    </div>
                   )}
                 </div>
               ))}
@@ -378,7 +394,7 @@ function PackContent({ iconPack, setPack, loadPackInfo }: PackContentProps) {
           <Button
             variant={"default"}
             className="flex gap-2.5"
-            onClick={() => ApplyIconPack(iconPack.metadata.id)}
+            onClick={() => ApplyIconPack(iconPackInfo.metadata.id)}
           >
             Apply Icon Pack
           </Button>
@@ -392,12 +408,12 @@ function PackContent({ iconPack, setPack, loadPackInfo }: PackContentProps) {
               GetIconFolder().then((folder) => {
                 if (folder) {
                   AddFilesToIconPackFromFolder(
-                    iconPack.metadata.id,
+                    iconPackInfo.metadata.id,
                     folder,
                     true
                   ).then(() => {
                     loadPackInfo();
-                    GetIconPack(iconPack.metadata.id).then((iconPack) => {
+                    GetIconPack(iconPackInfo.metadata.id).then((iconPack) => {
                       setIconPackInfo(iconPack);
                     });
                   });
@@ -411,12 +427,14 @@ function PackContent({ iconPack, setPack, loadPackInfo }: PackContentProps) {
             variant={"secondary"}
             className="flex gap-2.5"
             onClick={() => {
-              AddFilesToIconPackFromDesktop(iconPack.metadata.id).then(() => {
-                loadPackInfo();
-                GetIconPack(iconPack.metadata.id).then((iconPack) => {
-                  setIconPackInfo(iconPack);
-                });
-              });
+              AddFilesToIconPackFromDesktop(iconPackInfo.metadata.id).then(
+                () => {
+                  loadPackInfo();
+                  GetIconPack(iconPackInfo.metadata.id).then((iconPack) => {
+                    setIconPackInfo(iconPack);
+                  });
+                }
+              );
             }}
           >
             <Monitor className="w-6 h-6" /> Add Icons From Desktop
@@ -428,12 +446,12 @@ function PackContent({ iconPack, setPack, loadPackInfo }: PackContentProps) {
               GetIconFile().then((file) => {
                 if (file) {
                   AddFileToIconPackFromPath(
-                    iconPack.metadata.id,
+                    iconPackInfo.metadata.id,
                     file,
                     true
                   ).then(() => {
                     loadPackInfo();
-                    GetIconPack(iconPack.metadata.id).then((iconPack) => {
+                    GetIconPack(iconPackInfo.metadata.id).then((iconPack) => {
                       setIconPackInfo(iconPack);
                     });
                   });
@@ -471,8 +489,8 @@ function PackContent({ iconPack, setPack, loadPackInfo }: PackContentProps) {
           </div>
           <SettingContent>
             <div className="flex gap-2">
-            <div className="text-right w-8">0%</div>
-            <Slider
+              <div className="text-right w-8">0%</div>
+              <Slider
                 onValueChange={(value) => setCornerRadius(value[0] as number)}
                 onPointerUp={() =>
                   handleSettingChange("cornerRadius", cornerRadius)
@@ -526,7 +544,7 @@ function PackContent({ iconPack, setPack, loadPackInfo }: PackContentProps) {
                 key={file.id}
                 src={
                   "packs\\" +
-                  iconPack.metadata.id +
+                  iconPackInfo.metadata.id +
                   "\\icons\\" +
                   file.id +
                   ".png"
