@@ -268,7 +268,7 @@ func CreateFileInfo(packId string, path string) (FileInfo, error) {
 		}
 		fileInfo.Destination = ConvertToGeneralPath(fileInfo.Destination)
 
-		if strings.ToLower(filepath.Ext(link.StringData.IconLocation)) == ".ico" {
+		if packId != "" && strings.ToLower(filepath.Ext(link.StringData.IconLocation)) == ".ico" {
 			iconPath := filepath.Join(packsFolder, packId, "icons", fileInfo.Id+".png")
 			err = ConvertToPng(link.StringData.IconLocation, iconPath)
 			if err != nil {
@@ -444,6 +444,9 @@ func (pack *IconPack) Apply() error {
 				}
 			}
 		}
+
+		match := file.MatchFile()
+		runtime.LogDebug(appContext, "Match: "+match)
 	}
 
 	// Copy settings.json to apply.json
@@ -473,6 +476,55 @@ func (pack *IconPack) IsApplied() bool {
 	}
 
 	return apply.CornerRadius == pack.Settings.CornerRadius && apply.Opacity == pack.Settings.Opacity
+}
+
+func (fileInfo *FileInfo) MatchFile() string {
+	pathPattern := fileInfo.Path
+	path := ConvertToFullPath(pathPattern)
+	if path != "" {
+		if *config.RenameMatchedFiles && fileInfo.Name != filepath.Base(path) {
+			newPath := filepath.Join(filepath.Dir(path), fileInfo.Name+fileInfo.Extension)
+			os.Rename(path, newPath)
+			path = newPath
+		}
+
+		return path
+	}
+
+	if *config.MatchByDestination {
+		pathDir := ConvertToFullPath(filepath.Dir(pathPattern))
+
+		files, err := os.ReadDir(pathDir)
+		if err != nil {
+			runtime.LogError(appContext, err.Error())
+			return ""
+		}
+
+		for _, file := range files {
+			if filepath.Ext(file.Name()) == filepath.Ext(pathPattern) {
+				currentFilePath := filepath.Join(pathDir, file.Name())
+				currentFileInfo, err := CreateFileInfo("", currentFilePath)
+				if err != nil {
+					runtime.LogError(appContext, err.Error())
+					return ""
+				}
+				if ConvertToFullPath(currentFileInfo.Destination) == ConvertToFullPath(fileInfo.Destination) {
+					runtime.LogDebug(appContext, "Matched file: "+currentFilePath)
+
+					if *config.RenameMatchedFiles && currentFileInfo.Name != fileInfo.Name {
+						newPath := filepath.Join(pathDir, fileInfo.Name+fileInfo.Extension)
+						os.Rename(currentFilePath, newPath)
+						currentFilePath = newPath
+						runtime.LogDebug(appContext, "Renamed file: "+currentFilePath)
+					}
+
+					return currentFilePath
+				}
+			}
+		}
+	}
+
+	return ""
 }
 
 func (a *App) Test() {
