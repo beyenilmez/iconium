@@ -415,33 +415,64 @@ func (a *App) ApplyIconPack(id string) {
 }
 
 func (pack *IconPack) Apply() error {
+	targetFolder := filepath.Join(activeIconFolder, pack.Metadata.Id)
+	err := create_folder(targetFolder)
+	if err != nil {
+		return err
+	}
+
 	for _, file := range pack.Files {
-
 		if file.HasIcon {
-			iconPath := filepath.Join(packsFolder, pack.Metadata.Id, "icons", file.Id+".png")
-			if _, err := os.Stat(iconPath); err != nil {
-				runtime.LogError(appContext, err.Error())
-				continue
-			}
-
-			// Copy to icons folder
-			targetFolder := filepath.Join(activeIconFolder, pack.Metadata.Id)
-			err := create_folder(targetFolder)
-			if err != nil {
-				runtime.LogError(appContext, err.Error())
-				continue
-			}
 			targetPath := filepath.Join(targetFolder, file.Id+".ico")
-			err = ConvertToIco(iconPath, targetPath, pack.Settings)
 
-			if err != nil {
-				runtime.LogError(appContext, err.Error())
-				continue
+			targetPathExists := false
+			if _, err := os.Stat(targetPath); err == nil {
+				targetPathExists = true
+			}
+
+			if !targetPathExists || !pack.IsApplied() {
+				iconPath := filepath.Join(packsFolder, pack.Metadata.Id, "icons", file.Id+".png")
+				if _, err := os.Stat(iconPath); err != nil {
+					runtime.LogError(appContext, err.Error())
+					continue
+				}
+				err = ConvertToIco(iconPath, targetPath, pack.Settings)
+
+				if err != nil {
+					runtime.LogError(appContext, err.Error())
+					continue
+				}
 			}
 		}
 	}
 
+	// Copy settings.json to apply.json
+	settingsPath := filepath.Join(packsFolder, pack.Metadata.Id, "settings.json")
+	applyPath := filepath.Join(packsFolder, pack.Metadata.Id, "apply.json")
+	err = copy_file(settingsPath, applyPath)
+	if err != nil {
+		runtime.LogError(appContext, err.Error())
+		return err
+	}
+
 	return nil
+}
+
+func (pack *IconPack) IsApplied() bool {
+	applyPath := filepath.Join(packsFolder, pack.Metadata.Id, "apply.json")
+
+	if _, err := os.Stat(applyPath); os.IsNotExist(err) {
+		return false
+	}
+
+	var apply IconPackSettings
+	err := readJSON(applyPath, &apply)
+	if err != nil {
+		runtime.LogError(appContext, err.Error())
+		return false
+	}
+
+	return apply.CornerRadius == pack.Settings.CornerRadius && apply.Opacity == pack.Settings.Opacity
 }
 
 func (a *App) Test() {

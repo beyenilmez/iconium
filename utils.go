@@ -174,3 +174,15 @@ func ConvertToFullPath(path string) string {
 
 	return ""
 }
+
+func copy_file(src string, dst string) error {
+	input, err := os.ReadFile(src)
+	if err != nil {
+		return err
+	}
+	err = os.WriteFile(dst, input, 0o644)
+	if err != nil {
+		return err
+	}
+	return nil
+}
