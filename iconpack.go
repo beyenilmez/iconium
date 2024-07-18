@@ -508,7 +508,7 @@ func (fileInfo *FileInfo) MatchFile() string {
 					runtime.LogError(appContext, err.Error())
 					return ""
 				}
-				if ConvertToFullPath(currentFileInfo.Destination) == ConvertToFullPath(fileInfo.Destination) {
+				if currentFileInfo.Destination == fileInfo.Destination {
 					runtime.LogDebug(appContext, "Matched file: "+currentFilePath)
 
 					if *config.RenameMatchedFiles && currentFileInfo.Name != fileInfo.Name {
