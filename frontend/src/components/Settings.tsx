@@ -16,6 +16,8 @@ import { CheckForUpdatesSetting } from "./SettingItems/CheckForUpdatesSetting";
 import { UpdateSetting } from "./SettingItems/UpdateSetting";
 import { useEffect, useState } from "react";
 import { useStorage } from "@/contexts/storage-provider";
+import { MatchByDestinationSetting } from "./SettingItems/MatchByDestinationSetting";
+import { RenameMatchedFilesSetting } from "./SettingItems/RenameMatchedFilesSetting";
 
 export default function Settings() {
   const { t } = useTranslation();
@@ -46,6 +48,13 @@ export default function Settings() {
           className="px-12 py-2 w-full"
         >
           {t("settings.categories.application")}
+        </TabsTrigger>
+        <TabsTrigger
+          value="icon_pack"
+          onClick={() => setTab("icon_pack")}
+          className="px-12 py-2 w-full"
+        >
+          {t("settings.categories.icon_pack")}
         </TabsTrigger>
         <TabsTrigger
           value="system"
@@ -84,6 +93,12 @@ export default function Settings() {
           <WindowScaleSetting />
           <UseSystemTitleBarSetting />
           <SaveWindowStatusSetting />
+        </SettingsGroup>
+      </TabsContent>
+      <TabsContent value="icon_pack" className="w-full">
+        <SettingsGroup className="flex flex-col items-start px-4 py-2 w-full h-full">
+          <MatchByDestinationSetting />
+          <RenameMatchedFilesSetting />
         </SettingsGroup>
       </TabsContent>
       <TabsContent value="system" className="w-full">

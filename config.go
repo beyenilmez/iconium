@@ -34,6 +34,8 @@ type Config struct {
 	WindowEffect         *int    `json:"windowEffect"`         // 0 = Auto, 1 = None, 2 = Mica, 3 = Acrylic, 4 = Tabbed
 	CheckForUpdates      *bool   `json:"checkForUpdates"`      // true, false
 	LastUpdateCheck      *int    `json:"lastUpdateCheck"`      // unix timestamp
+	MatchByDestination   *bool   `json:"matchByDestination"`   // true, false
+	RenameMatchedFiles   *bool   `json:"renameMatchedFiles"`   // true, false
 }
 
 func GetDefaultConfig() Config {
@@ -59,6 +61,8 @@ func GetDefaultConfig() Config {
 	defaultWindowEffect := 0
 	defaultCheckForUpdates := true
 	defaultLastUpdateCheck := 0
+	defaultMatchByDestination := true
+	defaultRenameMatchedFiles := false
 
 	return Config{
 		Theme:                &defaultTheme,
@@ -83,6 +87,8 @@ func GetDefaultConfig() Config {
 		WindowEffect:         &defaultWindowEffect,
 		CheckForUpdates:      &defaultCheckForUpdates,
 		LastUpdateCheck:      &defaultLastUpdateCheck,
+		MatchByDestination:   &defaultMatchByDestination,
+		RenameMatchedFiles:   &defaultRenameMatchedFiles,
 	}
 }
 

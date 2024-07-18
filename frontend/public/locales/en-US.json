@@ -24,6 +24,7 @@
     "categories": {
       "general": "General",
       "application": "Application",
+      "icon_pack": "Icon Pack",
       "system": "System",
       "advanced": "Advanced",
       "update": "Update"
