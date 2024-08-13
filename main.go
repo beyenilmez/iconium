@@ -10,6 +10,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/wailsapp/wails/v2"
@@ -18,8 +19,6 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 	"github.com/wailsapp/wails/v2/pkg/options/windows"
 )
-
-var cmd *exec.Cmd
 
 //go:embed all:frontend/dist
 var assets embed.FS
@@ -156,4 +155,16 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func sendCommand(command ...string) (string, error) {
+	// Use `exec.Command` to send a command to the existing cmd window
+	cmd := exec.Command("cmd.exe", append([]string{"/C"}, command...)...)
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		HideWindow: true,
+	}
+
+	output, err := cmd.Output()
+
+	return string(output), err
 }

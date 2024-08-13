@@ -1,11 +1,9 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"math"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -42,6 +40,7 @@ func GetMaskPath(radius, opacity int) (string, error) {
 	opacityPercent := fmt.Sprintf("%.2f", float64(opacity)/100.0)
 
 	maskArgs := []string{
+		imageMagickPath,
 		"-size", "256x256",
 		"xc:none",
 		"-draw", fmt.Sprintf("fill rgba(0,0,0,%s) roundrectangle 0,0,255,255,%d,%d", opacityPercent, roundedRadius, roundedRadius),
@@ -49,13 +48,9 @@ func GetMaskPath(radius, opacity int) (string, error) {
 	}
 
 	// Execute ImageMagick command to create mask
-	cmd = exec.Command(imageMagickPath, maskArgs...)
-	var maskStderr bytes.Buffer
-	cmd.Stderr = &maskStderr
-
-	err := cmd.Run()
+	_, err := sendCommand(maskArgs...)
 	if err != nil {
-		return "", fmt.Errorf("error creating mask: %w\n%s", err, maskStderr.String())
+		return "", fmt.Errorf("error creating mask: %ws", err)
 	}
 
 	return maskPath, nil
@@ -78,6 +73,7 @@ func ConvertToIco(path string, destination string, settings IconPackSettings) er
 
 	// Build ImageMagick command arguments to apply the mask and convert to ICO
 	args := []string{
+		imageMagickPath,
 		path,
 		maskPath,
 		"-compose", "DstIn",
@@ -87,13 +83,9 @@ func ConvertToIco(path string, destination string, settings IconPackSettings) er
 	}
 
 	// Execute ImageMagick command silently
-	cmd = exec.Command(imageMagickPath, args...)
-	var stderr bytes.Buffer
-	cmd.Stderr = &stderr
-
-	err = cmd.Run()
+	_, err = sendCommand(args...)
 	if err != nil {
-		return fmt.Errorf("error converting image: %w\n%s", err, stderr.String())
+		return fmt.Errorf("error converting image: %w", err)
 	}
 
 	return nil
@@ -115,16 +107,12 @@ func ConvertToPng(path string, destination string) error {
 	tempIconPath := filepath.Join(tempIconFolder, "icon.png")
 
 	// Build magick command arguments
-	args := []string{path, "-alpha", "on", "-background", "none", tempIconPath}
+	args := []string{imageMagickPath, path, "-alpha", "on", "-background", "none", tempIconPath}
 
 	// Execute magick command silently
-	cmd = exec.Command(imageMagickPath, args...)
-	var stderr bytes.Buffer
-	cmd.Stderr = &stderr
-
-	err = cmd.Run()
+	_, err = sendCommand(args...)
 	if err != nil {
-		return fmt.Errorf("error converting image: %w\n%s", err, stderr.String())
+		return fmt.Errorf("error converting image: %w", err)
 	}
 
 	// Delete the icons other than the largest one
@@ -164,19 +152,15 @@ func GetImageWidth(path string) (int, error) {
 	}
 
 	// Build magick command arguments
-	args := []string{"identify", "-ping", "-format", "%w", path}
+	args := []string{imageMagickPath, "identify", "-ping", "-format", "%w", path}
 
 	// Execute magick command silently
-	cmd = exec.Command(imageMagickPath, args...)
-	var stderr bytes.Buffer
-	cmd.Stderr = &stderr
-
-	output, err := cmd.Output()
+	output, err := sendCommand(args...)
 	if err != nil {
-		return -1, fmt.Errorf("error getting image width: %w\n%s", err, stderr.String())
+		return -1, fmt.Errorf("error getting image width: %w\n%s", err, output)
 	}
 
-	width, err := strconv.Atoi(strings.TrimSpace(string(output)))
+	width, err := strconv.Atoi(strings.TrimSpace(output))
 
 	if err != nil {
 		return -1, err

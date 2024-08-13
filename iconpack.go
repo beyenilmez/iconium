@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"sync"
 
 	"github.com/google/uuid"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -383,9 +384,17 @@ func (a *App) AddFilesToIconPackFromFolder(id string, path string, save bool) {
 		return
 	}
 
+	var wg sync.WaitGroup
+
 	for _, file := range files {
-		a.AddFileToIconPackFromPath(id, path+"\\"+file.Name(), false)
+		wg.Add(1)
+		go func(file os.DirEntry) {
+			defer wg.Done()
+			a.AddFileToIconPackFromPath(id, path+"\\"+file.Name(), false)
+		}(file)
 	}
+
+	wg.Wait()
 
 	if save {
 		WriteIconPack(iconPackCache[id])
@@ -421,33 +430,42 @@ func (pack *IconPack) Apply() error {
 		return err
 	}
 
+	var wg sync.WaitGroup
+
 	for _, file := range pack.Files {
-		if file.HasIcon {
-			targetPath := filepath.Join(targetFolder, file.Id+".ico")
+		wg.Add(1)
 
-			targetPathExists := false
-			if _, err := os.Stat(targetPath); err == nil {
-				targetPathExists = true
+		go func(file FileInfo) {
+			defer wg.Done()
+			if file.HasIcon {
+				targetPath := filepath.Join(targetFolder, file.Id+".ico")
+
+				targetPathExists := false
+				if _, err := os.Stat(targetPath); err == nil {
+					targetPathExists = true
+				}
+
+				if !targetPathExists || !pack.IsApplied() {
+					iconPath := filepath.Join(packsFolder, pack.Metadata.Id, "icons", file.Id+".png")
+					if _, err := os.Stat(iconPath); err != nil {
+						runtime.LogError(appContext, err.Error())
+						return
+					}
+					err = ConvertToIco(iconPath, targetPath, pack.Settings)
+
+					if err != nil {
+						runtime.LogError(appContext, err.Error())
+						return
+					}
+				}
 			}
 
-			if !targetPathExists || !pack.IsApplied() {
-				iconPath := filepath.Join(packsFolder, pack.Metadata.Id, "icons", file.Id+".png")
-				if _, err := os.Stat(iconPath); err != nil {
-					runtime.LogError(appContext, err.Error())
-					continue
-				}
-				err = ConvertToIco(iconPath, targetPath, pack.Settings)
-
-				if err != nil {
-					runtime.LogError(appContext, err.Error())
-					continue
-				}
-			}
-		}
-
-		match := file.MatchFile()
-		runtime.LogDebug(appContext, "Match: "+match)
+			match := file.MatchFile()
+			runtime.LogDebug(appContext, "Match: "+match)
+		}(file)
 	}
+
+	wg.Wait()
 
 	// Copy settings.json to apply.json
 	settingsPath := filepath.Join(packsFolder, pack.Metadata.Id, "settings.json")
