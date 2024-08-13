@@ -106,14 +106,6 @@ export function SetIconPackInfo(arg1) {
   return window['go']['main']['App']['SetIconPackInfo'](arg1);
 }
 
-export function Test() {
-  return window['go']['main']['App']['Test']();
-}
-
-export function Test2() {
-  return window['go']['main']['App']['Test2']();
-}
-
 export function Update(arg1) {
   return window['go']['main']['App']['Update'](arg1);
 }

@@ -306,6 +306,20 @@ func CreateFileInfo(packId string, path string) (FileInfo, error) {
 	return fileInfo, nil
 }
 
+func GetAppliedIcon(path string) (string, error) {
+	link, err := lnk.File(path)
+
+	if err != nil {
+		return "", fmt.Errorf("failed to open .lnk file: %s", err.Error())
+	}
+
+	if link.StringData.IconLocation != "" {
+		return link.StringData.IconLocation, nil
+	}
+
+	return "", errors.New("icon not found")
+}
+
 func (a *App) AddIconPack(name string, version string, author string, icon string) error {
 	iconPack, err := CreateIconPack(name, version, author, icon)
 
@@ -445,7 +459,11 @@ func (pack *IconPack) Apply() error {
 
 		go func(file *FileInfo) {
 			defer wg.Done()
-			if file.HasIcon {
+
+			match := file.MatchFile()
+			runtime.LogDebug(appContext, "Match: "+match)
+
+			if file.HasIcon && match != "" {
 				targetPath := filepath.Join(targetFolder, file.IconId+".ico")
 
 				targetPathExists := false
@@ -478,10 +496,24 @@ func (pack *IconPack) Apply() error {
 						return
 					}
 				}
-			}
 
-			match := file.MatchFile()
-			runtime.LogDebug(appContext, "Match: "+match)
+				appliedIconPath, err := GetAppliedIcon(match)
+				if err != nil {
+					runtime.LogWarningf(appContext, "Failed to get applied icon for %s: %s", match, err.Error())
+				}
+				runtime.LogDebug(appContext, "Applied icon path: "+appliedIconPath)
+
+				if appliedIconPath == targetPath {
+					runtime.LogDebug(appContext, "Icon already applied")
+				} else {
+					runtime.LogDebug(appContext, "Applying icon")
+
+					err = SetIcon(match, targetPath)
+					if err != nil {
+						runtime.LogWarningf(appContext, "Failed to set icon for %s: %s", match, err.Error())
+					}
+				}
+			}
 		}(file)
 	}
 
@@ -565,13 +597,18 @@ func (fileInfo *FileInfo) MatchFile() string {
 	return ""
 }
 
-func (a *App) Test() {
-	runtime.LogDebug(a.ctx, fmt.Sprint(ConvertToFullPath("${DESKTOP}\\o*.lnk")))
-	runtime.LogDebug(a.ctx, "Desktop paths: "+fmt.Sprint(get_desktop_paths()))
-}
+func SetIcon(path string, iconPath string) error {
+	switch filepath.Ext(path) {
+	case ".lnk":
+		_, err := sendCommand("cscript.exe", setLnkIconScriptPath, filepath.Dir(path), filepath.Base(path), iconPath, "0")
 
-func (a *App) Test2() {
-	iconPacks, _ = GetIconPackInfo()
+		if err != nil {
+			return err
+		}
 
-	fmt.Println(iconPacks)
+		runtime.LogDebug(appContext, "Applied icon: "+iconPath)
+		return nil
+	}
+
+	return errors.New("unsupported file type")
 }

@@ -54,10 +54,6 @@ export function SetConfigField(arg1:string,arg2:any):Promise<void>;
 
 export function SetIconPackInfo(arg1:main.IconPack):Promise<void>;
 
-export function Test():Promise<void>;
-
-export function Test2():Promise<void>;
-
 export function Update(arg1:string):Promise<void>;
 
 export function UpdateAsAdmin(arg1:string):Promise<void>;

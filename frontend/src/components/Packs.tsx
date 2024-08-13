@@ -39,7 +39,6 @@ import {
   GetIconPack,
   GetIconPackInfo,
   SetIconPackInfo,
-  Test,
 } from "@/wailsjs/go/main/App";
 import { main } from "@/wailsjs/go/models";
 import {
@@ -87,7 +86,6 @@ export default function Packs() {
   return (
     <Tabs value={pack} className="flex flex-row w-full h-full">
       <TabsList className="flex-col justify-start px-2 rounded-none w-96 h-[calc(100vh-5.5rem)] overflow-y-auto shrink-0">
-        <Button onClick={Test}>Test</Button>
         {packInfos?.map((pack) => (
           <PackTrigger
             key={pack.metadata.id}
