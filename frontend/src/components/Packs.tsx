@@ -58,6 +58,7 @@ import {
 import Image from "./Image";
 import { Slider } from "./ui/my-slider";
 import { Skeleton } from "./ui/skeleton";
+import { Checkbox } from "./ui/checkbox";
 
 export default function Packs() {
   const [pack, setPack] = useState("");
@@ -201,6 +202,7 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
     main.IconPack.createFrom({})
   );
   const dialogRef = useRef<AreYouSureDialogRef>(null);
+  const [deleteGeneratedIcons, setDeleteGeneratedIcons] = useState(false);
 
   const [cornerRadius, setCornerRadius] = useState(-1);
   const [opacity, setOpacity] = useState(-1);
@@ -259,7 +261,7 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
   };
 
   const handleDelete = () => {
-    DeleteIconPack(iconPackId).then(() => {
+    DeleteIconPack(iconPackId, deleteGeneratedIcons).then(() => {
       setPack("");
       loadPackInfo();
     });
@@ -335,6 +337,7 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
 
   const openDialog = useCallback(() => {
     if (dialogRef.current) {
+      setDeleteGeneratedIcons(false);
       dialogRef.current.openDialog();
     }
   }, []);
@@ -410,7 +413,23 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
                   title="Are you sure you want to delete this pack?"
                   description="This action can not be undone."
                   onCancel={handleDelete}
-                />
+                >
+                  <div className="flex items-center space-x-2 py-3">
+                    <Checkbox
+                      id="deleteGeneratedIcons"
+                      checked={deleteGeneratedIcons}
+                      onCheckedChange={() =>
+                        setDeleteGeneratedIcons(!deleteGeneratedIcons)
+                      }
+                    />
+                    <label
+                      htmlFor="deleteGeneratedIcons"
+                      className="font-medium text-sm leading-none select-none"
+                    >
+                      Delete generated icons
+                    </label>
+                  </div>
+                </AreYouSureDialog>
               </>
             ) : (
               <>

@@ -16,7 +16,7 @@ export function ApplyIconPack(arg1:string):Promise<void>;
 
 export function CheckForUpdate():Promise<main.UpdateInfo>;
 
-export function DeleteIconPack(arg1:string):Promise<void>;
+export function DeleteIconPack(arg1:string,arg2:boolean):Promise<void>;
 
 export function GetBase64Png():Promise<string>;
 

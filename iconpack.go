@@ -332,15 +332,24 @@ func (a *App) AddIconPack(name string, version string, author string, icon strin
 	return WriteIconPack(iconPack)
 }
 
-func (a *App) DeleteIconPack(id string) error {
+func (a *App) DeleteIconPack(id string, deleteGeneratedIcons bool) error {
 	iconPackPath := path.Join(packsFolder, id)
 
 	if _, err := os.Stat(iconPackPath); os.IsNotExist(err) {
 		return err
 	}
-
 	if err := os.RemoveAll(iconPackPath); err != nil {
 		return err
+	}
+
+	if deleteGeneratedIcons {
+		activeIconsPath := path.Join(activeIconFolder, id)
+		if _, err := os.Stat(activeIconsPath); os.IsNotExist(err) {
+			return err
+		}
+		if err := os.RemoveAll(activeIconsPath); err != nil {
+			return err
+		}
 	}
 
 	for i, pack := range iconPacks {

@@ -30,8 +30,8 @@ export function CheckForUpdate() {
   return window['go']['main']['App']['CheckForUpdate']();
 }
 
-export function DeleteIconPack(arg1) {
-  return window['go']['main']['App']['DeleteIconPack'](arg1);
+export function DeleteIconPack(arg1, arg2) {
+  return window['go']['main']['App']['DeleteIconPack'](arg1, arg2);
 }
 
 export function GetBase64Png() {
