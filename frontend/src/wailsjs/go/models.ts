@@ -66,6 +66,7 @@ export namespace main {
 	    destinationPath: string;
 	    extension: string;
 	    hasIcon: boolean;
+	    iconId: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new FileInfo(source);
@@ -80,6 +81,7 @@ export namespace main {
 	        this.destinationPath = source["destinationPath"];
 	        this.extension = source["extension"];
 	        this.hasIcon = source["hasIcon"];
+	        this.iconId = source["iconId"];
 	    }
 	}
 	export class IconPackSettings {

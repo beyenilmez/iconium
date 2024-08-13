@@ -24,6 +24,7 @@ type FileInfo struct {
 	Destination string `json:"destinationPath"`
 	Extension   string `json:"extension"`
 	HasIcon     bool   `json:"hasIcon"`
+	IconId      string `json:"iconId"`
 }
 
 type Metadata struct {
@@ -418,7 +419,11 @@ func (a *App) ApplyIconPack(id string) {
 
 	err = pack.Apply()
 
-	if err != nil {
+	// Save icon pack
+	if err == nil {
+		runtime.LogInfo(appContext, fmt.Sprintf("Applied icon pack %s, attempting to save", pack.Metadata.Id))
+		WriteIconPack(pack)
+	} else {
 		runtime.LogError(appContext, err.Error())
 	}
 }
@@ -432,20 +437,35 @@ func (pack *IconPack) Apply() error {
 
 	var wg sync.WaitGroup
 
-	for _, file := range pack.Files {
+	for i := range pack.Files {
 		wg.Add(1)
 
-		go func(file FileInfo) {
+		// Use a pointer to the file in the slice
+		file := &pack.Files[i]
+
+		go func(file *FileInfo) {
 			defer wg.Done()
 			if file.HasIcon {
-				targetPath := filepath.Join(targetFolder, file.Id+".ico")
+				targetPath := filepath.Join(targetFolder, file.IconId+".ico")
 
 				targetPathExists := false
 				if _, err := os.Stat(targetPath); err == nil {
 					targetPathExists = true
 				}
 
+				// Regenerate
 				if !targetPathExists || !pack.IsApplied() {
+					if targetPathExists {
+						err = os.Remove(targetPath)
+						if err != nil {
+							runtime.LogWarningf(appContext, "Failed to remove old icon %s: %s", targetPath, err.Error())
+						}
+					}
+
+					// Update the IconId directly on the file pointer
+					file.IconId = uuid.NewString()
+					targetPath = filepath.Join(targetFolder, file.IconId+".ico")
+
 					iconPath := filepath.Join(packsFolder, pack.Metadata.Id, "icons", file.Id+".png")
 					if _, err := os.Stat(iconPath); err != nil {
 						runtime.LogError(appContext, err.Error())
