@@ -1,4 +1,5 @@
 {
+  "save": "Kaydet",
   "cancel": "İptal",
   "yes": "Evet",
   "no": "Hayır",
@@ -7,11 +8,98 @@
   "export": "Dışa Aktar",
   "error": "Hata",
   "show": "Göster",
+  "create": "Oluştur",
+  "delete": "Sil",
 
   "nav": {
     "my_packs": "Paketlerim",
     "edit": "Düzenle",
     "settings": "Ayarlar"
+  },
+
+  "my_packs": {
+    "create_new_pack": {
+      "label": "Yeni Paket Oluştur",
+      "title": "İkon Paketi Oluştur"
+    },
+
+    "delete_pack": {
+      "confirmation_title": "Bu paketi silmek istediğinizden emin misiniz?",
+      "confirmation_description": "Bu işlem geri alınamaz.",
+      "delete_generated_icons": "Oluşturulan ikonları sil"
+    },
+
+    "card": {
+      "pack_information": {
+        "label": "Paket Bilgileri",
+
+        "information": {
+          "name": {
+            "label": "Ad",
+            "placeholder": "Benim Paketim",
+
+            "message": {
+              "name_required": "Ad gereklidir",
+              "name_max": "Ad, 32 karakteri geçemez"
+            }
+          },
+
+          "version": {
+            "label": "Versiyon",
+            "placeholder": "v1.0.0",
+
+            "message": {
+              "version_required": "Versiyon gereklidir",
+              "version_format": "Versiyon, \"v1.0.0\" formatında olmalıdır"
+            }
+          },
+
+          "author": {
+            "label": "Yazar",
+            "placeholder": "Adınız",
+
+            "message": {
+              "author_max": "Yazar, 32 karakteri geçemez"
+            }
+          },
+
+          "icon": {
+            "label": "İkon"
+          }
+        }
+      },
+
+      "pack_actions": {
+        "label": "Paket İşlemleri",
+        "apply_icon_pack": "İkon Paketini Uygula",
+        "add_icons_from_desktop": "Masaüstü İkonlarını Ekle",
+        "add_icons": "İkon Ekle"
+      },
+
+      "pack_settings": {
+        "label": "Paket Ayarları",
+
+        "setting": {
+          "enabled": {
+            "label": "Etkin"
+          },
+
+          "corner_radius": {
+            "label": "Köşe Yarıçapı",
+            "description": "Bu paketteki simgelerin köşe yarıçapını değiştirin."
+          },
+
+          "opacity": {
+            "label": "Opaklık",
+            "description": "Bu paketteki simgelerin opaklığını değiştirin."
+          }
+        }
+      },
+
+      "icons": {
+        "label": "İkonlar"
+      }
+    }
   },
 
   "settings": {
@@ -93,6 +181,16 @@
       "save_window_status": {
         "label": "Pencere Durumunu Kaydet",
         "description": "Pencere boyutunu, konumunu ve durumunu kaydet."
+      },
+
+      "match_by_destination": {
+        "label": "Kısayolları Hedeflerine Göre Eşleştir",
+        "description": "Dosya yolu ile eşleştirme başarısız olursa, kısayolları hedeflerine göre eşleştir."
+      },
+
+      "rename_matched_files": {
+        "label": "Eşleşen Dosyaları Yeniden Adlandır",
+        "description": "İsimler eşleşmiyorsa, eşleşen dosyaları yeniden adlandır."
       },
 
       "check_for_updates": {

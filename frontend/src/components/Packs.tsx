@@ -59,8 +59,11 @@ import Image from "./Image";
 import { Slider } from "./ui/my-slider";
 import { Skeleton } from "./ui/skeleton";
 import { Checkbox } from "./ui/checkbox";
+import { useTranslation } from "react-i18next";
 
 export default function Packs() {
+  const { t } = useTranslation();
+
   const [pack, setPack] = useState("");
   const [packInfos, setPackInfos] = useState<main.IconPack[]>();
   const [selectedPackKeyCount, setSelectedPackKeyCount] = useState(0);
@@ -99,13 +102,13 @@ export default function Packs() {
         <Dialog>
           <DialogTrigger className="w-full">
             <Button variant={"outline"} className="my-2 py-6 w-full">
-              Create New Pack
+              {t("my_packs.create_new_pack.label")}
             </Button>
           </DialogTrigger>
           <DialogClose ref={dialogCloseRef} />
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Create Icon Pack</DialogTitle>
+              <DialogTitle> {t("my_packs.create_new_pack.title")}</DialogTitle>
             </DialogHeader>
             <CreatePackForm
               loadPackInfo={loadPackInfo}
@@ -193,6 +196,8 @@ interface PackContentProps {
 }
 
 function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
+  const { t } = useTranslation();
+
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
   const [iconPackInfo, setIconPackInfo] = useState(
@@ -360,7 +365,7 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
     >
       <div className="bg-card p-4 rounded-md w-full">
         <div className="mb-3 pb-1 border-b font-medium text-xl">
-          Pack Information
+          {t("my_packs.card.pack_information.label")}
         </div>
         <div className="flex flex-row justify-between items-end gap-6">
           <div className="flex items-center gap-6">
@@ -379,7 +384,11 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
               {fields.map((field) => (
                 <div key={field} className="flex flex-col gap-1">
                   <div className="font-medium text-xs">
-                    {field.charAt(0).toUpperCase() + field.slice(1)}
+                    {t(
+                      "my_packs.card.pack_information.information." +
+                        field +
+                        ".label"
+                    )}
                   </div>
                   {editMode ? (
                     <Input
@@ -408,10 +417,12 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
                 </Button>
                 <AreYouSureDialog
                   ref={dialogRef}
-                  cancelText="Delete"
-                  acceptText="Cancel"
-                  title="Are you sure you want to delete this pack?"
-                  description="This action can not be undone."
+                  cancelText={t("delete")}
+                  acceptText={t("cancel")}
+                  title={t("my_packs.delete_pack.confirmation_title")}
+                  description={t(
+                    "my_packs.delete_pack.confirmation_description"
+                  )}
                   onCancel={handleDelete}
                 >
                   <div className="flex items-center space-x-2 py-3">
@@ -426,7 +437,7 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
                       htmlFor="deleteGeneratedIcons"
                       className="font-medium text-sm leading-none select-none"
                     >
-                      Delete generated icons
+                      {t("my_packs.delete_pack.delete_generated_icons")}
                     </label>
                   </div>
                 </AreYouSureDialog>
@@ -434,14 +445,14 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
             ) : (
               <>
                 <Button variant="outline" onClick={handleSave}>
-                  Save
+                  {t("save")}
                 </Button>
                 <Button
                   variant="outline"
                   className="ml-2"
                   onClick={handleCancel}
                 >
-                  Cancel
+                  {t("cancel")}
                 </Button>
               </>
             )}
@@ -451,7 +462,7 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
 
       <div className="bg-card p-4 rounded-md w-full">
         <div className="mb-3 pb-1 border-b font-medium text-xl">
-          Pack Actions
+          {t("my_packs.card.pack_actions.label")}
         </div>
         <div className="flex flex-wrap gap-1.5 mb-2">
           <Button
@@ -461,7 +472,7 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
             disabled={running}
           >
             {applyRunning && <Loader2 className="w-6 h-6 animate-spin" />}
-            Apply Icon Pack
+            {t("my_packs.card.pack_actions.apply_icon_pack")}
           </Button>
         </div>
 
@@ -477,7 +488,7 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
             ) : (
               <Monitor className="w-6 h-6" />
             )}
-            Add Icons From Desktop
+            {t("my_packs.card.pack_actions.add_icons_from_desktop")}
           </Button>
           <Button
             variant={"secondary"}
@@ -490,17 +501,19 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
             ) : (
               <Upload className="w-6 h-6" />
             )}
-            Add Icons
+            {t("my_packs.card.pack_actions.add_icons")}
           </Button>
         </div>
       </div>
 
       <div className="bg-card p-4 rounded-md w-full">
         <div className="mb-3 pb-1 border-b font-medium text-xl">
-          Pack Settings
+          {t("my_packs.card.pack_settings.label")}
         </div>
         <SettingsItem className="border-none" loading={loading}>
-          <SettingLabel>Enabled</SettingLabel>
+          <SettingLabel>
+            {t("my_packs.card.pack_settings.setting.enabled.label")}
+          </SettingLabel>
           <SettingContent>
             <Switch
               checked={iconPackInfo.settings.enabled}
@@ -513,9 +526,13 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
 
         <SettingsItem className="border-none" loading={loading}>
           <div>
-            <SettingLabel>Corner Radius</SettingLabel>
+            <SettingLabel>
+              {t("my_packs.card.pack_settings.setting.corner_radius.label")}
+            </SettingLabel>
             <SettingDescription>
-              Change the corner radius of the icons in this pack.
+              {t(
+                "my_packs.card.pack_settings.setting.corner_radius.description"
+              )}
             </SettingDescription>
           </div>
           <SettingContent>
@@ -542,9 +559,11 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
 
         <SettingsItem className="border-none" loading={loading}>
           <div>
-            <SettingLabel>Opacity</SettingLabel>
+            <SettingLabel>
+              {t("my_packs.card.pack_settings.setting.opacity.label")}
+            </SettingLabel>
             <SettingDescription>
-              Change the opacity of the icons in this pack.
+              {t("my_packs.card.pack_settings.setting.opacity.description")}
             </SettingDescription>
           </div>
           <SettingContent>
@@ -567,7 +586,9 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
       </div>
 
       <div className="bg-card p-4 rounded-md w-full">
-        <div className="mb-3 pb-1 border-b font-medium text-xl">Icons</div>
+        <div className="mb-3 pb-1 border-b font-medium text-xl">
+          {t("my_packs.card.icons.label")}
+        </div>
         <div className="flex flex-wrap gap-2">
           {iconPackInfo.files?.map((file) =>
             file.hasIcon ? (
@@ -598,23 +619,39 @@ interface CreatePackFormProps {
 }
 
 function CreatePackForm({ loadPackInfo, dialogCloseRef }: CreatePackFormProps) {
+  const { t } = useTranslation();
+
   const formSchema = z.object({
     icon: z.string(),
     name: z
       .string()
-      .min(1, { message: "Name is required" })
-      .max(32, { message: "Name can not exceed 32 characters" })
-      // Check for windows file name compatibility
-      .regex(/^(?!\.)/, { message: "Name can not start with a period" })
-      .regex(/^(?!.*\.$)/, {
-        message: "Name can not end with a period",
+      .min(1, {
+        message: t(
+          "my_packs.card.pack_information.information.name.message.name_required"
+        ),
+      })
+      .max(32, {
+        message: t(
+          "my_packs.card.pack_information.information.name.message.name_max"
+        ),
       }),
-    version: z.string().regex(/^v[0-9]{1,4}\.[0-9]{1,4}\.[0-9]{1,4}$/, {
-      message: "Version must be in the format: v1.0.0",
-    }),
-    author: z
+    version: z
       .string()
-      .max(32, { message: "Author can not exceed 32 characters" }),
+      .min(1, {
+        message: t(
+          "my_packs.card.pack_information.information.version.message.version_required"
+        ),
+      })
+      .regex(/^v[0-9]{1,4}\.[0-9]{1,4}\.[0-9]{1,4}$/, {
+        message: t(
+          "my_packs.card.pack_information.information.version.message.version_format"
+        ),
+      }),
+    author: z.string().max(32, {
+      message: t(
+        "my_packs.card.pack_information.information.author.message.author_max"
+      ),
+    }),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -646,7 +683,9 @@ function CreatePackForm({ loadPackInfo, dialogCloseRef }: CreatePackFormProps) {
           name="icon"
           render={({ field }) => (
             <FormItem className="flex flex-col gap-1">
-              <FormLabel>Icon</FormLabel>
+              <FormLabel>
+                {t("my_packs.card.pack_information.information.icon.label")}
+              </FormLabel>
               <SelectImage
                 icon={field.value}
                 sizeClass="w-12 h-12"
@@ -662,9 +701,17 @@ function CreatePackForm({ loadPackInfo, dialogCloseRef }: CreatePackFormProps) {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>
+                {" "}
+                {t("my_packs.card.pack_information.information.name.label")}
+              </FormLabel>
               <FormControl>
-                <Input placeholder="My profile" {...field} />
+                <Input
+                  placeholder={t(
+                    "my_packs.card.pack_information.information.name.placeholder"
+                  )}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -675,9 +722,16 @@ function CreatePackForm({ loadPackInfo, dialogCloseRef }: CreatePackFormProps) {
           name="version"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Version</FormLabel>
+              <FormLabel>
+                {t("my_packs.card.pack_information.information.version.label")}
+              </FormLabel>
               <FormControl>
-                <Input placeholder="v1.0.0" {...field} />
+                <Input
+                  placeholder={t(
+                    "my_packs.card.pack_information.information.version.placeholder"
+                  )}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -688,16 +742,23 @@ function CreatePackForm({ loadPackInfo, dialogCloseRef }: CreatePackFormProps) {
           name="author"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Author</FormLabel>
+              <FormLabel>
+                {t("my_packs.card.pack_information.information.author.label")}
+              </FormLabel>
               <FormControl>
-                <Input placeholder="Your name" {...field} />
+                <Input
+                  placeholder={t(
+                    "my_packs.card.pack_information.information.author.placeholder"
+                  )}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
         <Button type="submit" className="mt-3">
-          Create
+          {t("create")}
         </Button>
       </form>
     </Form>
