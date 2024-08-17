@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Skeleton } from "./ui/skeleton";
+import { CircleHelp } from "lucide-react";
 
 // Define the props type for the Image component
 interface ImageProps {
@@ -7,6 +8,7 @@ interface ImageProps {
   className?: string;
   cornerRadius?: number;
   opacity?: number;
+  unkown?: boolean;
 }
 
 const Image: React.FC<ImageProps> = ({
@@ -14,13 +16,16 @@ const Image: React.FC<ImageProps> = ({
   className,
   cornerRadius = 0,
   opacity = 100,
+  unkown = false,
   ...rest
 }) => {
   const [loading, setLoading] = useState(true);
 
   return (
     <>
-      <Skeleton className={`${className} ${loading ? "" : "hidden"}`} />
+    {unkown ? <CircleHelp className={`${className} ${loading ? "" : "hidden"}`} />:
+    <Skeleton className={`${className} ${loading ? "" : "hidden"}`} />
+    }
       <img
         src={src}
         className={`${className} ${loading ? "hidden" : ""}`}

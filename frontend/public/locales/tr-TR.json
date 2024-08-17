@@ -72,6 +72,7 @@
       "pack_actions": {
         "label": "Paket İşlemleri",
         "apply_icon_pack": "İkon Paketini Uygula",
+        "edit_icon_pack": "İkon Paketini Düzenle",
         "add_icons_from_desktop": "Masaüstü İkonlarını Ekle",
         "add_icons": "İkon Ekle"
       },

@@ -72,6 +72,7 @@
       "pack_actions": {
         "label": "Pack Actions",
         "apply_icon_pack": "Apply Icon Pack",
+        "edit_icon_pack": "Edit Icon Pack",
         "add_icons_from_desktop": "Add Icons from Desktop",
         "add_icons": "Add Icons"
       },

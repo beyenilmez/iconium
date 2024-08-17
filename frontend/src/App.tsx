@@ -16,7 +16,7 @@ import Packs from "./components/Packs";
 function App() {
   const { config, initialConfig } = useConfig();
   const { t } = useTranslation();
-  const { setValue } = useStorage();
+  const { setValue, getValue } = useStorage();
   const [tab, setTab] = useState("packs");
 
   useLayoutEffect(() => {
@@ -101,13 +101,13 @@ function App() {
         <Tabs value={tab} className="flex flex-col w-full h-full">
           <TabsList className="shadow-bottom-xs z-10 justify-between px-3 py-7 rounded-none w-full h-12">
             <div>
-              <TabsTrigger value="packs" onClick={() => setTab("packs")}>
+              <TabsTrigger value="packs" onClick={() => setTab("packs")} disabled={getValue("editingIconPack")}>
                 {t("nav.my_packs")}
               </TabsTrigger>
-              <TabsTrigger value="edit" onClick={() => setTab("edit")}>
+              <TabsTrigger value="edit" onClick={() => setTab("edit")} disabled={getValue("editingIconPack")}>
                 {t("nav.edit")}
               </TabsTrigger>
-              <TabsTrigger value="settings" onClick={() => setTab("settings")}>
+              <TabsTrigger value="settings" onClick={() => setTab("settings")} disabled={getValue("editingIconPack")}>
                 {t("nav.settings")}
               </TabsTrigger>
             </div>

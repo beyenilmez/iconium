@@ -13,6 +13,7 @@ import {
   Edit,
   Loader2,
   Monitor,
+  Pencil,
   Trash,
   Upload,
 } from "lucide-react";
@@ -60,9 +61,21 @@ import { Slider } from "./ui/my-slider";
 import { Skeleton } from "./ui/skeleton";
 import { Checkbox } from "./ui/checkbox";
 import { useTranslation } from "react-i18next";
-
+import { useStorage } from "@/contexts/storage-provider";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 export default function Packs() {
   const { t } = useTranslation();
+  const { setValue } = useStorage();
+
+  const [editingIconPack, setEditingIconPack] = useState(false);
+  useEffect(() => {
+    setValue("editingIconPack", editingIconPack);
+  });
 
   const [pack, setPack] = useState("");
   const [packInfos, setPackInfos] = useState<main.IconPack[]>();
@@ -89,41 +102,61 @@ export default function Packs() {
 
   return (
     <Tabs value={pack} className="flex flex-row w-full h-full">
-      <TabsList className="flex-col justify-start px-2 rounded-none w-96 h-[calc(100vh-5.5rem)] overflow-y-auto shrink-0">
+      <TabsList
+        className={`flex-col justify-start px-2 rounded-none h-[calc(100vh-5.5rem)] overflow-y-auto shrink-0 transition-all duration-300`}
+        style={{ width: editingIconPack ? "6rem" : "24rem" }}
+      >
         {packInfos?.map((pack) => (
           <PackTrigger
             key={pack.metadata.id}
             iconPack={pack}
             setPack={setPack}
             reloadSelectedPack={reloadSelectedPack}
+            editingIconPack={editingIconPack}
+            disabled={editingIconPack}
           />
         ))}
 
-        <Dialog>
-          <DialogTrigger className="w-full">
-            <Button variant={"outline"} className="my-2 py-6 w-full">
-              {t("my_packs.create_new_pack.label")}
-            </Button>
-          </DialogTrigger>
-          <DialogClose ref={dialogCloseRef} />
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle> {t("my_packs.create_new_pack.title")}</DialogTitle>
-            </DialogHeader>
-            <CreatePackForm
-              loadPackInfo={loadPackInfo}
-              dialogCloseRef={dialogCloseRef}
-            />
-          </DialogContent>
-        </Dialog>
+        {!editingIconPack && (
+          <Dialog>
+            <DialogTrigger className="w-full">
+              <Button variant={"outline"} className="my-2 py-6 w-full">
+                {t("my_packs.create_new_pack.label")}
+              </Button>
+            </DialogTrigger>
+            <DialogClose ref={dialogCloseRef} />
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>
+                  {" "}
+                  {t("my_packs.create_new_pack.title")}
+                </DialogTitle>
+              </DialogHeader>
+              <CreatePackForm
+                loadPackInfo={loadPackInfo}
+                dialogCloseRef={dialogCloseRef}
+              />
+            </DialogContent>
+          </Dialog>
+        )}
       </TabsList>
 
-      {pack && (
+      {pack && !editingIconPack && (
         <PackContent
           key={selectedPackKeyCount}
           iconPackId={pack}
           setPack={setPack}
           loadPackInfo={loadPackInfo}
+          setEditingIconPack={setEditingIconPack}
+        />
+      )}
+
+      {pack && editingIconPack && (
+        <PackEdit
+          iconPackId={pack}
+          setPack={setPack}
+          loadPackInfo={loadPackInfo}
+          setEditingIconPack={setEditingIconPack}
         />
       )}
     </Tabs>
@@ -134,12 +167,16 @@ interface PackTriggerProps {
   iconPack: main.IconPack;
   setPack: (pack: string) => void;
   reloadSelectedPack: () => void;
+  editingIconPack: boolean;
+  disabled?: boolean;
 }
 
 function PackTrigger({
   iconPack,
   setPack,
   reloadSelectedPack,
+  editingIconPack,
+  disabled,
   ...props
 }: PackTriggerProps) {
   const [enabledState, setEnabledState] = useState(iconPack.settings.enabled);
@@ -161,6 +198,7 @@ function PackTrigger({
       value={iconPack.metadata.id}
       onClick={() => setPack(iconPack.metadata.id)}
       className="flex justify-between p-4 w-full"
+      disabled={disabled}
       {...props}
     >
       <div className="flex gap-4 w-full">
@@ -173,18 +211,22 @@ function PackTrigger({
         ) : (
           <CircleHelp className="w-12 h-12" />
         )}
-        <div className="flex flex-col items-start">
-          <div className="w-52 text-ellipsis text-left overflow-hidden">
-            {iconPack.metadata.name}
+        {!editingIconPack && (
+          <div className="flex flex-col items-start">
+            <div className="w-52 text-ellipsis text-left overflow-hidden">
+              {iconPack.metadata.name}
+            </div>
+            <div className="opacity-50 ml-1">{iconPack.metadata.version}</div>
           </div>
-          <div className="opacity-50 ml-1">{iconPack.metadata.version}</div>
-        </div>
+        )}
       </div>
-      <Switch
-        checked={enabledState}
-        onCheckedChange={handleEnable}
-        onClick={(e) => e.stopPropagation()}
-      />
+      {!editingIconPack && (
+        <Switch
+          checked={enabledState}
+          onCheckedChange={handleEnable}
+          onClick={(e) => e.stopPropagation()}
+        />
+      )}
     </TabsTrigger>
   );
 }
@@ -193,9 +235,15 @@ interface PackContentProps {
   iconPackId: string;
   setPack: (pack: string) => void;
   loadPackInfo: () => void;
+  setEditingIconPack: (editingIconPack: boolean) => void;
 }
 
-function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
+function PackContent({
+  iconPackId,
+  setPack,
+  loadPackInfo,
+  setEditingIconPack,
+}: PackContentProps) {
   const { t } = useTranslation();
 
   const [loading, setLoading] = useState(true);
@@ -298,6 +346,10 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
     "version",
     "author",
   ];
+
+  const handleEditIconPack = () => {
+    setEditingIconPack(true);
+  };
 
   const handleApplyIconPack = () => {
     setApplyRunning(true);
@@ -474,6 +526,16 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
             {applyRunning && <Loader2 className="w-6 h-6 animate-spin" />}
             {t("my_packs.card.pack_actions.apply_icon_pack")}
           </Button>
+
+          <Button
+            variant={"default"}
+            className="flex gap-2.5"
+            onClick={handleEditIconPack}
+            disabled={running}
+          >
+            <Pencil className="w-6 h-6" />
+            {t("my_packs.card.pack_actions.edit_icon_pack")}
+          </Button>
         </div>
 
         <div className="flex flex-wrap gap-1.5">
@@ -610,6 +672,127 @@ function PackContent({ iconPackId, setPack, loadPackInfo }: PackContentProps) {
         </div>
       </div>
     </TabsContent>
+  );
+}
+
+function PackEdit({
+  iconPackId,
+  setPack,
+  loadPackInfo,
+  setEditingIconPack,
+}: PackContentProps) {
+  const { t } = useTranslation();
+
+  const [loading, setLoading] = useState(true);
+  const [iconPackInfo, setIconPackInfo] = useState(
+    main.IconPack.createFrom({})
+  );
+
+  const [addIconsFromDesktopRunning, setAddIconsFromDesktopRunning] =
+    useState(false);
+  const [addIconsRunning, setAddIconsRunning] = useState(false);
+  const running = addIconsFromDesktopRunning || addIconsRunning;
+
+  useEffect(() => {
+    GetIconPack(iconPackId).then((iconPack) => {
+      setIconPackInfo(iconPack);
+      setLoading(false);
+    });
+  }, []);
+
+  const handleAddIconsFromDesktop = () => {
+    setAddIconsFromDesktopRunning(true);
+
+    setTimeout(() => {
+      setAddIconsFromDesktopRunning(false);
+    }, 2000);
+  };
+
+  const handleAddIcon = () => {
+    setAddIconsRunning(true);
+
+    setTimeout(() => {
+      setAddIconsRunning(false);
+    }, 2000);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col gap-4 p-4 w-full h-full">
+        <Skeleton className="w-full h-1/3" />
+        <Skeleton className="w-full h-1/3" />
+        <Skeleton className="w-full h-1/2" />
+        <Skeleton className="w-full h-1/2" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col w-full">
+      <div className="shadow-bottom-sm flex justify-between items-center bg-muted px-3 h-16">
+        <div className="flex flex-wrap gap-1.5">
+          <Button
+            variant={"secondary"}
+            className="flex gap-2.5"
+            onClick={handleAddIconsFromDesktop}
+            disabled={running}
+          >
+            {addIconsFromDesktopRunning ? (
+              <Loader2 className="w-6 h-6 animate-spin" />
+            ) : (
+              <Monitor className="w-6 h-6" />
+            )}
+            {t("my_packs.card.pack_actions.add_icons_from_desktop")}
+          </Button>
+          <Button
+            variant={"secondary"}
+            className="flex gap-2.5"
+            onClick={handleAddIcon}
+            disabled={running}
+          >
+            {addIconsRunning ? (
+              <Loader2 className="w-6 h-6 animate-spin" />
+            ) : (
+              <Upload className="w-6 h-6" />
+            )}
+            {t("my_packs.card.pack_actions.add_icons")}
+          </Button>
+        </div>
+        <div className="flex gap-2">
+          <Button>Save</Button>
+          <Button variant="destructive">Cancel</Button>
+        </div>
+      </div>
+      <div className="flex flex-col h-[calc(100vh-5.5rem-4rem)] w-full overflow-x-hidden overflow-y-auto">
+        <Accordion type="single" collapsible className="w-full">
+          {iconPackInfo.files.map((file) => (
+            <AccordionItem value={file.id}>
+              <AccordionTrigger className="p-2">
+                <div className="flex items-center gap-2">
+                  <Image
+                    src={
+                      "packs\\" +
+                      iconPackInfo.metadata.id +
+                      "\\icons\\" +
+                      file.id +
+                      ".png"
+                    }
+                    className="w-8 h-8"
+                    unkown
+                  />
+                  {file.name}
+                </div>
+              </AccordionTrigger>
+              <AccordionContent>
+                {String(setPack) +
+                  String(loadPackInfo) +
+                  String(setEditingIconPack)}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </div>
+    </div>
   );
 }
 
