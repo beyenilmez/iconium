@@ -101,13 +101,10 @@ function App() {
         <Tabs value={tab} className="flex flex-col w-full h-full">
           <TabsList className="shadow-bottom-xs z-10 justify-between px-3 py-7 rounded-none w-full h-12">
             <div>
-              <TabsTrigger value="packs" onClick={() => setTab("packs")} disabled={getValue("editingIconPack")}>
+              <TabsTrigger value="packs" onClick={() => setTab("packs")} disabled={getValue("editingIconPack")} className="px-6">
                 {t("nav.my_packs")}
               </TabsTrigger>
-              <TabsTrigger value="edit" onClick={() => setTab("edit")} disabled={getValue("editingIconPack")}>
-                {t("nav.edit")}
-              </TabsTrigger>
-              <TabsTrigger value="settings" onClick={() => setTab("settings")} disabled={getValue("editingIconPack")}>
+              <TabsTrigger value="settings" onClick={() => setTab("settings")} disabled={getValue("editingIconPack")} className="px-6">
                 {t("nav.settings")}
               </TabsTrigger>
             </div>
@@ -116,9 +113,6 @@ function App() {
 
           <TabsContent value="packs" className="w-ful h-full">
             <Packs />
-          </TabsContent>
-          <TabsContent value="edit" className="w-ful h-full">
-            Edit your packs here.
           </TabsContent>
           <TabsContent value="settings" className="w-ful h-full">
             <Settings />
