@@ -79,13 +79,13 @@ export default function Settings() {
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="general" className="w-full">
+      <TabsContent value="general" className="w-full h-[calc(100vh-5.5rem)] overflow-y-auto">
         <SettingsGroup className="flex flex-col items-start px-4 py-2 w-full h-full">
           <LocaleSetting />
           <ThemeSetting />
         </SettingsGroup>
       </TabsContent>
-      <TabsContent value="app" className="w-full">
+      <TabsContent value="app" className="w-full h-[calc(100vh-5.5rem)] overflow-y-auto">
         <SettingsGroup className="flex flex-col items-start px-4 py-2 w-full h-full">
           <ThemeSetting />
           <WindowEffectSetting />
@@ -95,13 +95,13 @@ export default function Settings() {
           <SaveWindowStatusSetting />
         </SettingsGroup>
       </TabsContent>
-      <TabsContent value="icon_pack" className="w-full">
+      <TabsContent value="icon_pack" className="w-full h-[calc(100vh-5.5rem)] overflow-y-auto">
         <SettingsGroup className="flex flex-col items-start px-4 py-2 w-full h-full">
           <MatchByDestinationSetting />
           <RenameMatchedFilesSetting />
         </SettingsGroup>
       </TabsContent>
-      <TabsContent value="system" className="w-full">
+      <TabsContent value="system" className="w-full h-[calc(100vh-5.5rem)] overflow-y-auto">
         Edit your system settings here.
       </TabsContent>
       <TabsContent value="advanced" className="w-full">
@@ -112,7 +112,7 @@ export default function Settings() {
           <ImportExportSetting />
         </SettingsGroup>
       </TabsContent>
-      <TabsContent value="update" className="w-full">
+      <TabsContent value="update" className="w-full h-[calc(100vh-5.5rem)] overflow-y-auto">
         <SettingsGroup className="flex flex-col items-start px-4 py-2 w-full h-full">
           <CheckForUpdatesSetting />
           <UpdateSetting />
