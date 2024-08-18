@@ -99,7 +99,7 @@ function App() {
       <div className="flex flex-col h-dvh">
         <TitleBar />
         <Tabs value={tab} className="flex flex-col w-full h-full">
-          <TabsList className="shadow-bottom-xs z-10 justify-between px-3 py-7 rounded-none w-full h-12">
+          <TabsList className="shadow-bottom-xs z-30 justify-between px-3 py-7 rounded-none w-full h-12">
             <div>
               <TabsTrigger value="packs" onClick={() => setTab("packs")} disabled={getValue("editingIconPack")} className="px-6">
                 {t("nav.my_packs")}

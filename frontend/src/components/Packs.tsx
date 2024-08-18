@@ -98,7 +98,7 @@ export default function Packs() {
   return (
     <Tabs value={selectedPackId} className="flex flex-row w-full h-full">
       <TabsList
-        className={`flex-col justify-start px-2 rounded-none h-[calc(100vh-5.5rem)] overflow-y-auto shrink-0 transition-all duration-300`}
+        className={`flex-col justify-start px-2 rounded-none h-[calc(100vh-5.5rem)] overflow-y-auto shrink-0 transition-all duration-300 z-20`}
         style={{ width: editingIconPack ? "6rem" : "24rem" }}
       >
         {iconPacks?.map((pack) => (
@@ -751,7 +751,7 @@ function PackEdit({
 
   return (
     <div className="flex flex-col w-full">
-      <div className="shadow-bottom-sm flex justify-between items-center bg-muted px-3 h-16">
+      <div className="shadow-bottom-sm flex justify-between items-center bg-muted backdrop-contrast-50 dark:backdrop-contrast-200 px-3 h-16">
         <div className="flex flex-wrap gap-1.5">
           <Button
             variant={"secondary"}
