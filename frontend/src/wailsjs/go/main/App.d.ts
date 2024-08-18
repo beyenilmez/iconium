@@ -10,11 +10,13 @@ export function AddFilesToIconPackFromFolder(arg1:string,arg2:string,arg3:boolea
 
 export function AddFilesToIconPackFromPath(arg1:string,arg2:Array<string>,arg3:boolean):Promise<void>;
 
-export function AddIconPack(arg1:string,arg2:string,arg3:string,arg4:string):Promise<void>;
+export function AddIconPack(arg1:string,arg2:string,arg3:string):Promise<void>;
 
 export function ApplyIconPack(arg1:string):Promise<void>;
 
 export function CheckForUpdate():Promise<main.UpdateInfo>;
+
+export function ClearTempPngPaths():Promise<void>;
 
 export function DeleteIconPack(arg1:string,arg2:boolean):Promise<void>;
 
@@ -32,9 +34,11 @@ export function GetIconFolder():Promise<string>;
 
 export function GetIconPack(arg1:string):Promise<main.IconPack>;
 
-export function GetIconPackInfo():Promise<Array<main.IconPack>>;
+export function GetIconPackList():Promise<Array<main.IconPack>>;
 
 export function GetLoadConfigPath():Promise<string>;
+
+export function GetTempPng(arg1:string):Promise<string>;
 
 export function GetVersion():Promise<string>;
 
@@ -52,7 +56,13 @@ export function SendNotification(arg1:string,arg2:string,arg3:string,arg4:string
 
 export function SetConfigField(arg1:string,arg2:any):Promise<void>;
 
-export function SetIconPackInfo(arg1:main.IconPack):Promise<void>;
+export function SetIconPack(arg1:main.IconPack):Promise<void>;
+
+export function SetIconPackField(arg1:string,arg2:string,arg3:string,arg4:any):Promise<void>;
+
+export function SetIconPackMetadata(arg1:string,arg2:main.Metadata):Promise<void>;
+
+export function UUID():Promise<string>;
 
 export function Update(arg1:string):Promise<void>;
 

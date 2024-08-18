@@ -18,8 +18,8 @@ export function AddFilesToIconPackFromPath(arg1, arg2, arg3) {
   return window['go']['main']['App']['AddFilesToIconPackFromPath'](arg1, arg2, arg3);
 }
 
-export function AddIconPack(arg1, arg2, arg3, arg4) {
-  return window['go']['main']['App']['AddIconPack'](arg1, arg2, arg3, arg4);
+export function AddIconPack(arg1, arg2, arg3) {
+  return window['go']['main']['App']['AddIconPack'](arg1, arg2, arg3);
 }
 
 export function ApplyIconPack(arg1) {
@@ -28,6 +28,10 @@ export function ApplyIconPack(arg1) {
 
 export function CheckForUpdate() {
   return window['go']['main']['App']['CheckForUpdate']();
+}
+
+export function ClearTempPngPaths() {
+  return window['go']['main']['App']['ClearTempPngPaths']();
 }
 
 export function DeleteIconPack(arg1, arg2) {
@@ -62,12 +66,16 @@ export function GetIconPack(arg1) {
   return window['go']['main']['App']['GetIconPack'](arg1);
 }
 
-export function GetIconPackInfo() {
-  return window['go']['main']['App']['GetIconPackInfo']();
+export function GetIconPackList() {
+  return window['go']['main']['App']['GetIconPackList']();
 }
 
 export function GetLoadConfigPath() {
   return window['go']['main']['App']['GetLoadConfigPath']();
+}
+
+export function GetTempPng(arg1) {
+  return window['go']['main']['App']['GetTempPng'](arg1);
 }
 
 export function GetVersion() {
@@ -102,8 +110,20 @@ export function SetConfigField(arg1, arg2) {
   return window['go']['main']['App']['SetConfigField'](arg1, arg2);
 }
 
-export function SetIconPackInfo(arg1) {
-  return window['go']['main']['App']['SetIconPackInfo'](arg1);
+export function SetIconPack(arg1) {
+  return window['go']['main']['App']['SetIconPack'](arg1);
+}
+
+export function SetIconPackField(arg1, arg2, arg3, arg4) {
+  return window['go']['main']['App']['SetIconPackField'](arg1, arg2, arg3, arg4);
+}
+
+export function SetIconPackMetadata(arg1, arg2) {
+  return window['go']['main']['App']['SetIconPackMetadata'](arg1, arg2);
+}
+
+export function UUID() {
+  return window['go']['main']['App']['UUID']();
 }
 
 export function Update(arg1) {

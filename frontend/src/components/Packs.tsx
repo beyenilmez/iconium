@@ -8,15 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import {
-  CircleHelp,
-  Edit,
-  Loader2,
-  Monitor,
-  Pencil,
-  Trash,
-  Upload,
-} from "lucide-react";
+import { Edit, Loader2, Monitor, Pencil, Trash, Upload } from "lucide-react";
 import {
   AreYouSureDialog,
   AreYouSureDialogRef,
@@ -35,11 +27,13 @@ import {
   AddFilesToIconPackFromPath,
   AddIconPack,
   ApplyIconPack,
+  ClearTempPngPaths,
   DeleteIconPack,
   GetIconFiles,
   GetIconPack,
-  GetIconPackInfo,
-  SetIconPackInfo,
+  GetIconPackList,
+  SetIconPackField,
+  SetIconPackMetadata,
 } from "@/wailsjs/go/main/App";
 import { main } from "@/wailsjs/go/models";
 import {
@@ -68,6 +62,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+
 export default function Packs() {
   const { t } = useTranslation();
   const { setValue } = useStorage();
@@ -77,15 +72,15 @@ export default function Packs() {
     setValue("editingIconPack", editingIconPack);
   });
 
-  const [pack, setPack] = useState("");
-  const [packInfos, setPackInfos] = useState<main.IconPack[]>();
+  const [selectedPackId, setSelectedPackId] = useState("");
+  const [iconPacks, setIconPacks] = useState<main.IconPack[]>();
   const [selectedPackKeyCount, setSelectedPackKeyCount] = useState(0);
 
   const dialogCloseRef = useRef(null);
 
-  const loadPackInfo = async () => {
-    const packInfos = await GetIconPackInfo();
-    setPackInfos(packInfos);
+  const loadIconPacks = async () => {
+    const packs = await GetIconPackList();
+    setIconPacks(packs);
   };
 
   const reloadSelectedPack = () => {
@@ -93,24 +88,31 @@ export default function Packs() {
   };
 
   useEffect(() => {
-    loadPackInfo();
+    loadIconPacks();
   }, []);
 
   useEffect(() => {
     reloadSelectedPack();
-  }, [pack]);
+  }, [selectedPackId]);
 
   return (
-    <Tabs value={pack} className="flex flex-row w-full h-full">
+    <Tabs value={selectedPackId} className="flex flex-row w-full h-full">
       <TabsList
         className={`flex-col justify-start px-2 rounded-none h-[calc(100vh-5.5rem)] overflow-y-auto shrink-0 transition-all duration-300`}
         style={{ width: editingIconPack ? "6rem" : "24rem" }}
       >
-        {packInfos?.map((pack) => (
+        {iconPacks?.map((pack) => (
           <PackTrigger
-            key={pack.metadata.id}
-            iconPack={pack}
-            setPack={setPack}
+            key={
+              pack.metadata.id +
+              pack.metadata.name +
+              pack.metadata.version +
+              pack.metadata.iconName +
+              pack.settings.enabled
+            }
+            packId={pack.metadata.id}
+            selectedPackId={selectedPackId}
+            setSelectedPackId={setSelectedPackId}
             reloadSelectedPack={reloadSelectedPack}
             editingIconPack={editingIconPack}
             disabled={editingIconPack}
@@ -127,13 +129,10 @@ export default function Packs() {
             <DialogClose ref={dialogCloseRef} />
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>
-                  {" "}
-                  {t("my_packs.create_new_pack.title")}
-                </DialogTitle>
+                <DialogTitle>{t("my_packs.create_new_pack.title")}</DialogTitle>
               </DialogHeader>
               <CreatePackForm
-                loadPackInfo={loadPackInfo}
+                loadPackInfo={loadIconPacks}
                 dialogCloseRef={dialogCloseRef}
               />
             </DialogContent>
@@ -141,21 +140,22 @@ export default function Packs() {
         )}
       </TabsList>
 
-      {pack && !editingIconPack && (
+      {selectedPackId && !editingIconPack && (
         <PackContent
           key={selectedPackKeyCount}
-          iconPackId={pack}
-          setPack={setPack}
-          loadPackInfo={loadPackInfo}
+          iconPackId={selectedPackId}
+          setSelectedPackId={setSelectedPackId}
+          loadIconPacks={loadIconPacks}
           setEditingIconPack={setEditingIconPack}
+          reloadSelectedPack={reloadSelectedPack}
         />
       )}
 
-      {pack && editingIconPack && (
+      {selectedPackId && editingIconPack && (
         <PackEdit
-          iconPackId={pack}
-          setPack={setPack}
-          loadPackInfo={loadPackInfo}
+          iconPackId={selectedPackId}
+          setSelectedPackId={setSelectedPackId}
+          loadIconPacks={loadIconPacks}
           setEditingIconPack={setEditingIconPack}
         />
       )}
@@ -164,59 +164,70 @@ export default function Packs() {
 }
 
 interface PackTriggerProps {
-  iconPack: main.IconPack;
-  setPack: (pack: string) => void;
+  packId: string;
+  selectedPackId: string;
+  setSelectedPackId: (packId: string) => void;
   reloadSelectedPack: () => void;
   editingIconPack: boolean;
   disabled?: boolean;
 }
 
 function PackTrigger({
-  iconPack,
-  setPack,
+  packId,
+  selectedPackId,
+  setSelectedPackId,
   reloadSelectedPack,
   editingIconPack,
   disabled,
   ...props
 }: PackTriggerProps) {
-  const [enabledState, setEnabledState] = useState(iconPack.settings.enabled);
+  const [iconPack, setIconPack] = useState<main.IconPack>();
+  const [enabledState, setEnabledState] = useState(false);
 
   useEffect(() => {
-    setEnabledState(iconPack.settings.enabled);
-  }, [iconPack]);
+    GetIconPack(packId).then((iconPack) => {
+      setIconPack(iconPack);
+      setEnabledState(iconPack.settings.enabled);
+    });
+  }, [packId]);
 
   const handleEnable = () => {
-    iconPack.settings.enabled = !iconPack.settings.enabled;
-    SetIconPackInfo(iconPack).then(() => {
-      setEnabledState(!enabledState);
-      reloadSelectedPack();
-    });
+    SetIconPackField(packId, "settings.json", "enabled", !enabledState).then(
+      () => {
+        setEnabledState(!enabledState);
+        if (packId === selectedPackId) {
+          reloadSelectedPack();
+        }
+      }
+    );
   };
 
   return (
     <TabsTrigger
-      value={iconPack.metadata.id}
-      onClick={() => setPack(iconPack.metadata.id)}
+      value={packId}
+      onClick={() => setSelectedPackId(packId)}
       className="flex justify-between p-4 w-full"
       disabled={disabled}
       {...props}
     >
       <div className="flex gap-4 w-full">
-        {iconPack.metadata.icon ? (
-          <img
-            src={iconPack.metadata.icon}
-            alt="pack-icon"
-            className="w-12 h-12"
-          />
-        ) : (
-          <CircleHelp className="w-12 h-12" />
-        )}
+        <Image
+          src={
+            "packs\\" +
+            iconPack?.metadata.id +
+            "\\" +
+            iconPack?.metadata.iconName +
+            ".png"
+          }
+          className="w-12 h-12"
+          unkown
+        />
         {!editingIconPack && (
           <div className="flex flex-col items-start">
             <div className="w-52 text-ellipsis text-left overflow-hidden">
-              {iconPack.metadata.name}
+              {iconPack?.metadata.name}
             </div>
-            <div className="opacity-50 ml-1">{iconPack.metadata.version}</div>
+            <div className="opacity-50 ml-1">{iconPack?.metadata.version}</div>
           </div>
         )}
       </div>
@@ -233,30 +244,29 @@ function PackTrigger({
 
 interface PackContentProps {
   iconPackId: string;
-  setPack: (pack: string) => void;
-  loadPackInfo: () => void;
+  setSelectedPackId: (packId: string) => void;
+  loadIconPacks: () => void;
   setEditingIconPack: (editingIconPack: boolean) => void;
+  reloadSelectedPack: () => void;
 }
 
 function PackContent({
   iconPackId,
-  setPack,
-  loadPackInfo,
+  setSelectedPackId,
+  loadIconPacks,
   setEditingIconPack,
+  reloadSelectedPack,
 }: PackContentProps) {
   const { t } = useTranslation();
 
   const [loading, setLoading] = useState(true);
-  const [editMode, setEditMode] = useState(false);
-  const [iconPackInfo, setIconPackInfo] = useState(
-    main.IconPack.createFrom({})
-  );
-  const [editedIconPackInfo, setEditedIconPackInfo] = useState(
-    main.IconPack.createFrom({})
-  );
+  const [editingMetadata, setEditingMetadata] = useState(false);
+  const [iconPack, setIconPack] = useState<main.IconPack>();
+  const [editedIconPack, setEditedIconPack] = useState<main.IconPack>();
   const dialogRef = useRef<AreYouSureDialogRef>(null);
   const [deleteGeneratedIcons, setDeleteGeneratedIcons] = useState(false);
 
+  const [enabled, setEnabled] = useState(false);
   const [cornerRadius, setCornerRadius] = useState(-1);
   const [opacity, setOpacity] = useState(-1);
 
@@ -268,77 +278,88 @@ function PackContent({
   const running = applyRunning || addIconsFromDesktopRunning || addIconsRunning;
 
   useEffect(() => {
-    GetIconPack(iconPackId).then((iconPack) => {
-      setIconPackInfo(iconPack);
-      setCornerRadius(iconPack.settings.cornerRadius);
-      setOpacity(iconPack.settings.opacity);
+    GetIconPack(iconPackId).then((pack) => {
+      setIconPack(pack);
+      setEnabled(pack.settings.enabled);
+      setOpacity(pack.settings.opacity);
+      setCornerRadius(pack.settings.cornerRadius);
       setLoading(false);
     });
   }, []);
 
-  const handleChange = (
+  const handleMetadataChange = (
     field: keyof main.IconPack["metadata"],
-    value: string,
-    editMode?: boolean
+    value: string
   ) => {
-    const newIconPackInfo = {
-      ...iconPackInfo,
+    if (iconPack === undefined) {
+      return;
+    }
+
+    const newIconPack = {
+      ...iconPack,
       metadata: {
-        ...iconPackInfo.metadata,
+        ...iconPack.metadata,
         [field]: value,
       },
     } as main.IconPack;
 
-    if (editMode) {
-      setEditedIconPackInfo(newIconPackInfo);
-    } else {
-      setIconPackInfo(newIconPackInfo);
-    }
-  };
-
-  const handleEdit = () => {
-    setEditedIconPackInfo(iconPackInfo);
-    setEditMode(true);
-  };
-
-  const handleSave = () => {
-    setIconPackInfo(editedIconPackInfo);
-    SetIconPackInfo(editedIconPackInfo).then(() => {
-      loadPackInfo();
-    });
-    setEditMode(false);
-  };
-
-  const handleCancel = () => {
-    setEditMode(false);
-  };
-
-  const handleDelete = () => {
-    DeleteIconPack(iconPackId, deleteGeneratedIcons).then(() => {
-      setPack("");
-      loadPackInfo();
-    });
+    setEditedIconPack(newIconPack);
   };
 
   const handleSettingChange = (
     field: keyof main.IconPack["settings"],
-    value: boolean | number,
-    editMode?: boolean
+    value: boolean | number
   ) => {
-    const newIconPackInfo = {
-      ...iconPackInfo,
-      settings: {
-        ...iconPackInfo.settings,
-        [field]: value,
-      },
-    } as main.IconPack;
-
-    if (editMode) {
-      setEditedIconPackInfo(newIconPackInfo);
-    } else {
-      setIconPackInfo(newIconPackInfo);
-      SetIconPackInfo(newIconPackInfo).then(loadPackInfo);
+    if (iconPack === undefined) {
+      return;
     }
+
+    SetIconPackField(iconPackId, "settings.json", field, value).then(() => {
+      const newIconPack = {
+        ...iconPack,
+        settings: {
+          ...iconPack.settings,
+          [field]: value,
+        },
+      } as main.IconPack;
+
+      setIconPack(newIconPack);
+
+      if (field === "enabled") {
+        console.log("loadIconPacks");
+        loadIconPacks();
+      }
+    });
+  };
+
+  const handleEditStart = () => {
+    setEditedIconPack(iconPack);
+    setEditingMetadata(true);
+  };
+
+  const handleEditSave = () => {
+    if (editedIconPack === undefined) {
+      return;
+    }
+
+    SetIconPackMetadata(iconPackId, editedIconPack.metadata).then(() => {
+      setIconPack(editedIconPack);
+      loadIconPacks();
+      reloadSelectedPack();
+      setEditingMetadata(false);
+    });
+  };
+
+  const handleEditCancel = () => {
+    setEditingMetadata(false);
+    ClearTempPngPaths();
+  };
+
+  const handleDelete = () => {
+    DeleteIconPack(iconPackId, deleteGeneratedIcons).then(() => {
+      setSelectedPackId("");
+      loadIconPacks();
+    });
   };
 
   const fields: (keyof main.IconPack["metadata"])[] = [
@@ -353,7 +374,7 @@ function PackContent({
 
   const handleApplyIconPack = () => {
     setApplyRunning(true);
-    ApplyIconPack(iconPackInfo.metadata.id).finally(() => {
+    ApplyIconPack(iconPackId).finally(() => {
       setApplyRunning(false);
     });
   };
@@ -361,10 +382,10 @@ function PackContent({
   const handleAddIconsFromDesktop = () => {
     setAddIconsFromDesktopRunning(true);
 
-    AddFilesToIconPackFromDesktop(iconPackInfo.metadata.id).then(() => {
-      GetIconPack(iconPackInfo.metadata.id)
-        .then((iconPack) => {
-          setIconPackInfo(iconPack);
+    AddFilesToIconPackFromDesktop(iconPackId).then(() => {
+      GetIconPack(iconPackId)
+        .then((pack) => {
+          setIconPack(pack);
         })
         .finally(() => {
           setAddIconsFromDesktopRunning(false);
@@ -377,17 +398,15 @@ function PackContent({
       if (files) {
         setAddIconsRunning(true);
 
-        AddFilesToIconPackFromPath(iconPackInfo.metadata.id, files, true).then(
-          () => {
-            GetIconPack(iconPackInfo.metadata.id)
-              .then((iconPack) => {
-                setIconPackInfo(iconPack);
-              })
-              .finally(() => {
-                setAddIconsRunning(false);
-              });
-          }
-        );
+        AddFilesToIconPackFromPath(iconPackId, files, true).then(() => {
+          GetIconPack(iconPackId)
+            .then((pack) => {
+              setIconPack(pack);
+            })
+            .finally(() => {
+              setAddIconsRunning(false);
+            });
+        });
       }
     });
   };
@@ -399,7 +418,7 @@ function PackContent({
     }
   }, []);
 
-  if (loading) {
+  if (loading || iconPack === undefined) {
     return (
       <div className="flex flex-col gap-4 p-4 w-full h-full">
         <Skeleton className="w-full h-1/3" />
@@ -422,15 +441,16 @@ function PackContent({
         <div className="flex flex-row justify-between items-end gap-6">
           <div className="flex items-center gap-6">
             <SelectImage
-              icon={
-                editMode
-                  ? editedIconPackInfo.metadata.icon
-                  : iconPackInfo.metadata.icon
+              src={
+                "packs\\" +
+                iconPackId +
+                "\\" +
+                iconPack.metadata.iconName +
+                ".png"
               }
-              onIconChange={(icon) => handleChange("icon", icon, true)}
-              sizeClass="w-12 h-12"
-              editSizeClass="w-7 h-7"
-              editable={editMode}
+              packId={iconPackId}
+              editable={editingMetadata}
+              unkown
             />
             <div className="flex flex-row gap-8">
               {fields.map((field) => (
@@ -442,26 +462,28 @@ function PackContent({
                         ".label"
                     )}
                   </div>
-                  {editMode ? (
+                  {editingMetadata ? (
                     <Input
-                      value={editedIconPackInfo.metadata[field]}
+                      value={
+                        editedIconPack?.metadata[field]
+                          ? editedIconPack.metadata[field]
+                          : ""
+                      }
                       onChange={(e) =>
-                        handleChange(field, e.target.value, true)
+                        handleMetadataChange(field, e.target.value)
                       }
                     />
                   ) : (
-                    <div className="opacity-60">
-                      {iconPackInfo.metadata[field]}
-                    </div>
+                    <div className="opacity-60">{iconPack.metadata[field]}</div>
                   )}
                 </div>
               ))}
             </div>
           </div>
           <div className="flex h-full">
-            {!editMode ? (
+            {!editingMetadata ? (
               <>
-                <Button variant="ghost" size="icon" onClick={handleEdit}>
+                <Button variant="ghost" size="icon" onClick={handleEditStart}>
                   <Edit className="w-6 h-6" />
                 </Button>
                 <Button variant="ghost" size="icon" onClick={openDialog}>
@@ -496,13 +518,13 @@ function PackContent({
               </>
             ) : (
               <>
-                <Button variant="outline" onClick={handleSave}>
+                <Button variant="outline" onClick={handleEditSave}>
                   {t("save")}
                 </Button>
                 <Button
                   variant="outline"
                   className="ml-2"
-                  onClick={handleCancel}
+                  onClick={handleEditCancel}
                 >
                   {t("cancel")}
                 </Button>
@@ -578,10 +600,11 @@ function PackContent({
           </SettingLabel>
           <SettingContent>
             <Switch
-              checked={iconPackInfo.settings.enabled}
-              onCheckedChange={(enabled) =>
-                handleSettingChange("enabled", enabled)
-              }
+              checked={enabled}
+              onCheckedChange={(enabled) => {
+                setEnabled(enabled as boolean);
+                handleSettingChange("enabled", enabled);
+              }}
             />
           </SettingContent>
         </SettingsItem>
@@ -605,7 +628,7 @@ function PackContent({
                 onPointerUp={() =>
                   handleSettingChange("cornerRadius", cornerRadius)
                 }
-                defaultValue={[iconPackInfo.settings.cornerRadius]}
+                defaultValue={[iconPack.settings.cornerRadius]}
                 min={0}
                 max={50}
                 step={1}
@@ -634,7 +657,7 @@ function PackContent({
               <Slider
                 onValueChange={(value) => setOpacity(value[0] as number)}
                 onPointerUp={() => handleSettingChange("opacity", opacity)}
-                defaultValue={[iconPackInfo.settings.opacity]}
+                defaultValue={[iconPack.settings.opacity]}
                 min={10}
                 max={100}
                 step={1}
@@ -652,17 +675,11 @@ function PackContent({
           {t("my_packs.card.icons.label")}
         </div>
         <div className="flex flex-wrap gap-2">
-          {iconPackInfo.files?.map((file) =>
+          {iconPack.files?.map((file) =>
             file.hasIcon ? (
               <Image
                 key={file.id}
-                src={
-                  "packs\\" +
-                  iconPackInfo.metadata.id +
-                  "\\icons\\" +
-                  file.id +
-                  ".png"
-                }
+                src={"packs\\" + iconPackId + "\\icons\\" + file.id + ".png"}
                 className="w-10 h-10"
                 cornerRadius={cornerRadius}
                 opacity={opacity}
@@ -675,18 +692,23 @@ function PackContent({
   );
 }
 
+interface PackEditProps {
+  iconPackId: string;
+  setSelectedPackId: (packId: string) => void;
+  loadIconPacks: () => void;
+  setEditingIconPack: (editingIconPack: boolean) => void;
+}
+
 function PackEdit({
   iconPackId,
-  setPack,
-  loadPackInfo,
+  setSelectedPackId: setPack,
+  loadIconPacks: loadPackInfo,
   setEditingIconPack,
-}: PackContentProps) {
+}: PackEditProps) {
   const { t } = useTranslation();
 
   const [loading, setLoading] = useState(true);
-  const [iconPackInfo, setIconPackInfo] = useState(
-    main.IconPack.createFrom({})
-  );
+  const [iconPack, setIconPack] = useState<main.IconPack>();
 
   const [addIconsFromDesktopRunning, setAddIconsFromDesktopRunning] =
     useState(false);
@@ -694,8 +716,8 @@ function PackEdit({
   const running = addIconsFromDesktopRunning || addIconsRunning;
 
   useEffect(() => {
-    GetIconPack(iconPackId).then((iconPack) => {
-      setIconPackInfo(iconPack);
+    GetIconPack(iconPackId).then((pack) => {
+      setIconPack(pack);
       setLoading(false);
     });
   }, []);
@@ -716,7 +738,7 @@ function PackEdit({
     }, 2000);
   };
 
-  if (loading) {
+  if (loading || iconPack === undefined) {
     return (
       <div className="flex flex-col gap-4 p-4 w-full h-full">
         <Skeleton className="w-full h-1/3" />
@@ -765,14 +787,14 @@ function PackEdit({
       </div>
       <div className="flex flex-col h-[calc(100vh-5.5rem-4rem)] w-full overflow-x-hidden overflow-y-auto">
         <Accordion type="single" collapsible className="w-full">
-          {iconPackInfo.files.map((file) => (
+          {iconPack.files.map((file) => (
             <AccordionItem value={file.id}>
               <AccordionTrigger className="p-2">
                 <div className="flex items-center gap-2">
                   <Image
                     src={
                       "packs\\" +
-                      iconPackInfo.metadata.id +
+                      iconPack.metadata.id +
                       "\\icons\\" +
                       file.id +
                       ".png"
@@ -848,11 +870,18 @@ function CreatePackForm({ loadPackInfo, dialogCloseRef }: CreatePackFormProps) {
   });
 
   function onSubmit(data: z.infer<typeof formSchema>) {
-    AddIconPack(data.name, data.version, data.author, data.icon).then(() => {
+    AddIconPack(data.name, data.version, data.author).then(() => {
       loadPackInfo();
       dialogCloseRef.current?.click();
     });
   }
+
+  useEffect(() => {  
+    return () => {
+      // This function runs before the component unmounts
+      ClearTempPngPaths();
+    };
+  }, []);
 
   return (
     <Form {...form}>
@@ -864,17 +893,12 @@ function CreatePackForm({ loadPackInfo, dialogCloseRef }: CreatePackFormProps) {
         <FormField
           control={form.control}
           name="icon"
-          render={({ field }) => (
+          render={() => (
             <FormItem className="flex flex-col gap-1">
               <FormLabel>
                 {t("my_packs.card.pack_information.information.icon.label")}
               </FormLabel>
-              <SelectImage
-                icon={field.value}
-                sizeClass="w-12 h-12"
-                editSizeClass="w-7 h-7"
-                onIconChange={(icon) => form.setValue("icon", icon)}
-              />
+              <SelectImage editable />
               <FormMessage />
             </FormItem>
           )}
@@ -890,6 +914,7 @@ function CreatePackForm({ loadPackInfo, dialogCloseRef }: CreatePackFormProps) {
               </FormLabel>
               <FormControl>
                 <Input
+                  autoComplete="new-password"
                   placeholder={t(
                     "my_packs.card.pack_information.information.name.placeholder"
                   )}
@@ -910,6 +935,7 @@ function CreatePackForm({ loadPackInfo, dialogCloseRef }: CreatePackFormProps) {
               </FormLabel>
               <FormControl>
                 <Input
+                  autoComplete="new-password"
                   placeholder={t(
                     "my_packs.card.pack_information.information.version.placeholder"
                   )}
@@ -930,6 +956,7 @@ function CreatePackForm({ loadPackInfo, dialogCloseRef }: CreatePackFormProps) {
               </FormLabel>
               <FormControl>
                 <Input
+                  autoComplete="new-password"
                   placeholder={t(
                     "my_packs.card.pack_information.information.author.placeholder"
                   )}

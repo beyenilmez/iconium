@@ -105,7 +105,7 @@ export namespace main {
 	    name: string;
 	    version: string;
 	    author: string;
-	    icon: string;
+	    iconName: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new Metadata(source);
@@ -117,7 +117,7 @@ export namespace main {
 	        this.name = source["name"];
 	        this.version = source["version"];
 	        this.author = source["author"];
-	        this.icon = source["icon"];
+	        this.iconName = source["iconName"];
 	    }
 	}
 	export class IconPack {

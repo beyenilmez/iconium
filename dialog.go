@@ -1,9 +1,12 @@
 package main
 
 import (
+	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
@@ -90,6 +93,48 @@ func (a *App) GetBase64Png() string {
 	runtime.LogInfo(a.ctx, "Image selected: "+path)
 
 	return base64Png
+}
+
+func (a *App) GetTempPng(id string) string {
+	oldPackPngPath, ok := tempPngPaths[id]
+
+	tempPackPngPath := filepath.Join(tempFolder, "iconium-"+uuid.NewString()+".png")
+
+	path, err := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
+		Title: "Select image",
+		Filters: []runtime.FileFilter{
+			{
+				DisplayName: "PNG",
+				Pattern:     "*.png",
+			},
+		},
+	})
+
+	if err != nil {
+		runtime.LogWarning(a.ctx, err.Error())
+		return ""
+	}
+	if path == "" {
+		return ""
+	}
+
+	err = copy_file(path, tempPackPngPath)
+	if err != nil {
+		runtime.LogErrorf(a.ctx, "Error copying pack.png file: %s", err.Error())
+		return ""
+	}
+
+	runtime.LogInfof(a.ctx, "Trimming path: %s (cut %s)", tempPackPngPath, appFolder)
+	trimmedPath := strings.TrimPrefix(tempPackPngPath, appFolder)
+
+	tempPngPaths[id] = tempPackPngPath
+
+	// Remove old pack png
+	if ok {
+		os.Remove(oldPackPngPath)
+	}
+
+	return trimmedPath
 }
 
 func (a *App) GetIconFolder() string {

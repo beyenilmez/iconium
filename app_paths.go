@@ -6,7 +6,6 @@ import (
 	"io/fs"
 	"os"
 	"os/user"
-	"path"
 	"path/filepath"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -16,6 +15,8 @@ import (
 var scriptsFolderEmbedded embed.FS
 
 var setLnkIconScriptPath string
+
+var appFolder string
 
 var packsFolder string
 var logsFolder string
@@ -30,6 +31,8 @@ var appIconPath string
 var installationDirectory string
 var imageMagickPath string
 
+var tempPngPaths map[string]string = map[string]string{}
+
 func path_init() error {
 	appData, err := os.UserConfigDir()
 	if err != nil {
@@ -40,19 +43,19 @@ func path_init() error {
 	}
 	runtime.LogDebug(appContext, "Found user config directory: "+appData)
 
-	appFolder := path.Join(appData, "iconium")
+	appFolder = filepath.Join(appData, "iconium")
 
-	packsFolder = path.Join(appFolder, "packs")
-	logsFolder = path.Join(appFolder, "logs")
-	savedConfigFolder = path.Join(appFolder, "savedconfigs")
-	activeIconFolder = path.Join(appFolder, "icons")
-	tempFolder = path.Join(appFolder, "temp")
-	maskFolder = path.Join(appFolder, "masks")
-	scriptsFolder = path.Join(appFolder, "scripts")
+	packsFolder = filepath.Join(appFolder, "packs")
+	logsFolder = filepath.Join(appFolder, "logs")
+	savedConfigFolder = filepath.Join(appFolder, "savedconfigs")
+	activeIconFolder = filepath.Join(appFolder, "icons")
+	tempFolder = filepath.Join(appFolder, "temp")
+	maskFolder = filepath.Join(appFolder, "masks")
+	scriptsFolder = filepath.Join(appFolder, "scripts")
 
-	configPath = path.Join(appFolder, "config.json")
-	appIconPath = path.Join(appFolder, "appicon.png")
-	setLnkIconScriptPath = path.Join(scriptsFolder, "setlnkicon.vbs")
+	configPath = filepath.Join(appFolder, "config.json")
+	appIconPath = filepath.Join(appFolder, "appicon.png")
+	setLnkIconScriptPath = filepath.Join(scriptsFolder, "setlnkicon.vbs")
 
 	runtime.LogTrace(appContext, "Attempting to create folders")
 	err = create_folder(appFolder)
@@ -170,7 +173,7 @@ func path_init() error {
 }
 
 func get_logs_folder() (string, error) {
-	logsFolder = path.Join(os.Getenv("APPDATA"), "iconium", "logs")
+	logsFolder = filepath.Join(os.Getenv("APPDATA"), "iconium", "logs")
 
 	// Create folder if it doesn't exist
 	if _, err := os.Stat(logsFolder); os.IsNotExist(err) {
@@ -183,7 +186,7 @@ func get_logs_folder() (string, error) {
 }
 
 func get_config_path() string {
-	configPath = path.Join(os.Getenv("APPDATA"), "iconium", "config.json")
+	configPath = filepath.Join(os.Getenv("APPDATA"), "iconium", "config.json")
 
 	return configPath
 }
@@ -203,4 +206,17 @@ func get_desktop_paths() (string, string) {
 	public := filepath.Join(publicDir, "Desktop")
 
 	return desktop, public
+}
+
+func (a *App) ClearTempPngPaths() {
+	for k := range tempPngPaths {
+		err := os.Remove(tempPngPaths[k])
+		if err != nil {
+			runtime.LogErrorf(appContext, "Error removing tempPngPath: %s", err)
+			continue
+		}
+		delete(tempPngPaths, k)
+	}
+
+	runtime.LogDebug(appContext, "Cleared tempPngPaths")
 }

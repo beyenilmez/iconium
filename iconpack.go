@@ -7,6 +7,7 @@ import (
 	"path"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -28,11 +29,11 @@ type FileInfo struct {
 }
 
 type Metadata struct {
-	Id      string `json:"id"`
-	Name    string `json:"name"`
-	Version string `json:"version"`
-	Author  string `json:"author"`
-	Icon    string `json:"icon"`
+	Id       string `json:"id"`
+	Name     string `json:"name"`
+	Version  string `json:"version"`
+	Author   string `json:"author"`
+	IconName string `json:"iconName"`
 }
 
 type IconPack struct {
@@ -49,17 +50,14 @@ type IconPackSettings struct {
 
 var allowedFileExtensions = []string{".lnk"}
 
-var iconPacks []IconPack
-
 var iconPackCache map[string]IconPack = map[string]IconPack{}
 
-func CreateIconPack(name string, version string, author string, icon string) (IconPack, error) {
+func CreateIconPack(name string, version string, author string) (IconPack, error) {
 	var iconPack IconPack
 	iconPack.Metadata.Id = uuid.NewString()
 	iconPack.Metadata.Name = name
 	iconPack.Metadata.Version = version
 	iconPack.Metadata.Author = author
-	iconPack.Metadata.Icon = icon
 	iconPack.Files = []FileInfo{}
 
 	iconPack.Settings.Enabled = false
@@ -134,115 +132,186 @@ func ReadIconPack(id string) (IconPack, error) {
 	return iconPack, nil
 }
 
-func (a *App) GetIconPack(id string) IconPack {
+func (a *App) GetIconPack(id string) (IconPack, error) {
 	if iconPack, ok := iconPackCache[id]; ok {
-		return iconPack
+		return iconPack, nil
 	}
 
 	iconPack, err := ReadIconPack(id)
 
 	if err != nil {
 		runtime.LogError(a.ctx, fmt.Sprintf("Failed to read icon pack: %s", err.Error()))
-		return IconPack{}
+		return IconPack{}, err
 	}
 
-	return iconPack
+	return iconPack, nil
 }
 
-func GetIconPackInfo() ([]IconPack, error) {
-	files, err := os.ReadDir(packsFolder)
+func (a *App) SetIconPack(iconPack IconPack) error {
+	err := WriteIconPack(iconPack)
+
 	if err != nil {
-		return nil, err
+		runtime.LogError(a.ctx, fmt.Sprintf("Failed to write icon pack: %s", err.Error()))
+		return err
 	}
 
-	// Sort files by added date
-	sort.Slice(files, func(i, j int) bool {
-		infoI, err := os.Stat(path.Join(packsFolder, files[i].Name()))
+	return nil
+}
+
+func (a *App) SetIconPackField(packId string, fileName string, field string, value interface{}) {
+	// Check if the icon pack exists
+	iconPack, err := a.GetIconPack(packId)
+	if err != nil {
+		runtime.LogError(appContext, fmt.Sprintf("Icon pack %s not found: %s", packId, err.Error()))
+		return
+	}
+
+	packFolder := path.Join(packsFolder, packId)
+
+	// Check if the file exists
+	filePath := path.Join(packFolder, fileName)
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		runtime.LogError(appContext, fmt.Sprintf("File %s not found", filePath))
+		return
+	}
+
+	// Read the file
+	var jsonData map[string]interface{}
+	err = readJSON(filePath, &jsonData)
+	if err != nil {
+		runtime.LogError(appContext, fmt.Sprintf("Failed to read file %s: %s", filePath, err.Error()))
+		return
+	}
+
+	// Set the field
+	jsonData[field] = value
+
+	// Write the file
+	err = writeJSON(filePath, jsonData)
+	if err != nil {
+		runtime.LogError(appContext, fmt.Sprintf("Failed to write file %s: %s", filePath, err.Error()))
+		return
+	}
+
+	// Update cache
+	switch fileName {
+	case "metadata.json":
+		switch field {
+		case "id":
+			iconPack.Metadata.Id = value.(string)
+		case "name":
+			iconPack.Metadata.Name = value.(string)
+		case "version":
+			iconPack.Metadata.Version = value.(string)
+		case "author":
+			iconPack.Metadata.Author = value.(string)
+		}
+	case "settings.json":
+		switch field {
+		case "enabled":
+			iconPack.Settings.Enabled = value.(bool)
+		case "cornerRadius":
+			intVal, err := strconv.Atoi(fmt.Sprintf("%v", value))
+			if err != nil {
+				runtime.LogWarning(appContext, fmt.Sprintf("Failed to convert %v to int: %s", value, err.Error()))
+				return
+			}
+			iconPack.Settings.CornerRadius = intVal
+		case "opacity":
+			intVal, err := strconv.Atoi(fmt.Sprintf("%v", value))
+			if err != nil {
+				runtime.LogWarning(appContext, fmt.Sprintf("Failed to convert %v to int: %s", value, err.Error()))
+				return
+			}
+			iconPack.Settings.Opacity = intVal
+		}
+	}
+
+	a.SetIconPack(iconPack)
+}
+
+func (a *App) SetIconPackMetadata(packId string, metadata Metadata) {
+	// Check if the icon pack exists
+	iconPack, err := a.GetIconPack(packId)
+	if err != nil {
+		runtime.LogError(appContext, fmt.Sprintf("Icon pack %s not found: %s", packId, err.Error()))
+		return
+	}
+
+	tempPackPngPath, ok := tempPngPaths[packId]
+
+	if ok {
+		runtime.LogDebugf(appContext, "Copying temp pack png: %s", tempPackPngPath)
+
+		metadata.IconName = uuid.New().String()
+
+		// Copy temp pack png
+		err = copy_file(tempPackPngPath, path.Join(packsFolder, iconPack.Metadata.Id, metadata.IconName+".png"))
 		if err != nil {
-			return false
+			runtime.LogError(appContext, fmt.Sprintf("Failed to copy temp pack png: %s", err.Error()))
+			return
 		}
 
-		infoJ, err := os.Stat(path.Join(packsFolder, files[j].Name()))
+		// Remove temp pack png
+		err = os.Remove(tempPackPngPath)
 		if err != nil {
-			return false
+			runtime.LogError(appContext, fmt.Sprintf("Failed to remove temp pack png: %s", err.Error()))
+			return
 		}
+		delete(tempPngPaths, packId)
 
-		return infoI.ModTime().Before(infoJ.ModTime())
-	})
+		os.Remove(path.Join(packsFolder, iconPack.Metadata.Id, iconPack.Metadata.IconName+".png"))
+	}
+
+	// Update cache
+	iconPack.Metadata = metadata
+	a.SetIconPack(iconPack)
+}
+
+func CacheIconPacks() error {
+	// Clear cache
+	for k := range iconPackCache {
+		delete(iconPackCache, k)
+	}
+
+	files, err := os.ReadDir(packsFolder)
+	if err != nil {
+		return err
+	}
 
 	for _, file := range files {
 		if file.IsDir() {
-			packPath := path.Join(packsFolder, file.Name())
-			metadataPath := path.Join(packPath, "metadata.json")
-			settingsPath := path.Join(packPath, "settings.json")
+			iconPack, err := ReadIconPack(file.Name())
 
-			if _, err := os.Stat(metadataPath); os.IsNotExist(err) {
+			if err != nil {
+				runtime.LogWarningf(appContext, fmt.Sprintf("Failed to read icon pack (%s): %s", file.Name(), err.Error()))
 				continue
 			}
 
-			if _, err := os.Stat(settingsPath); os.IsNotExist(err) {
-				continue
-			}
-
-			var metadata Metadata
-			var settings IconPackSettings
-
-			if err := readJSON(metadataPath, &metadata); err != nil {
-				return nil, err
-			}
-
-			if err := readJSON(settingsPath, &settings); err != nil {
-				return nil, err
-			}
-
-			iconPacks = append(iconPacks, IconPack{
-				Metadata: metadata,
-				Settings: settings,
-			})
-
-			cachedPack := iconPackCache[metadata.Id]
-			if cachedPack.Metadata.Id == metadata.Id {
-				cachedPack.Metadata = metadata
-				cachedPack.Settings = settings
-				iconPackCache[metadata.Id] = cachedPack
-			}
+			iconPackCache[iconPack.Metadata.Id] = iconPack
 		}
 	}
 
-	return iconPacks, nil
+	return nil
 }
 
-func (a *App) GetIconPackInfo() []IconPack {
-	if iconPacks == nil {
-		iconPacks, _ = GetIconPackInfo()
+func (a *App) GetIconPackList() []IconPack {
+	if len(iconPackCache) == 0 {
+		CacheIconPacks()
 	}
+
+	iconPacks := make([]IconPack, 0, len(iconPackCache))
+
+	for _, iconPack := range iconPackCache {
+		iconPacks = append(iconPacks, iconPack)
+	}
+
+	// Sort icon packs by name
+	sort.Slice(iconPacks, func(i, j int) bool {
+		return iconPacks[i].Metadata.Name < iconPacks[j].Metadata.Name
+	})
 
 	return iconPacks
-}
-
-func (a *App) SetIconPackInfo(iconPack IconPack) {
-	metadataFile := path.Join(packsFolder, iconPack.Metadata.Id, "metadata.json")
-	settingsFile := path.Join(packsFolder, iconPack.Metadata.Id, "settings.json")
-
-	if err := writeJSON(metadataFile, iconPack.Metadata); err != nil {
-		runtime.LogError(a.ctx, fmt.Sprintf("Failed to write metadata file: %s", err.Error()))
-	}
-	if err := writeJSON(settingsFile, iconPack.Settings); err != nil {
-		runtime.LogError(a.ctx, fmt.Sprintf("Failed to write settings file: %s", err.Error()))
-	}
-
-	for i, pack := range iconPacks {
-		if pack.Metadata.Id == iconPack.Metadata.Id {
-			iconPacks[i] = iconPack
-			cachedPack := iconPackCache[iconPack.Metadata.Id]
-			if cachedPack.Metadata.Id == iconPack.Metadata.Id {
-				cachedPack.Metadata = iconPack.Metadata
-				cachedPack.Settings = iconPack.Settings
-				iconPackCache[iconPack.Metadata.Id] = cachedPack
-			}
-			break
-		}
-	}
 }
 
 func CreateFileInfo(packId string, path string) (FileInfo, error) {
@@ -288,13 +357,10 @@ func CreateFileInfo(packId string, path string) (FileInfo, error) {
 		return FileInfo{}, err
 	}
 	defer file.Close()
-
 	fileStat, err := file.Stat()
-
 	if err != nil {
 		return FileInfo{}, err
 	}
-
 	if fileStat.IsDir() {
 		fileInfo.Extension = "dir"
 	}
@@ -320,16 +386,36 @@ func GetAppliedIcon(path string) (string, error) {
 	return "", errors.New("icon not found")
 }
 
-func (a *App) AddIconPack(name string, version string, author string, icon string) error {
-	iconPack, err := CreateIconPack(name, version, author, icon)
-
+func (a *App) AddIconPack(name string, version string, author string) error {
+	iconPack, err := CreateIconPack(name, version, author)
 	if err != nil {
 		return err
 	}
 
-	iconPacks = append(iconPacks, iconPack)
+	tempPackPngPath, ok := tempPngPaths["temp"]
 
-	return WriteIconPack(iconPack)
+	if ok {
+		runtime.LogDebug(appContext, "Adding pack png for "+iconPack.Metadata.Id)
+
+		iconPack.Metadata.IconName = uuid.NewString()
+
+		// Copy temp pack png
+		err = copy_file(tempPackPngPath, path.Join(packsFolder, iconPack.Metadata.Id, iconPack.Metadata.IconName+".png"))
+		if err != nil {
+			return err
+		}
+
+		// Remove temp pack png
+		err = os.Remove(tempPackPngPath)
+		if err != nil {
+			return err
+		}
+		delete(tempPngPaths, "temp")
+
+		a.SetIconPack(iconPack)
+	}
+
+	return nil
 }
 
 func (a *App) DeleteIconPack(id string, deleteGeneratedIcons bool) error {
@@ -352,38 +438,29 @@ func (a *App) DeleteIconPack(id string, deleteGeneratedIcons bool) error {
 		}
 	}
 
-	for i, pack := range iconPacks {
-		if pack.Metadata.Id == id {
-			iconPacks = append(iconPacks[:i], iconPacks[i+1:]...)
-			iconPackCache[id] = IconPack{}
-			break
-		}
-	}
+	delete(iconPackCache, id)
 
 	return nil
 }
 
 func (a *App) AddFileToIconPackFromPath(id string, path string, save bool) {
 	fileInfo, err := CreateFileInfo(id, path)
-
 	if err != nil {
 		runtime.LogError(a.ctx, err.Error())
 		return
 	}
 
-	cachedPack := iconPackCache[id]
-	if cachedPack.Metadata.Id != id {
-		cachedPack, err = ReadIconPack(id)
-		if err != nil {
-			runtime.LogError(a.ctx, fmt.Sprintf("Failed to read icon pack: %s", err.Error()))
-			return
-		}
+	cachedPack, err := a.GetIconPack(id)
+	if err != nil {
+		runtime.LogError(a.ctx, fmt.Sprintf("Failed to read icon pack: %s", err.Error()))
+		return
 	}
 	cachedPack.Files = append(cachedPack.Files, fileInfo)
+
 	iconPackCache[id] = cachedPack
 
 	if save {
-		WriteIconPack(iconPackCache[id])
+		a.SetIconPack(cachedPack)
 		return
 	}
 
@@ -396,13 +473,12 @@ func (a *App) AddFilesToIconPackFromPath(id string, path []string, save bool) {
 	}
 
 	if save {
-		WriteIconPack(iconPackCache[id])
+		a.SetIconPack(iconPackCache[id])
 	}
 }
 
 func (a *App) AddFilesToIconPackFromFolder(id string, path string, save bool) {
 	files, err := os.ReadDir(path)
-
 	if err != nil {
 		runtime.LogError(a.ctx, err.Error())
 		return
@@ -421,7 +497,12 @@ func (a *App) AddFilesToIconPackFromFolder(id string, path string, save bool) {
 	wg.Wait()
 
 	if save {
-		WriteIconPack(iconPackCache[id])
+		runtime.LogInfo(a.ctx, fmt.Sprintf("Saving icon pack %s", id))
+
+		err = a.SetIconPack(iconPackCache[id])
+		if err != nil {
+			runtime.LogError(a.ctx, err.Error())
+		}
 	}
 }
 
@@ -433,7 +514,7 @@ func (a *App) AddFilesToIconPackFromDesktop(id string) {
 }
 
 func (a *App) ApplyIconPack(id string) {
-	pack, err := ReadIconPack(id)
+	pack, err := a.GetIconPack(id)
 
 	if err != nil {
 		runtime.LogError(appContext, err.Error())
@@ -445,7 +526,13 @@ func (a *App) ApplyIconPack(id string) {
 	// Save icon pack
 	if err == nil {
 		runtime.LogInfo(appContext, fmt.Sprintf("Applied icon pack %s, attempting to save", pack.Metadata.Id))
-		WriteIconPack(pack)
+		err = a.SetIconPack(pack)
+
+		if err == nil {
+			runtime.LogInfo(appContext, fmt.Sprintf("Saved icon pack %s", pack.Metadata.Id))
+		} else {
+			runtime.LogError(appContext, err.Error())
+		}
 	} else {
 		runtime.LogError(appContext, err.Error())
 	}

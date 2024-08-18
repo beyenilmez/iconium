@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/google/uuid"
 	lnk "github.com/parsiya/golnk"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -185,4 +186,8 @@ func copy_file(src string, dst string) error {
 		return err
 	}
 	return nil
+}
+
+func (a *App) UUID() string {
+	return uuid.NewString()
 }
