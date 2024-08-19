@@ -34,6 +34,7 @@ var installationDirectory string
 var imageMagickPath string
 
 var tempPngPaths map[string]string = map[string]string{}
+var deletePngPaths map[string]([]string) = map[string]([]string){}
 
 func path_init() error {
 	appData, err := os.UserConfigDir()
@@ -258,4 +259,17 @@ func (a *App) AddTempPngPath(id string, path string) {
 	}
 
 	tempPngPaths[id] = tempPngPath
+}
+
+func (a *App) AddDeletePngPath(packId, fileId string) {
+	paths := deletePngPaths[packId]
+	path := filepath.Join(packsFolder, packId, "icons", fileId+".png")
+	paths = append(paths, path)
+	deletePngPaths[packId] = paths
+}
+
+func (a *App) ClearDeletePngPaths() {
+	for k := range deletePngPaths {
+		delete(deletePngPaths, k)
+	}
 }

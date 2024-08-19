@@ -12,6 +12,7 @@ import {
   Edit,
   FolderOpen,
   Loader2,
+  LucideTrash,
   Monitor,
   Pencil,
   SquarePlus,
@@ -32,11 +33,13 @@ import {
 } from "@/components/ui/dialog";
 import SelectImage from "./SelectImage";
 import {
+  AddDeletePngPath,
   AddFilesToIconPackFromDesktop,
   AddFilesToIconPackFromPath,
   AddIconPack,
   AddTempPngPath,
   ApplyIconPack,
+  ClearDeletePngPaths,
   ClearTempPngPaths,
   CreateLastTab,
   DeleteIconPack,
@@ -389,6 +392,7 @@ function PackContent({
   const handleEditCancel = () => {
     setEditingMetadata(false);
     ClearTempPngPaths();
+    ClearDeletePngPaths();
   };
 
   const handleDelete = () => {
@@ -805,13 +809,18 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
             iconId: "",
           })
         );
-        console.log(oldFiles);
         setFiles(oldFiles);
       })
       .finally(() => {
         setAddIconsRunning(false);
       });
   };
+
+  const handleRemoveIcon = (index: number) => {
+    if (!files) return;
+    setFiles((prevFiles) => prevFiles?.filter((_, i) => i !== index));
+    AddDeletePngPath(iconPackId, files[index].id);
+  }
 
   const handleInputChange = (index: number, field: string, value: string) => {
     setFiles((prevFiles) =>
@@ -900,10 +909,17 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
         </div>
       </div>
       <div className="flex flex-col h-[calc(100vh-5.5rem-4rem)] w-full overflow-x-hidden overflow-y-auto">
-        <Accordion type="single" collapsible className="w-full">
+        <Accordion type="single" collapsible className="px-1 w-ful">
           {files.map((file, index) => (
             <AccordionItem key={file.id} value={file.id}>
-              <AccordionTrigger className="p-2">
+              <AccordionTrigger className="p-2" end={
+                <Button variant="ghost" size={"icon"} className="p-1.5 w-8 h-8" onClick={(e) => {
+                  e.stopPropagation()
+                  handleRemoveIcon(index)
+                }}>
+                  <LucideTrash/>
+                </Button>
+              }>
                 <div className="flex items-center gap-2">
                   <SelectImage
                     sizeClass="w-8 h-8"
@@ -912,7 +928,6 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
                     key={updateArray[index]}
                     alwaysShowOriginal={false}
                   />
-
                   {file.name}
                 </div>
               </AccordionTrigger>
