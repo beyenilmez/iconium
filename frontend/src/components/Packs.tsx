@@ -836,11 +836,18 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
 
   if (loading || files === undefined) {
     return (
-      <div className="flex flex-col gap-4 p-4 w-full h-full">
-        <Skeleton className="w-full h-1/3" />
-        <Skeleton className="w-full h-1/3" />
-        <Skeleton className="w-full h-1/2" />
-        <Skeleton className="w-full h-1/2" />
+      <div className="flex flex-col gap-3 p-4 w-full h-full">
+        <Skeleton className="w-full h-full" />
+        <Skeleton className="w-full h-full" />
+        <Skeleton className="w-full h-full" />
+        <Skeleton className="w-full h-full" />
+        <Skeleton className="w-full h-full" />
+        <Skeleton className="w-full h-full" />
+        <Skeleton className="w-full h-full" />
+        <Skeleton className="w-full h-full" />
+        <Skeleton className="w-full h-full" />
+        <Skeleton className="w-full h-full" />
+        <Skeleton className="w-full h-full" />
       </div>
     );
   }
