@@ -38,6 +38,10 @@ export function DeleteIconPack(arg1, arg2) {
   return window['go']['main']['App']['DeleteIconPack'](arg1, arg2);
 }
 
+export function Ext(arg1) {
+  return window['go']['main']['App']['Ext'](arg1);
+}
+
 export function GetBase64Png() {
   return window['go']['main']['App']['GetBase64Png']();
 }
@@ -48,6 +52,18 @@ export function GetConfig() {
 
 export function GetConfigField(arg1) {
   return window['go']['main']['App']['GetConfigField'](arg1);
+}
+
+export function GetFileInfoFromDesktop(arg1) {
+  return window['go']['main']['App']['GetFileInfoFromDesktop'](arg1);
+}
+
+export function GetFileInfoFromPaths(arg1, arg2) {
+  return window['go']['main']['App']['GetFileInfoFromPaths'](arg1, arg2);
+}
+
+export function GetFilePath(arg1) {
+  return window['go']['main']['App']['GetFilePath'](arg1);
 }
 
 export function GetIconFile() {
@@ -76,6 +92,10 @@ export function GetLoadConfigPath() {
 
 export function GetTempPng(arg1) {
   return window['go']['main']['App']['GetTempPng'](arg1);
+}
+
+export function GetTempPngPath(arg1) {
+  return window['go']['main']['App']['GetTempPngPath'](arg1);
 }
 
 export function GetVersion() {

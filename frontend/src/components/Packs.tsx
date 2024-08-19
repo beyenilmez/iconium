@@ -8,7 +8,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { Edit, Loader2, Monitor, Pencil, Trash, Upload } from "lucide-react";
+import {
+  Edit,
+  FolderOpen,
+  Loader2,
+  Monitor,
+  Pencil,
+  Trash,
+  Upload,
+} from "lucide-react";
 import {
   AreYouSureDialog,
   AreYouSureDialogRef,
@@ -29,6 +37,10 @@ import {
   ApplyIconPack,
   ClearTempPngPaths,
   DeleteIconPack,
+  Ext,
+  GetFileInfoFromDesktop,
+  GetFileInfoFromPaths,
+  GetFilePath,
   GetIconFiles,
   GetIconPack,
   GetIconPackList,
@@ -62,6 +74,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { LogDebug } from "@/wailsjs/runtime/runtime";
+import { Label } from "./ui/label";
 
 export default function Packs() {
   const { t } = useTranslation();
@@ -70,7 +84,7 @@ export default function Packs() {
   const [editingIconPack, setEditingIconPack] = useState(false);
   useEffect(() => {
     setValue("editingIconPack", editingIconPack);
-  });
+  }, [editingIconPack]);
 
   const [selectedPackId, setSelectedPackId] = useState("");
   const [iconPacks, setIconPacks] = useState<main.IconPack[]>();
@@ -140,25 +154,24 @@ export default function Packs() {
         )}
       </TabsList>
 
-      {selectedPackId && !editingIconPack && (
-        <PackContent
-          key={selectedPackKeyCount}
-          iconPackId={selectedPackId}
-          setSelectedPackId={setSelectedPackId}
-          loadIconPacks={loadIconPacks}
-          setEditingIconPack={setEditingIconPack}
-          reloadSelectedPack={reloadSelectedPack}
-        />
-      )}
-
-      {selectedPackId && editingIconPack && (
-        <PackEdit
-          iconPackId={selectedPackId}
-          setSelectedPackId={setSelectedPackId}
-          loadIconPacks={loadIconPacks}
-          setEditingIconPack={setEditingIconPack}
-        />
-      )}
+      {selectedPackId &&
+        (editingIconPack ? (
+          <PackEdit
+            iconPackId={selectedPackId}
+            setSelectedPackId={setSelectedPackId}
+            loadIconPacks={loadIconPacks}
+            setEditingIconPack={setEditingIconPack}
+          />
+        ) : (
+          <PackContent
+            key={selectedPackKeyCount}
+            iconPackId={selectedPackId}
+            setSelectedPackId={setSelectedPackId}
+            loadIconPacks={loadIconPacks}
+            setEditingIconPack={setEditingIconPack}
+            reloadSelectedPack={reloadSelectedPack}
+          />
+        ))}
     </Tabs>
   );
 }
@@ -679,7 +692,7 @@ function PackContent({
             file.hasIcon ? (
               <Image
                 key={file.id}
-                src={"packs\\" + iconPackId + "\\icons\\" + file.id + ".png"}
+                src={`packs\\${iconPackId}\\icons\\${file.id}.png`}
                 className="w-10 h-10"
                 cornerRadius={cornerRadius}
                 opacity={opacity}
@@ -708,7 +721,8 @@ function PackEdit({
   const { t } = useTranslation();
 
   const [loading, setLoading] = useState(true);
-  const [iconPack, setIconPack] = useState<main.IconPack>();
+  const [files, setFiles] = useState<main.FileInfo[]>();
+  const [updateArray, setUpdateArray] = useState<number[]>([]);
 
   const [addIconsFromDesktopRunning, setAddIconsFromDesktopRunning] =
     useState(false);
@@ -717,7 +731,10 @@ function PackEdit({
 
   useEffect(() => {
     GetIconPack(iconPackId).then((pack) => {
-      setIconPack(pack);
+      setFiles(pack.files);
+      for (let i = 0; i < pack.files.length; i++) {
+        setUpdateArray((prev) => [...prev, i]);
+      }
       setLoading(false);
     });
   }, []);
@@ -725,20 +742,49 @@ function PackEdit({
   const handleAddIconsFromDesktop = () => {
     setAddIconsFromDesktopRunning(true);
 
-    setTimeout(() => {
-      setAddIconsFromDesktopRunning(false);
-    }, 2000);
+    GetFileInfoFromDesktop("temp")
+      .then((fileInfos) => {
+        const oldFiles = files || [];
+        oldFiles.push(...fileInfos);
+        setFiles(oldFiles);
+      })
+      .finally(() => {
+        setAddIconsFromDesktopRunning(false);
+      });
   };
 
   const handleAddIcon = () => {
-    setAddIconsRunning(true);
+    GetIconFiles().then((paths) => {
+      if (paths) {
+        setAddIconsRunning(true);
 
-    setTimeout(() => {
-      setAddIconsRunning(false);
-    }, 2000);
+        GetFileInfoFromPaths("temp", paths)
+          .then((fileInfos) => {
+            const oldFiles = files || [];
+            oldFiles.push(...fileInfos);
+            setFiles(oldFiles);
+          })
+          .finally(() => {
+            setAddIconsRunning(false);
+          });
+      }
+    });
   };
 
-  if (loading || iconPack === undefined) {
+  const handleInputChange = (index: number, field: string, value: string) => {
+    setFiles((prevFiles) =>
+      prevFiles?.map((file, i) =>
+        i === index ? { ...file, [field]: value } : file
+      )
+    );
+  };
+
+  const handleCancelEdit = () => {
+    setEditingIconPack(false);
+    ClearTempPngPaths();
+  };
+
+  if (loading || files === undefined) {
     return (
       <div className="flex flex-col gap-4 p-4 w-full h-full">
         <Skeleton className="w-full h-1/3" />
@@ -751,6 +797,10 @@ function PackEdit({
 
   return (
     <div className="flex flex-col w-full">
+      <div hidden>
+        {String(setPack) + String(loadPackInfo) + String(setEditingIconPack)}
+      </div>
+
       <div className="shadow-bottom-sm flex justify-between items-center bg-muted backdrop-contrast-50 dark:backdrop-contrast-200 px-3 h-16">
         <div className="flex flex-wrap gap-1.5">
           <Button
@@ -782,38 +832,162 @@ function PackEdit({
         </div>
         <div className="flex gap-2">
           <Button>Save</Button>
-          <Button variant="destructive">Cancel</Button>
+          <Button variant="destructive" onClick={handleCancelEdit}>
+            Cancel
+          </Button>
         </div>
       </div>
       <div className="flex flex-col h-[calc(100vh-5.5rem-4rem)] w-full overflow-x-hidden overflow-y-auto">
         <Accordion type="single" collapsible className="w-full">
-          {iconPack.files.map((file) => (
-            <AccordionItem value={file.id}>
+          {files.map((file, index) => (
+            <AccordionItem key={file.id} value={file.id}>
               <AccordionTrigger className="p-2">
                 <div className="flex items-center gap-2">
-                  <Image
-                    src={
-                      "packs\\" +
-                      iconPack.metadata.id +
-                      "\\icons\\" +
-                      file.id +
-                      ".png"
-                    }
-                    className="w-8 h-8"
-                    unkown
+                  <SelectImage
+                    sizeClass="w-8 h-8"
+                    src={`packs/${iconPackId}/icons/${file.id}.png`}
+                    packId={file.id}
+                    key={updateArray[index]}
+                    alwaysShowOriginal={false}
                   />
+
                   {file.name}
                 </div>
               </AccordionTrigger>
               <AccordionContent>
-                {String(setPack) +
-                  String(loadPackInfo) +
-                  String(setEditingIconPack)}
+                <div className="flex flex-col gap-3 px-4 py-2 w-full h-full">
+                  <div className="flex gap-4 w-full">
+                    <div className="flex flex-col gap-1.5">
+                      <Label>Icon</Label>
+                      <SelectImage
+                        src={`packs/${iconPackId}/icons/${file.id}.png`}
+                        packId={file.id}
+                        onChange={() => {
+                          setUpdateArray((prevUpdateArray) => {
+                            const newArray = [...prevUpdateArray];
+                            newArray[index] = prevUpdateArray[index] + 1;
+                            return newArray;
+                          });
+                        }}
+                        editable
+                      />
+                    </div>
+                    <TextInput
+                      key={file.id}
+                      value={file.name}
+                      placeholder={"File Name"}
+                      onChange={(value) => {
+                        handleInputChange(index, "name", value);
+                      }}
+                      label={"Name"}
+                      className="justify-between w-full"
+                    />
+                  </div>
+                  <TextInput
+                    value={file.description}
+                    placeholder={"Description"}
+                    onChange={(value) => {
+                      handleInputChange(index, "description", value);
+                    }}
+                    label={"Description"}
+                  />
+                  <PathInput
+                    value={file.path}
+                    placeholder={"Path"}
+                    onChange={(value) => {
+                      handleInputChange(index, "path", value);
+                      Ext(value).then((ext) => {
+                        handleInputChange(index, "extension", ext);
+                      });
+                    }}
+                    label={"Path"}
+                  />
+
+                  {file.extension === ".lnk" && (
+                    <PathInput
+                      value={file.destinationPath}
+                      placeholder={"Destination Path"}
+                      onChange={(value) => {
+                        handleInputChange(index, "destinationPath", value);
+                      }}
+                      label={"Destination Path"}
+                    />
+                  )}
+                </div>
               </AccordionContent>
             </AccordionItem>
           ))}
         </Accordion>
       </div>
+    </div>
+  );
+}
+
+function TextInput({
+  value,
+  placeholder,
+  onChange,
+  label,
+  className = "",
+}: {
+  value: string;
+  placeholder?: string;
+  onChange: (value: string) => void;
+  label: string;
+  className?: string;
+}) {
+  return (
+    <div className={`flex flex-col gap-1.5 ${className}`}>
+      <Label className="ml-1">{label}</Label>
+      <Input
+        className="w-full h-10 focus-visible:ring-offset-1"
+        value={value}
+        placeholder={placeholder}
+        onChange={(e) => {
+          onChange(e.target.value);
+        }}
+      />
+    </div>
+  );
+}
+
+function PathInput({
+  value,
+  placeholder,
+  onChange,
+  label,
+}: {
+  value: string;
+  placeholder?: string;
+  onChange: (value: string) => void;
+  label: string;
+}) {
+  const handleChoosePath = () => {
+    GetFilePath(value).then((path) => {
+      if (path) {
+        LogDebug("Path selected: " + path);
+        onChange(path);
+      }
+    });
+  };
+
+  return (
+    <div className="flex items-end gap-1.5 w-full">
+      <TextInput
+        value={value}
+        placeholder={placeholder}
+        onChange={onChange}
+        label={label}
+        className="w-full"
+      />
+      <Button
+        variant={"secondary"}
+        size={"icon"}
+        className="w-10 h-10"
+        onClick={handleChoosePath}
+      >
+        <FolderOpen className="w-5 h-5" />
+      </Button>
     </div>
   );
 }
@@ -876,7 +1050,7 @@ function CreatePackForm({ loadPackInfo, dialogCloseRef }: CreatePackFormProps) {
     });
   }
 
-  useEffect(() => {  
+  useEffect(() => {
     return () => {
       // This function runs before the component unmounts
       ClearTempPngPaths();

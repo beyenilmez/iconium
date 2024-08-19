@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"strings"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -219,4 +220,14 @@ func (a *App) ClearTempPngPaths() {
 	}
 
 	runtime.LogDebug(appContext, "Cleared tempPngPaths")
+}
+
+func (a *App) GetTempPngPath(id string) string {
+	tempPath, ok := tempPngPaths[id]
+	if ok {
+		tempPath = strings.TrimPrefix(tempPath, appFolder)
+		return tempPath
+	} else {
+		return ""
+	}
 }

@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Skeleton } from "./ui/skeleton";
 import { CircleHelp, Upload } from "lucide-react";
 import { Button } from "./ui/button";
-import { GetTempPng } from "@/wailsjs/go/main/App";
+import { GetTempPng, GetTempPngPath } from "@/wailsjs/go/main/App";
+import { LogDebug } from "@/wailsjs/runtime/runtime";
 
 interface SelectImageProps {
   src?: string;
@@ -12,6 +13,8 @@ interface SelectImageProps {
   editSizeClass?: string;
   editable?: boolean;
   unkown?: boolean;
+  alwaysShowOriginal?: boolean;
+  onChange?: (value: string) => void;
 }
 
 const SelectImage: React.FC<SelectImageProps> = ({
@@ -22,26 +25,43 @@ const SelectImage: React.FC<SelectImageProps> = ({
   editSizeClass = "w-7 h-7",
   editable = false,
   unkown = true,
+  alwaysShowOriginal = true,
+  onChange,
   ...rest
 }) => {
   const [loading, setLoading] = useState(true);
   const [iconPath, setIconPath] = useState(originalSrc);
-  const src = editable ? iconPath : originalSrc;
+  const [imgKey, setImgKey] = useState(0);
 
   const handleUpload = () => {
     GetTempPng(packId).then((path) => {
       if (path) {
         setIconPath(path);
+        onChange?.(path);
       }
     });
   };
 
   useEffect(() => {
-    if (!editable) {
+    if (alwaysShowOriginal && !editable) {
       setIconPath(originalSrc);
       setLoading(true);
+    } else {
+      GetTempPngPath(packId).then((path) => {
+        LogDebug("GetTempPngPath: " + path);
+        if (path) {
+          setIconPath(path);
+        } else {
+          setIconPath(originalSrc);
+        }
+        setLoading(true);
+      });
     }
   }, [editable]);
+
+  useEffect(() => {
+    setImgKey(imgKey + 1);
+  }, [loading]);
 
   return (
     <Button
@@ -70,8 +90,8 @@ const SelectImage: React.FC<SelectImageProps> = ({
         />
       )}
       <img
-        key={loading ? "t" : "f"}
-        src={src}
+        key={imgKey}
+        src={iconPath}
         className={`select-none group-hover:opacity-10 transition-all ${sizeClass} ${
           loading ? "hidden" : ""
         }`}

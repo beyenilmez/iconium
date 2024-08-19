@@ -340,12 +340,27 @@ func CreateFileInfo(packId string, path string) (FileInfo, error) {
 		fileInfo.Destination = ConvertToGeneralPath(fileInfo.Destination)
 
 		if packId != "" && strings.ToLower(filepath.Ext(link.StringData.IconLocation)) == ".ico" {
-			iconPath := filepath.Join(packsFolder, packId, "icons", fileInfo.Id+".png")
-			err = ConvertToPng(link.StringData.IconLocation, iconPath)
-			if err != nil {
-				runtime.LogError(appContext, err.Error())
+			runtime.LogDebugf(appContext, "Attempting to copy icon: %s", link.StringData.IconLocation)
+
+			if packId == "temp" {
+				tempName := "iconium-" + uuid.NewString()
+				iconPath := filepath.Join(tempFolder, tempName+".png")
+
+				err = ConvertToPng(link.StringData.IconLocation, iconPath)
+				if err != nil {
+					runtime.LogError(appContext, err.Error())
+				} else {
+					fileInfo.HasIcon = true
+					tempPngPaths[fileInfo.Id] = iconPath
+				}
 			} else {
-				fileInfo.HasIcon = true
+				iconPath := filepath.Join(packsFolder, packId, "icons", fileInfo.Id+".png")
+				err = ConvertToPng(link.StringData.IconLocation, iconPath)
+				if err != nil {
+					runtime.LogError(appContext, err.Error())
+				} else {
+					fileInfo.HasIcon = true
+				}
 			}
 		}
 
@@ -475,6 +490,50 @@ func (a *App) AddFilesToIconPackFromPath(id string, path []string, save bool) {
 	if save {
 		a.SetIconPack(iconPackCache[id])
 	}
+}
+
+func (a *App) GetFileInfoFromPaths(id string, path []string) ([]FileInfo, error) {
+	var fileInfos []FileInfo
+	for _, p := range path {
+		if !contains(allowedFileExtensions, filepath.Ext(p)) {
+			continue
+		}
+
+		fileInfo, err := CreateFileInfo(id, p)
+		if err != nil {
+			return nil, err
+		}
+		fileInfos = append(fileInfos, fileInfo)
+	}
+	return fileInfos, nil
+}
+
+func (a *App) GetFileInfoFromDesktop(id string) ([]FileInfo, error) {
+	desktop, public := get_desktop_paths()
+
+	dirEntries, err := os.ReadDir(desktop)
+	if err != nil {
+		return nil, err
+	}
+	dirEntries2, err := os.ReadDir(public)
+	if err != nil {
+		return nil, err
+	}
+
+	paths := []string{}
+
+	for _, dirEntry := range dirEntries {
+		if contains(allowedFileExtensions, filepath.Ext(dirEntry.Name())) {
+			paths = append(paths, filepath.Join(desktop, dirEntry.Name()))
+		}
+	}
+	for _, dirEntry := range dirEntries2 {
+		if contains(allowedFileExtensions, filepath.Ext(dirEntry.Name())) {
+			paths = append(paths, filepath.Join(public, dirEntry.Name()))
+		}
+	}
+
+	return a.GetFileInfoFromPaths(id, paths)
 }
 
 func (a *App) AddFilesToIconPackFromFolder(id string, path string, save bool) {

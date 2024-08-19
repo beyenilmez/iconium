@@ -29,7 +29,9 @@ const Image: React.FC<ImageProps> = ({
       <img
         src={src}
         className={`${className} ${loading ? "hidden" : ""}`}
-        onLoad={() => setLoading(false)}
+        onLoad={() => {
+          setLoading(false)
+        }}
         style={{
           borderRadius: `${cornerRadius}%`,
           opacity: `${opacity / 100}`,

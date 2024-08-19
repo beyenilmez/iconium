@@ -157,7 +157,7 @@ func (a *App) GetIconFile() string {
 		CanCreateDirectories: true,
 		Filters: []runtime.FileFilter{
 			{
-				DisplayName: "Shortcut",
+				DisplayName: "Windows Shortcut",
 				Pattern:     "*.lnk",
 			},
 		},
@@ -177,7 +177,7 @@ func (a *App) GetIconFiles() []string {
 		CanCreateDirectories: true,
 		Filters: []runtime.FileFilter{
 			{
-				DisplayName: "Shortcut",
+				DisplayName: "Windows Shortcut",
 				Pattern:     "*.lnk",
 			},
 		},
@@ -189,6 +189,29 @@ func (a *App) GetIconFiles() []string {
 	}
 
 	return paths
+}
+
+func (a *App) GetFilePath(generalPath string) string {
+	fullPath := ConvertToFullPath(filepath.Dir(generalPath))
+
+	path, err := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
+		Title:            "Select file",
+		DefaultDirectory: fullPath,
+		ResolvesAliases:  true,
+		Filters: []runtime.FileFilter{
+			{
+				DisplayName: "Windows Shortcut",
+				Pattern:     "*.lnk",
+			},
+		},
+	})
+
+	if err != nil {
+		runtime.LogWarning(a.ctx, err.Error())
+		return ""
+	}
+
+	return ConvertToGeneralPath(path)
 }
 
 func (a *App) OpenFileInExplorer(path string) {

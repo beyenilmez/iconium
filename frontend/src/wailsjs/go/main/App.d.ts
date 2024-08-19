@@ -20,11 +20,19 @@ export function ClearTempPngPaths():Promise<void>;
 
 export function DeleteIconPack(arg1:string,arg2:boolean):Promise<void>;
 
+export function Ext(arg1:string):Promise<string>;
+
 export function GetBase64Png():Promise<string>;
 
 export function GetConfig():Promise<main.Config>;
 
 export function GetConfigField(arg1:string):Promise<any>;
+
+export function GetFileInfoFromDesktop(arg1:string):Promise<Array<main.FileInfo>>;
+
+export function GetFileInfoFromPaths(arg1:string,arg2:Array<string>):Promise<Array<main.FileInfo>>;
+
+export function GetFilePath(arg1:string):Promise<string>;
 
 export function GetIconFile():Promise<string>;
 
@@ -39,6 +47,8 @@ export function GetIconPackList():Promise<Array<main.IconPack>>;
 export function GetLoadConfigPath():Promise<string>;
 
 export function GetTempPng(arg1:string):Promise<string>;
+
+export function GetTempPngPath(arg1:string):Promise<string>;
 
 export function GetVersion():Promise<string>;
 

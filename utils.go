@@ -191,3 +191,7 @@ func copy_file(src string, dst string) error {
 func (a *App) UUID() string {
 	return uuid.NewString()
 }
+
+func (a *App) Ext(path string) string {
+	return filepath.Ext(path)
+}
