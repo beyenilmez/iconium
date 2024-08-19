@@ -49,12 +49,20 @@ export function UpdateSetting() {
   }, [getValue]);
 
   const handleCheckForUpdate = () => {
-    // Check for updates and update state accordingly
     if (!isUpdating) {
+      // Start the spinner and set a minimum duration for the animation
       setIsChecking(true);
-      CheckForUpdate()
-        .then(setUpdateInfo)
-        .finally(() => setTimeout(() => setIsChecking(false), 200));
+      const spinMinDuration = new Promise((resolve) =>
+        setTimeout(resolve, 500)
+      );
+
+      // Check for updates and update state accordingly
+      const updateJob = CheckForUpdate().then(setUpdateInfo);
+
+      // Wait for both the minimum spin duration and the update check to complete
+      Promise.all([spinMinDuration, updateJob]).finally(() =>
+        setIsChecking(false)
+      );
     }
   };
 
