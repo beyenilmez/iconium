@@ -304,14 +304,14 @@ function PackContent({
     field: keyof main.IconPack["metadata"],
     value: string
   ) => {
-    if (iconPack === undefined) {
+    if (editedIconPack === undefined) {
       return;
     }
 
     const newIconPack = {
-      ...iconPack,
+      ...editedIconPack,
       metadata: {
-        ...iconPack.metadata,
+        ...editedIconPack.metadata,
         [field]: value,
       },
     } as main.IconPack;
