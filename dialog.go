@@ -105,7 +105,7 @@ func (a *App) GetTempPng(id string) string {
 		Filters: []runtime.FileFilter{
 			{
 				DisplayName: "Image File",
-				Pattern:     "*.ico;*.png;*.jpg;*.jpeg;*.bmp;*.webp;*.svg",
+				Pattern:     "*.png;*.jpg;*.jpeg;*.webp;*.svg;*.bmp;*.ico",
 			},
 		},
 	})
