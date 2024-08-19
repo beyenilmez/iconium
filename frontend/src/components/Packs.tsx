@@ -45,6 +45,7 @@ import {
   GetIconPack,
   GetIconPackList,
   SetIconPackField,
+  SetIconPackFiles,
   SetIconPackMetadata,
 } from "@/wailsjs/go/main/App";
 import { main } from "@/wailsjs/go/models";
@@ -784,6 +785,14 @@ function PackEdit({
     ClearTempPngPaths();
   };
 
+  const handleSaveEdit = () => {
+    if (!files) return;
+    SetIconPackFiles(iconPackId, files).then(() => {
+      setEditingIconPack(false);
+      ClearTempPngPaths();
+    });
+  };
+
   if (loading || files === undefined) {
     return (
       <div className="flex flex-col gap-4 p-4 w-full h-full">
@@ -831,7 +840,7 @@ function PackEdit({
           </Button>
         </div>
         <div className="flex gap-2">
-          <Button>Save</Button>
+          <Button onClick={handleSaveEdit}>Save</Button>
           <Button variant="destructive" onClick={handleCancelEdit}>
             Cancel
           </Button>

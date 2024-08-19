@@ -70,6 +70,8 @@ export function SetIconPack(arg1:main.IconPack):Promise<void>;
 
 export function SetIconPackField(arg1:string,arg2:string,arg3:string,arg4:any):Promise<void>;
 
+export function SetIconPackFiles(arg1:string,arg2:Array<main.FileInfo>):Promise<void>;
+
 export function SetIconPackMetadata(arg1:string,arg2:main.Metadata):Promise<void>;
 
 export function UUID():Promise<string>;

@@ -138,6 +138,10 @@ export function SetIconPackField(arg1, arg2, arg3, arg4) {
   return window['go']['main']['App']['SetIconPackField'](arg1, arg2, arg3, arg4);
 }
 
+export function SetIconPackFiles(arg1, arg2) {
+  return window['go']['main']['App']['SetIconPackFiles'](arg1, arg2);
+}
+
 export function SetIconPackMetadata(arg1, arg2) {
   return window['go']['main']['App']['SetIconPackMetadata'](arg1, arg2);
 }

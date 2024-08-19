@@ -268,6 +268,45 @@ func (a *App) SetIconPackMetadata(packId string, metadata Metadata) {
 	a.SetIconPack(iconPack)
 }
 
+func (a *App) SetIconPackFiles(packId string, files []FileInfo) {
+	// Check if the icon pack exists
+	iconPack, err := a.GetIconPack(packId)
+	if err != nil {
+		runtime.LogError(appContext, fmt.Sprintf("Icon pack %s not found: %s", packId, err.Error()))
+		return
+	}
+
+	for _, file := range files {
+		file.HasIcon = false
+
+		tempPngPath, ok := tempPngPaths[file.Id]
+		if ok {
+			runtime.LogDebugf(appContext, "Attempting to copy temp png: %s", tempPngPath)
+
+			// Copy temp png
+			err = copy_file(tempPngPath, path.Join(packsFolder, packId, "icons", file.Id+".png"))
+			if err != nil {
+				runtime.LogError(appContext, fmt.Sprintf("Failed to copy temp png: %s", err.Error()))
+				continue
+			}
+
+			// Remove temp png
+			err = os.Remove(tempPngPath)
+			if err != nil {
+				runtime.LogError(appContext, fmt.Sprintf("Failed to remove temp png: %s", err.Error()))
+				continue
+			}
+			delete(tempPngPaths, file.Id)
+
+			file.HasIcon = true
+		}
+	}
+
+	// Update cache
+	iconPack.Files = files
+	a.SetIconPack(iconPack)
+}
+
 func CacheIconPacks() error {
 	// Clear cache
 	for k := range iconPackCache {
