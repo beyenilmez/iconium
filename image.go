@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 )
 
-var allowedImageExtensionsPng = []string{".ico"}
+var allowedImageExtensionsPng = []string{".ico", ".png", ".jpg", ".jpeg", ".bmp", ".webp", ".svg"}
 
 var allowedImageExtensionsIco = []string{".png", ".jpg", ".jpeg"}
 
@@ -61,7 +61,7 @@ func ConvertToIco(path string, destination string, settings IconPackSettings) er
 	extension := filepath.Ext(path)
 
 	// Check if the input file has a valid image extension
-	if !contains([]string{".png", ".jpg", ".jpeg", ".bmp", ".gif"}, extension) {
+	if extension != ".png" {
 		return fmt.Errorf("invalid image extension: %s", extension)
 	}
 
@@ -106,8 +106,16 @@ func ConvertToPng(path string, destination string) error {
 	defer os.RemoveAll(tempIconFolder)
 	tempIconPath := filepath.Join(tempIconFolder, "icon.png")
 
+	if extension != ".ico" {
+		tempIconPath = destination
+	}
+
 	// Build magick command arguments
 	args := []string{imageMagickPath, path, "-alpha", "on", "-background", "none", tempIconPath}
+
+	if extension != ".ico" {
+		args = []string{imageMagickPath, path, "-alpha", "on", "-background", "none", "-resize", "256x256\\!", tempIconPath}
+	}
 
 	// Execute magick command silently
 	_, err = sendCommand(args...)
@@ -115,30 +123,35 @@ func ConvertToPng(path string, destination string) error {
 		return fmt.Errorf("error converting image: %w", err)
 	}
 
-	// Delete the icons other than the largest one
-	files, err := os.ReadDir(tempIconFolder)
-	if err != nil {
-		return err
-	}
-
-	largestWidth := -1
-	var largestFile string
-	for _, file := range files {
-		width, err := GetImageWidth(filepath.Join(tempIconFolder, file.Name()))
+	if extension == ".ico" {
+		files, err := os.ReadDir(tempIconFolder)
 		if err != nil {
 			return err
 		}
 
-		if width > largestWidth {
-			largestWidth = width
-			largestFile = file.Name()
-		}
-	}
+		largestFile := "icon.png"
 
-	// Move the largest icon to the destination
-	err = os.Rename(filepath.Join(tempIconFolder, largestFile), destination)
-	if err != nil {
-		return err
+		// Delete the icons other than the largest one
+		if len(files) > 1 {
+			largestWidth := -1
+			for _, file := range files {
+				width, err := GetImageWidth(filepath.Join(tempIconFolder, file.Name()))
+				if err != nil {
+					return err
+				}
+
+				if width > largestWidth {
+					largestWidth = width
+					largestFile = file.Name()
+				}
+			}
+		}
+
+		// Move the largest icon to the destination
+		err = os.Rename(filepath.Join(tempIconFolder, largestFile), destination)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

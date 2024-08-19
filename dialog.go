@@ -104,8 +104,8 @@ func (a *App) GetTempPng(id string) string {
 		Title: "Select image",
 		Filters: []runtime.FileFilter{
 			{
-				DisplayName: "PNG",
-				Pattern:     "*.png",
+				DisplayName: "Image File",
+				Pattern:     "*.ico;*.png;*.jpg;*.jpeg;*.bmp;*.webp;*.svg",
 			},
 		},
 	})
@@ -118,7 +118,7 @@ func (a *App) GetTempPng(id string) string {
 		return ""
 	}
 
-	err = copy_file(path, tempPackPngPath)
+	err = ConvertToPng(path, tempPackPngPath)
 	if err != nil {
 		runtime.LogErrorf(a.ctx, "Error copying pack.png file: %s", err.Error())
 		return ""
