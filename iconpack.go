@@ -64,10 +64,13 @@ func CreateIconPack(name string, version string, author string) (IconPack, error
 	iconPack.Settings.CornerRadius = 0
 	iconPack.Settings.Opacity = 100
 
-	err := WriteIconPack(iconPack)
+	var err error
 
-	if err != nil {
-		return IconPack{}, err
+	if name != "" {
+		err = WriteIconPack(iconPack)
+		if err != nil {
+			return IconPack{}, err
+		}
 	}
 
 	return iconPack, err
@@ -116,15 +119,26 @@ func ReadIconPack(id string) (IconPack, error) {
 
 	iconPack := IconPack{}
 
+	defaultPack, err := CreateIconPack("", "", "")
+	if err != nil {
+		runtime.LogWarningf(appContext, "Failed to create default icon pack: %s", err.Error())
+		return IconPack{}, err
+	}
+
 	// Read metadata and files from their respective JSON files
 	if err := readJSON(metadataPath, &iconPack.Metadata); err != nil {
+		runtime.LogErrorf(appContext, "Failed to read icon pack metadata: %s", err.Error())
 		return IconPack{}, err
 	}
 	if err := readJSON(settingsPath, &iconPack.Settings); err != nil {
-		return IconPack{}, err
+		runtime.LogWarningf(appContext, "Failed to read icon pack settings: %s", err.Error())
+		iconPack.Settings = defaultPack.Settings
+		writeJSON(settingsPath, iconPack.Settings)
 	}
 	if err := readJSON(filesPath, &iconPack.Files); err != nil {
-		return IconPack{}, err
+		runtime.LogWarningf(appContext, "Failed to read icon pack files: %s", err.Error())
+		iconPack.Files = []FileInfo{}
+		writeJSON(filesPath, iconPack.Files)
 	}
 
 	iconPackCache[id] = iconPack
