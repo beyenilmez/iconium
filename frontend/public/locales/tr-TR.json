@@ -19,7 +19,6 @@
 
   "my_packs": {
     "create_new_pack": {
-      "label": "Yeni Paket Oluştur",
       "title": "İkon Paketi Oluştur"
     },
 

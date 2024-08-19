@@ -9,15 +9,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import {
+  Download,
   Edit,
   FolderOpen,
   Loader2,
   LucideTrash,
   Monitor,
   Pencil,
+  Plus,
+  RefreshCw,
   SquarePlus,
   Trash,
   Upload,
+  UploadIcon,
 } from "lucide-react";
 import {
   AreYouSureDialog,
@@ -40,6 +44,7 @@ import {
   AddTempPngPath,
   ApplyIconPack,
   ClearDeletePngPaths,
+  ClearIconPackCache,
   ClearTempPngPaths,
   CreateLastTab,
   DeleteIconPack,
@@ -104,6 +109,8 @@ export default function Packs() {
   const [iconPacks, setIconPacks] = useState<main.IconPack[]>();
   const [selectedPackKeyCount, setSelectedPackKeyCount] = useState(0);
 
+  const [reloadingIconPacks, setReloadingIconPacks] = useState(false);
+
   const dialogCloseRef = useRef(null);
 
   const loadIconPacks = async () => {
@@ -113,6 +120,26 @@ export default function Packs() {
 
   const reloadSelectedPack = () => {
     setSelectedPackKeyCount(selectedPackKeyCount + 1);
+  };
+
+  const handleReloadIconPacks = async () => {
+    setReloadingIconPacks(true);
+
+    // Start the timer for at least 250ms
+    const spinMinDuration = new Promise((resolve) => setTimeout(resolve, 250));
+
+    // Clear icon cache and reload packs
+    const reloadJob = ClearIconPackCache().then(() => {
+      return loadIconPacks().then(() => {
+        reloadSelectedPack();
+      });
+    });
+
+    // Wait for both the spin duration and the job to complete
+    await Promise.all([spinMinDuration, reloadJob]);
+
+    // Stop the spin animation
+    setReloadingIconPacks(false);
   };
 
   useEffect(() => {
@@ -139,48 +166,85 @@ export default function Packs() {
 
   return (
     <Tabs value={selectedPackId} className="flex flex-row w-full h-full">
-      <TabsList
-        className={`flex-col justify-start px-2 rounded-none h-[calc(100vh-5.5rem)] overflow-y-auto shrink-0 transition-all duration-300 z-20`}
-        style={{ width: editingIconPack ? "6rem" : "24rem" }}
-      >
-        {iconPacks?.map((pack) => (
-          <PackTrigger
-            key={
-              pack.metadata.id +
-              pack.metadata.name +
-              pack.metadata.version +
-              pack.metadata.iconName +
-              pack.settings.enabled
-            }
-            packId={pack.metadata.id}
-            selectedPackId={selectedPackId}
-            setSelectedPackId={setSelectedPackId}
-            reloadSelectedPack={reloadSelectedPack}
-            editingIconPack={editingIconPack}
-            disabled={editingIconPack}
-          />
-        ))}
-
+      <div>
         {!editingIconPack && (
-          <Dialog>
-            <DialogTrigger className="w-full">
-              <Button variant={"outline"} className="my-2 py-6 w-full">
-                {t("my_packs.create_new_pack.label")}
+          <div className="flex justify-between items-center gap-0.5 bg-muted backdrop-contrast-50 dark:backdrop-contrast-200 px-2 py-1 h-8 transition-all duration-[5000] overflow-hidden">
+            <div className="flex gap-0.5">
+              <Dialog>
+                <DialogTrigger className="flex items-center">
+                  <Button
+                    className="backdrop-brightness-150 p-1 border w-6 h-6"
+                    variant={"ghost"}
+                    size={"icon"}
+                  >
+                    <Plus />
+                  </Button>
+                </DialogTrigger>
+                <DialogClose ref={dialogCloseRef} />
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>
+                      {t("my_packs.create_new_pack.title")}
+                    </DialogTitle>
+                  </DialogHeader>
+                  <CreatePackForm
+                    loadPackInfo={loadIconPacks}
+                    dialogCloseRef={dialogCloseRef}
+                  />
+                </DialogContent>
+              </Dialog>
+              <Button
+                className="backdrop-brightness-150 p-1 border w-6 h-6"
+                variant={"ghost"}
+                size={"icon"}
+                onClick={handleReloadIconPacks}
+              >
+                <RefreshCw
+                  className={
+                    reloadingIconPacks ? "animate-spin duration-500" : ""
+                  }
+                />
               </Button>
-            </DialogTrigger>
-            <DialogClose ref={dialogCloseRef} />
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{t("my_packs.create_new_pack.title")}</DialogTitle>
-              </DialogHeader>
-              <CreatePackForm
-                loadPackInfo={loadIconPacks}
-                dialogCloseRef={dialogCloseRef}
-              />
-            </DialogContent>
-          </Dialog>
+            </div>
+            <div className="flex gap-0.5">
+              <Button
+                className="backdrop-brightness-150 p-1 border w-6 h-6"
+                variant={"ghost"}
+                size={"icon"}
+              >
+                <Download />
+              </Button>
+              <Button
+                className="backdrop-brightness-150 p-1 border w-6 h-6"
+                variant={"ghost"}
+                size={"icon"}
+              >
+                <UploadIcon />
+              </Button>
+            </div>
+          </div>
         )}
-      </TabsList>
+        <TabsList
+          className={`flex-col justify-start px-2 rounded-none h-[calc(100vh-5.5rem-2rem)] overflow-y-auto shrink-0 transition-all duration-300 z-20`}
+          style={{ width: editingIconPack ? "6rem" : "24rem" }}
+        >
+          {iconPacks?.map((pack) => (
+            <PackTrigger
+              key={
+                JSON.stringify(pack.metadata) +
+                JSON.stringify(pack.settings.enabled)
+              }
+              packId={pack.metadata.id}
+              selectedPackId={selectedPackId}
+              setSelectedPackId={setSelectedPackId}
+              reloadSelectedPack={reloadSelectedPack}
+              editingIconPack={editingIconPack}
+              disabled={editingIconPack}
+              loadIconPacks={loadIconPacks}
+            />
+          ))}
+        </TabsList>
+      </div>
 
       {selectedPackId &&
         (editingIconPack ? (
@@ -209,6 +273,7 @@ interface PackTriggerProps {
   reloadSelectedPack: () => void;
   editingIconPack: boolean;
   disabled?: boolean;
+  loadIconPacks: () => void;
 }
 
 function PackTrigger({
@@ -218,6 +283,7 @@ function PackTrigger({
   reloadSelectedPack,
   editingIconPack,
   disabled,
+  loadIconPacks,
   ...props
 }: PackTriggerProps) {
   const [iconPack, setIconPack] = useState<main.IconPack>();
@@ -234,6 +300,7 @@ function PackTrigger({
     SetIconPackField(packId, "settings.json", "enabled", !enabledState).then(
       () => {
         setEnabledState(!enabledState);
+        loadIconPacks();
         if (packId === selectedPackId) {
           reloadSelectedPack();
         }
@@ -820,7 +887,7 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
     if (!files) return;
     setFiles((prevFiles) => prevFiles?.filter((_, i) => i !== index));
     AddDeletePngPath(iconPackId, files[index].id);
-  }
+  };
 
   const handleInputChange = (index: number, field: string, value: string) => {
     setFiles((prevFiles) =>
@@ -912,14 +979,22 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
         <Accordion type="single" collapsible className="px-1 w-ful">
           {files.map((file, index) => (
             <AccordionItem key={file.id} value={file.id}>
-              <AccordionTrigger className="p-2" end={
-                <Button variant="ghost" size={"icon"} className="p-1.5 w-8 h-8" onClick={(e) => {
-                  e.stopPropagation()
-                  handleRemoveIcon(index)
-                }}>
-                  <LucideTrash/>
-                </Button>
-              }>
+              <AccordionTrigger
+                className="p-2"
+                end={
+                  <Button
+                    variant="ghost"
+                    size={"icon"}
+                    className="p-1.5 w-8 h-8"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemoveIcon(index);
+                    }}
+                  >
+                    <LucideTrash />
+                  </Button>
+                }
+              >
                 <div className="flex items-center gap-2">
                   <SelectImage
                     sizeClass="w-8 h-8"

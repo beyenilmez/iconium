@@ -42,6 +42,10 @@ export function ClearDeletePngPaths() {
   return window['go']['main']['App']['ClearDeletePngPaths']();
 }
 
+export function ClearIconPackCache() {
+  return window['go']['main']['App']['ClearIconPackCache']();
+}
+
 export function ClearTempPngPaths() {
   return window['go']['main']['App']['ClearTempPngPaths']();
 }

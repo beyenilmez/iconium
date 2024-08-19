@@ -355,6 +355,12 @@ func CacheIconPacks() error {
 	return nil
 }
 
+func (a *App) ClearIconPackCache() {
+	for k := range iconPackCache {
+		delete(iconPackCache, k)
+	}
+}
+
 func (a *App) GetIconPackList() []IconPack {
 	if len(iconPackCache) == 0 {
 		CacheIconPacks()

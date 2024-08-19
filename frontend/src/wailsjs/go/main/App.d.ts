@@ -22,6 +22,8 @@ export function CheckForUpdate():Promise<main.UpdateInfo>;
 
 export function ClearDeletePngPaths():Promise<void>;
 
+export function ClearIconPackCache():Promise<void>;
+
 export function ClearTempPngPaths():Promise<void>;
 
 export function CreateLastTab(arg1:string):Promise<void>;

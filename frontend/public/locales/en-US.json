@@ -19,7 +19,6 @@
 
   "my_packs": {
     "create_new_pack": {
-      "label": "Create New Pack",
       "title": "Create Icon Pack"
     },
 
