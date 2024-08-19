@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -193,5 +194,97 @@ func (a *App) UUID() string {
 }
 
 func (a *App) Ext(path string) string {
+	path = ConvertToFullPath(path)
+	if path == "" {
+		return ""
+	}
 	return filepath.Ext(path)
+}
+
+func (a *App) Name(path string) string {
+	path = ConvertToFullPath(path)
+	if path == "" {
+		return ""
+	}
+	base := filepath.Base(path)
+	return strings.TrimSuffix(base, filepath.Ext(base))
+}
+
+func (a *App) Description(path string) string {
+	path = ConvertToFullPath(path)
+	if path == "" {
+		return ""
+	}
+	link, err := lnk.File(path)
+	if err != nil {
+		return ""
+	}
+
+	return link.StringData.NameString
+}
+
+func (a *App) Destination(path string) string {
+	path = ConvertToFullPath(path)
+	if path == "" {
+		return ""
+	}
+	link, err := lnk.File(path)
+	if err != nil {
+		return ""
+	}
+
+	var destination string
+
+	if link.LinkInfo.LocalBasePath != "" {
+		destination = link.LinkInfo.LocalBasePath
+	}
+	if link.LinkInfo.LocalBasePathUnicode != "" {
+		destination = link.LinkInfo.LocalBasePathUnicode
+	}
+
+	runtime.LogDebugf(appContext, "Destination: %s", destination)
+
+	return ConvertToGeneralPath(destination)
+}
+
+func (a *App) IconLocation(path string) string {
+	path = ConvertToFullPath(path)
+	if path == "" {
+		return ""
+	}
+	link, err := lnk.File(path)
+	if err != nil {
+		return ""
+	}
+
+	return link.StringData.IconLocation
+}
+
+func (a *App) CreateLastTab(path string) {
+	tempFilePath := filepath.Join(tempFolder, "iconium-last-tab.txt")
+
+	if err := os.WriteFile(tempFilePath, []byte(path), 0o644); err != nil {
+		runtime.LogErrorf(appContext, "Error writing last tab path: %s", err)
+	}
+}
+
+func (a *App) ReadLastTab() string {
+	tempFilePath := filepath.Join(tempFolder, "iconium-last-tab.txt")
+
+	if _, err := os.Stat(tempFilePath); errors.Is(err, os.ErrNotExist) {
+		return ""
+	}
+
+	content, err := os.ReadFile(tempFilePath)
+	if err != nil {
+		runtime.LogErrorf(appContext, "Error reading last tab path: %s", err)
+		return ""
+	}
+
+	// Delete the temp file
+	if err := os.Remove(tempFilePath); err != nil {
+		runtime.LogErrorf(appContext, "Error removing temp file: %s", err)
+	}
+
+	return string(content)
 }

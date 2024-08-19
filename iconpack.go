@@ -276,9 +276,7 @@ func (a *App) SetIconPackFiles(packId string, files []FileInfo) {
 		return
 	}
 
-	for _, file := range files {
-		file.HasIcon = false
-
+	for i, file := range files {
 		tempPngPath, ok := tempPngPaths[file.Id]
 		if ok {
 			runtime.LogDebugf(appContext, "Attempting to copy temp png: %s", tempPngPath)
@@ -300,6 +298,8 @@ func (a *App) SetIconPackFiles(packId string, files []FileInfo) {
 
 			file.HasIcon = true
 		}
+
+		files[i] = file
 	}
 
 	// Update cache

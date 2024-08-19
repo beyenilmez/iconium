@@ -22,6 +22,10 @@ export function AddIconPack(arg1, arg2, arg3) {
   return window['go']['main']['App']['AddIconPack'](arg1, arg2, arg3);
 }
 
+export function AddTempPngPath(arg1, arg2) {
+  return window['go']['main']['App']['AddTempPngPath'](arg1, arg2);
+}
+
 export function ApplyIconPack(arg1) {
   return window['go']['main']['App']['ApplyIconPack'](arg1);
 }
@@ -34,8 +38,20 @@ export function ClearTempPngPaths() {
   return window['go']['main']['App']['ClearTempPngPaths']();
 }
 
+export function CreateLastTab(arg1) {
+  return window['go']['main']['App']['CreateLastTab'](arg1);
+}
+
 export function DeleteIconPack(arg1, arg2) {
   return window['go']['main']['App']['DeleteIconPack'](arg1, arg2);
+}
+
+export function Description(arg1) {
+  return window['go']['main']['App']['Description'](arg1);
+}
+
+export function Destination(arg1) {
+  return window['go']['main']['App']['Destination'](arg1);
 }
 
 export function Ext(arg1) {
@@ -102,6 +118,14 @@ export function GetVersion() {
   return window['go']['main']['App']['GetVersion']();
 }
 
+export function IconLocation(arg1) {
+  return window['go']['main']['App']['IconLocation'](arg1);
+}
+
+export function Name(arg1) {
+  return window['go']['main']['App']['Name'](arg1);
+}
+
 export function NeedsAdminPrivileges() {
   return window['go']['main']['App']['NeedsAdminPrivileges']();
 }
@@ -112,6 +136,10 @@ export function OpenFileInExplorer(arg1) {
 
 export function ReadConfig(arg1) {
   return window['go']['main']['App']['ReadConfig'](arg1);
+}
+
+export function ReadLastTab() {
+  return window['go']['main']['App']['ReadLastTab']();
 }
 
 export function RestartApplication(arg1, arg2) {

@@ -14,6 +14,7 @@ import {
   Loader2,
   Monitor,
   Pencil,
+  SquarePlus,
   Trash,
   Upload,
 } from "lucide-react";
@@ -34,9 +35,13 @@ import {
   AddFilesToIconPackFromDesktop,
   AddFilesToIconPackFromPath,
   AddIconPack,
+  AddTempPngPath,
   ApplyIconPack,
   ClearTempPngPaths,
+  CreateLastTab,
   DeleteIconPack,
+  Description,
+  Destination,
   Ext,
   GetFileInfoFromDesktop,
   GetFileInfoFromPaths,
@@ -44,9 +49,14 @@ import {
   GetIconFiles,
   GetIconPack,
   GetIconPackList,
+  GetTempPngPath,
+  IconLocation,
+  Name,
+  ReadLastTab,
   SetIconPackField,
   SetIconPackFiles,
   SetIconPackMetadata,
+  UUID,
 } from "@/wailsjs/go/main/App";
 import { main } from "@/wailsjs/go/models";
 import {
@@ -110,6 +120,20 @@ export default function Packs() {
     reloadSelectedPack();
   }, [selectedPackId]);
 
+  useEffect(() => {
+    if (!editingIconPack && selectedPackId !== "") {
+      CreateLastTab(selectedPackId).then(() => {
+        window.location.reload();
+      });
+    }
+  }, [editingIconPack]);
+
+  useEffect(() => {
+    ReadLastTab().then((packId) => {
+      setSelectedPackId(packId);
+    });
+  }, []);
+
   return (
     <Tabs value={selectedPackId} className="flex flex-row w-full h-full">
       <TabsList
@@ -159,8 +183,6 @@ export default function Packs() {
         (editingIconPack ? (
           <PackEdit
             iconPackId={selectedPackId}
-            setSelectedPackId={setSelectedPackId}
-            loadIconPacks={loadIconPacks}
             setEditingIconPack={setEditingIconPack}
           />
         ) : (
@@ -708,17 +730,10 @@ function PackContent({
 
 interface PackEditProps {
   iconPackId: string;
-  setSelectedPackId: (packId: string) => void;
-  loadIconPacks: () => void;
   setEditingIconPack: (editingIconPack: boolean) => void;
 }
 
-function PackEdit({
-  iconPackId,
-  setSelectedPackId: setPack,
-  loadIconPacks: loadPackInfo,
-  setEditingIconPack,
-}: PackEditProps) {
+function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
   const { t } = useTranslation();
 
   const [loading, setLoading] = useState(true);
@@ -772,6 +787,32 @@ function PackEdit({
     });
   };
 
+  const handleAddEmptyIcon = () => {
+    setAddIconsRunning(true);
+
+    UUID()
+      .then((uuid) => {
+        const oldFiles = files || [];
+        oldFiles.push(
+          main.FileInfo.createFrom({
+            id: uuid,
+            name: "New file",
+            description: "",
+            path: "",
+            destinationPath: "",
+            extension: "",
+            hasIcon: false,
+            iconId: "",
+          })
+        );
+        console.log(oldFiles);
+        setFiles(oldFiles);
+      })
+      .finally(() => {
+        setAddIconsRunning(false);
+      });
+  };
+
   const handleInputChange = (index: number, field: string, value: string) => {
     setFiles((prevFiles) =>
       prevFiles?.map((file, i) =>
@@ -806,10 +847,6 @@ function PackEdit({
 
   return (
     <div className="flex flex-col w-full">
-      <div hidden>
-        {String(setPack) + String(loadPackInfo) + String(setEditingIconPack)}
-      </div>
-
       <div className="shadow-bottom-sm flex justify-between items-center bg-muted backdrop-contrast-50 dark:backdrop-contrast-200 px-3 h-16">
         <div className="flex flex-wrap gap-1.5">
           <Button
@@ -837,6 +874,15 @@ function PackEdit({
               <Upload className="w-6 h-6" />
             )}
             {t("my_packs.card.pack_actions.add_icons")}
+          </Button>
+          <Button
+            variant={"secondary"}
+            className="flex gap-2.5"
+            onClick={handleAddEmptyIcon}
+            disabled={running}
+          >
+            <SquarePlus className="w-6 h-6" />
+            {"Add empty icon"}
           </Button>
         </div>
         <div className="flex gap-2">
@@ -878,7 +924,9 @@ function PackEdit({
                             return newArray;
                           });
                         }}
+                        key={updateArray[index]}
                         editable
+                        alwaysShowOriginal={false}
                       />
                     </div>
                     <TextInput
@@ -907,6 +955,40 @@ function PackEdit({
                       handleInputChange(index, "path", value);
                       Ext(value).then((ext) => {
                         handleInputChange(index, "extension", ext);
+                        console.log(ext);
+                      });
+                      if (file.name === "" || file.name === "New file") {
+                        Name(value).then((name) => {
+                          handleInputChange(index, "name", name);
+                        });
+                      }
+                      if (file.description === "") {
+                        Description(value).then((description) => {
+                          console.log(description);
+                          handleInputChange(index, "description", description);
+                        });
+                      }
+                      if (file.destinationPath === "") {
+                        Destination(value).then((destinationPath) => {
+                          handleInputChange(
+                            index,
+                            "destinationPath",
+                            destinationPath
+                          );
+                        });
+                      }
+                      GetTempPngPath(file.id).then((tempPngPath) => {
+                        if (!tempPngPath && !file.hasIcon) {
+                          IconLocation(value).then((iconLocation) => {
+                            AddTempPngPath(file.id, iconLocation).then(() => {
+                              setUpdateArray((prevUpdateArray) => {
+                                const newArray = [...prevUpdateArray];
+                                newArray[index] = prevUpdateArray[index] + 1;
+                                return newArray;
+                              });
+                            });
+                          });
+                        }
                       });
                     }}
                     label={"Path"}

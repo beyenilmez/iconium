@@ -12,13 +12,21 @@ export function AddFilesToIconPackFromPath(arg1:string,arg2:Array<string>,arg3:b
 
 export function AddIconPack(arg1:string,arg2:string,arg3:string):Promise<void>;
 
+export function AddTempPngPath(arg1:string,arg2:string):Promise<void>;
+
 export function ApplyIconPack(arg1:string):Promise<void>;
 
 export function CheckForUpdate():Promise<main.UpdateInfo>;
 
 export function ClearTempPngPaths():Promise<void>;
 
+export function CreateLastTab(arg1:string):Promise<void>;
+
 export function DeleteIconPack(arg1:string,arg2:boolean):Promise<void>;
+
+export function Description(arg1:string):Promise<string>;
+
+export function Destination(arg1:string):Promise<string>;
 
 export function Ext(arg1:string):Promise<string>;
 
@@ -52,11 +60,17 @@ export function GetTempPngPath(arg1:string):Promise<string>;
 
 export function GetVersion():Promise<string>;
 
+export function IconLocation(arg1:string):Promise<string>;
+
+export function Name(arg1:string):Promise<string>;
+
 export function NeedsAdminPrivileges():Promise<boolean>;
 
 export function OpenFileInExplorer(arg1:string):Promise<void>;
 
 export function ReadConfig(arg1:string):Promise<void>;
+
+export function ReadLastTab():Promise<string>;
 
 export function RestartApplication(arg1:boolean,arg2:Array<string>):Promise<void>;
 

@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
@@ -230,4 +231,31 @@ func (a *App) GetTempPngPath(id string) string {
 	} else {
 		return ""
 	}
+}
+
+func (a *App) AddTempPngPath(id string, path string) {
+	if !contains(allowedImageExtensionsPng, filepath.Ext(path)) {
+		runtime.LogError(appContext, "Extension is not allowed: "+path)
+		return
+	}
+
+	oldPath, ok := tempPngPaths[id]
+
+	tempPngPath := filepath.Join(tempFolder, "iconium-"+uuid.NewString()+".png")
+	err := ConvertToPng(path, tempPngPath)
+
+	if err != nil {
+		runtime.LogErrorf(appContext, "Error converting to png: %s", err)
+		return
+	}
+
+	if ok {
+		err = os.Remove(oldPath)
+		if err != nil {
+			runtime.LogErrorf(appContext, "Error removing old temp png: %s", err)
+			return
+		}
+	}
+
+	tempPngPaths[id] = tempPngPath
 }
