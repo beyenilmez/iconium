@@ -113,6 +113,19 @@ export default function Packs() {
 
   const dialogCloseRef = useRef(null);
 
+  const tabsListRef = useRef(null);
+  const [hasOverflow, setHasOverflow] = useState(false);
+  useEffect(() => {
+    const element = tabsListRef.current as HTMLElement | null;
+    if (!element) {
+      return;
+    }
+
+    const overflow = element.scrollHeight > element.clientHeight;
+    LogDebug(element.scrollHeight + " > " + element.clientHeight + " = " + overflow);
+    setHasOverflow(overflow);
+  }, [editingIconPack]);
+
   const loadIconPacks = async () => {
     const packs = await GetIconPackList();
     setIconPacks(packs);
@@ -167,66 +180,67 @@ export default function Packs() {
   return (
     <Tabs value={selectedPackId} className="flex flex-row w-full h-full">
       <div>
-        {!editingIconPack && (
-          <div className="flex justify-between items-center gap-0.5 bg-muted backdrop-contrast-50 dark:backdrop-contrast-200 px-2 py-1 h-8 transition-all duration-[5000] overflow-hidden">
-            <div className="flex gap-0.5">
-              <Dialog>
-                <DialogTrigger className="flex items-center">
-                  <Button
-                    className="backdrop-brightness-150 p-1 border w-6 h-6"
-                    variant={"ghost"}
-                    size={"icon"}
-                  >
-                    <Plus />
-                  </Button>
-                </DialogTrigger>
-                <DialogClose ref={dialogCloseRef} />
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>
-                      {t("my_packs.create_new_pack.title")}
-                    </DialogTitle>
-                  </DialogHeader>
-                  <CreatePackForm
-                    loadPackInfo={loadIconPacks}
-                    dialogCloseRef={dialogCloseRef}
-                  />
-                </DialogContent>
-              </Dialog>
-              <Button
-                className="backdrop-brightness-150 p-1 border w-6 h-6"
-                variant={"ghost"}
-                size={"icon"}
-                onClick={handleReloadIconPacks}
+        <div className="flex justify-between items-center gap-0.5 bg-muted backdrop-contrast-50 dark:backdrop-contrast-200 px-2 py-1 h-8 transition-all duration-[5000] overflow-hidden">
+          <div className="flex gap-0.5">
+            <Dialog>
+              <DialogTrigger
+                className="flex items-center"
+                disabled={editingIconPack}
               >
-                <RefreshCw
-                  className={
-                    reloadingIconPacks ? "animate-spin duration-500" : ""
-                  }
+                <Button
+                  disabled={editingIconPack}
+                  className="backdrop-brightness-150 p-1 border w-6 h-6"
+                  variant={"ghost"}
+                  size={"icon"}
+                >
+                  <Plus />
+                </Button>
+              </DialogTrigger>
+              <DialogClose ref={dialogCloseRef} />
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>
+                    {t("my_packs.create_new_pack.title")}
+                  </DialogTitle>
+                </DialogHeader>
+                <CreatePackForm
+                  loadPackInfo={loadIconPacks}
+                  dialogCloseRef={dialogCloseRef}
                 />
-              </Button>
-            </div>
-            <div className="flex gap-0.5">
-              <Button
-                className="backdrop-brightness-150 p-1 border w-6 h-6"
-                variant={"ghost"}
-                size={"icon"}
-              >
-                <Download />
-              </Button>
-              <Button
-                className="backdrop-brightness-150 p-1 border w-6 h-6"
-                variant={"ghost"}
-                size={"icon"}
-              >
-                <UploadIcon />
-              </Button>
-            </div>
+              </DialogContent>
+            </Dialog>
+            <Button
+              disabled={editingIconPack}
+              className="backdrop-brightness-150 p-1 border w-6 h-6"
+              variant={"ghost"}
+              size={"icon"}
+              onClick={handleReloadIconPacks}
+            >
+              <RefreshCw
+                className={
+                  reloadingIconPacks ? "animate-spin duration-500" : ""
+                }
+              />
+            </Button>
           </div>
-        )}
+          <div className="flex gap-0.5">
+            <Button
+              disabled={editingIconPack}
+              className="backdrop-brightness-150 p-1 border w-6 h-6"
+              variant={"ghost"}
+              size={"icon"}
+            >
+              <Download />
+            </Button>
+          </div>
+        </div>
+
         <TabsList
-          className={`flex-col justify-start px-2 rounded-none h-[calc(100vh-5.5rem-2rem)] overflow-y-auto shrink-0 transition-all duration-300 z-20`}
-          style={{ width: editingIconPack ? "6rem" : "24rem" }}
+          ref={tabsListRef}
+          className={`${
+            editingIconPack ? (hasOverflow ? "w-[6.6rem]" : "w-[6rem]") : "w-[24rem]"
+          }
+          flex-col justify-start px-2 rounded-none h-[calc(100vh-5.5rem-2rem)] overflow-y-auto shrink-0 transition-all duration-300 z-20`}
         >
           {iconPacks?.map((pack) => (
             <PackTrigger
@@ -664,6 +678,16 @@ function PackContent({
           >
             <Pencil className="w-6 h-6" />
             {t("my_packs.card.pack_actions.edit_icon_pack")}
+          </Button>
+
+          <Button
+            variant={"default"}
+            className="flex gap-2.5"
+            onClick={handleEditIconPack}
+            disabled={running}
+          >
+            <UploadIcon className="w-6 h-6" />
+            {t("Export Icon Pack")}
           </Button>
         </div>
 
