@@ -314,6 +314,11 @@ func unzip_folder(src, dst string) error {
 	return nil
 }
 
+func exists(path string) bool {
+	_, err := os.Stat(path)
+	return !os.IsNotExist(err)
+}
+
 func (a *App) UUID() string {
 	return uuid.NewString()
 }

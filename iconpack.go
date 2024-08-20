@@ -131,8 +131,17 @@ func ReadIconPack(id string) (IconPack, error) {
 		return IconPack{}, err
 	}
 
+	metadataChange := false
 	if iconPack.Metadata.Id != id {
 		iconPack.Metadata.Id = id
+		metadataChange = true
+	}
+	iconPath := filepath.Join(packsFolder, iconPack.Metadata.Id, iconPack.Metadata.IconName+".png")
+	if !exists(iconPath) {
+		iconPack.Metadata.IconName = ""
+		metadataChange = true
+	}
+	if metadataChange {
 		writeJSON(metadataPath, iconPack.Metadata)
 	}
 
@@ -186,33 +195,6 @@ func (a *App) SetIconPackField(packId string, fileName string, field string, val
 		return
 	}
 
-	packFolder := path.Join(packsFolder, packId)
-
-	// Check if the file exists
-	filePath := path.Join(packFolder, fileName)
-	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		runtime.LogError(appContext, fmt.Sprintf("File %s not found", filePath))
-		return
-	}
-
-	// Read the file
-	var jsonData map[string]interface{}
-	err = readJSON(filePath, &jsonData)
-	if err != nil {
-		runtime.LogError(appContext, fmt.Sprintf("Failed to read file %s: %s", filePath, err.Error()))
-		return
-	}
-
-	// Set the field
-	jsonData[field] = value
-
-	// Write the file
-	err = writeJSON(filePath, jsonData)
-	if err != nil {
-		runtime.LogError(appContext, fmt.Sprintf("Failed to write file %s: %s", filePath, err.Error()))
-		return
-	}
-
 	// Update cache
 	switch fileName {
 	case "metadata.json":
@@ -225,6 +207,8 @@ func (a *App) SetIconPackField(packId string, fileName string, field string, val
 			iconPack.Metadata.Version = value.(string)
 		case "author":
 			iconPack.Metadata.Author = value.(string)
+		case "iconName":
+			iconPack.Metadata.IconName = value.(string)
 		}
 	case "settings.json":
 		switch field {
@@ -315,9 +299,10 @@ func (a *App) SetIconPackFiles(packId string, files []FileInfo) {
 				continue
 			}
 			delete(tempPngPaths, file.Id)
-
-			file.HasIcon = true
 		}
+
+		iconPath := filepath.Join(packsFolder, packId, "icons", file.Id+".png")
+		file.HasIcon = exists(iconPath)
 
 		files[i] = file
 	}
@@ -327,7 +312,7 @@ func (a *App) SetIconPackFiles(packId string, files []FileInfo) {
 	for _, path := range paths {
 		os.Remove(path)
 	}
-	a.ClearDeletePngPaths()
+	delete(deletePngPaths, packId)
 
 	// Update cache
 	iconPack.Files = files
