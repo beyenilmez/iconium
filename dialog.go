@@ -214,6 +214,97 @@ func (a *App) GetFilePath(generalPath string) string {
 	return ConvertToGeneralPath(path)
 }
 
+func (a *App) ExportIconPack(packId string) string {
+	// Check if the icon pack exists
+	_, err := a.GetIconPack(packId)
+	if err != nil {
+		runtime.LogErrorf(appContext, "Icon pack %s not found: %s", packId, err.Error())
+		return ""
+	}
+
+	path, err := runtime.SaveFileDialog(a.ctx, runtime.SaveDialogOptions{
+		Title:                "Export icon pack",
+		CanCreateDirectories: true,
+		Filters: []runtime.FileFilter{
+			{
+				DisplayName: "Iconium File",
+				Pattern:     "*.icnm",
+			},
+		},
+	})
+	if err != nil {
+		runtime.LogWarning(a.ctx, err.Error())
+		return ""
+	}
+
+	iconPackPath := filepath.Join(packsFolder, packId)
+	runtime.LogInfof(a.ctx, "Exporting icon pack: %s", iconPackPath)
+
+	err = zip_folder(iconPackPath, path)
+
+	if err != nil {
+		runtime.LogErrorf(a.ctx, "Error exporting icon pack: %s", err.Error())
+		return ""
+	}
+
+	a.SendNotification("settings.icon_pack.exported", "", path, "success")
+
+	return path
+}
+
+func (a *App) ImportIconPack() string {
+	path, err := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
+		Title:                "Import icon pack",
+		CanCreateDirectories: true,
+		Filters: []runtime.FileFilter{
+			{
+				DisplayName: "Iconium File",
+				Pattern:     "*.icnm",
+			},
+		},
+	})
+	if err != nil {
+		runtime.LogWarning(a.ctx, err.Error())
+		return ""
+	}
+
+	runtime.LogInfof(a.ctx, "Importing icon pack: %s", path)
+
+	extractFolder := filepath.Join(tempFolder, "iconium-"+uuid.NewString())
+	defer os.RemoveAll(extractFolder)
+
+	err = unzip_folder(path, extractFolder)
+	if err != nil {
+		runtime.LogErrorf(a.ctx, "Error importing icon pack: %s", err.Error())
+		return ""
+	}
+
+	files, err := os.ReadDir(extractFolder)
+	if err != nil {
+		runtime.LogErrorf(a.ctx, "Error importing icon pack: %s", err.Error())
+		return ""
+	}
+	if len(files) != 1 {
+		runtime.LogErrorf(a.ctx, "Error importing icon pack")
+		return ""
+	}
+
+	packId := uuid.NewString()
+
+	tempIconPackPath := filepath.Join(extractFolder, files[0].Name())
+	targetPath := filepath.Join(packsFolder, packId)
+
+	err = os.Rename(tempIconPackPath, targetPath)
+	if err != nil {
+		runtime.LogErrorf(a.ctx, "Error importing icon pack: %s", err.Error())
+		return ""
+	}
+
+	a.SendNotification("settings.icon_pack.imported", "", "", "success")
+
+	return packId
+}
+
 func (a *App) OpenFileInExplorer(path string) {
 	runtime.LogInfo(a.ctx, "Opening file in explorer: "+path)
 

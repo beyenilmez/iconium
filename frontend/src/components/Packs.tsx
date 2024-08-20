@@ -50,6 +50,7 @@ import {
   DeleteIconPack,
   Description,
   Destination,
+  ExportIconPack,
   Ext,
   GetFileInfoFromDesktop,
   GetFileInfoFromPaths,
@@ -59,6 +60,7 @@ import {
   GetIconPackList,
   GetTempPngPath,
   IconLocation,
+  ImportIconPack,
   Name,
   ReadLastTab,
   SetIconPackField,
@@ -122,7 +124,9 @@ export default function Packs() {
     }
 
     const overflow = element.scrollHeight > element.clientHeight;
-    LogDebug(element.scrollHeight + " > " + element.clientHeight + " = " + overflow);
+    LogDebug(
+      element.scrollHeight + " > " + element.clientHeight + " = " + overflow
+    );
     setHasOverflow(overflow);
   }, [editingIconPack]);
 
@@ -153,6 +157,14 @@ export default function Packs() {
 
     // Stop the spin animation
     setReloadingIconPacks(false);
+  };
+
+  const handleImportIconPack = () => {
+    ImportIconPack().then((id) => {
+      handleReloadIconPacks().then(() => {
+        setSelectedPackId(id);
+      });
+    });
   };
 
   useEffect(() => {
@@ -226,6 +238,7 @@ export default function Packs() {
           <div className="flex gap-0.5">
             <Button
               disabled={editingIconPack}
+              onClick={handleImportIconPack}
               className="backdrop-brightness-150 p-1 border w-6 h-6"
               variant={"ghost"}
               size={"icon"}
@@ -238,7 +251,11 @@ export default function Packs() {
         <TabsList
           ref={tabsListRef}
           className={`${
-            editingIconPack ? (hasOverflow ? "w-[6.6rem]" : "w-[6rem]") : "w-[24rem]"
+            editingIconPack
+              ? hasOverflow
+                ? "w-[6.6rem]"
+                : "w-[6rem]"
+              : "w-[24rem]"
           }
           flex-col justify-start px-2 rounded-none h-[calc(100vh-5.5rem-2rem)] overflow-y-auto shrink-0 transition-all duration-300 z-20`}
         >
@@ -493,6 +510,10 @@ function PackContent({
     setEditingIconPack(true);
   };
 
+  const handleExportIconPack = () => {
+    ExportIconPack(iconPackId);
+  };
+
   const handleApplyIconPack = () => {
     setApplyRunning(true);
     ApplyIconPack(iconPackId).finally(() => {
@@ -683,7 +704,7 @@ function PackContent({
           <Button
             variant={"default"}
             className="flex gap-2.5"
-            onClick={handleEditIconPack}
+            onClick={handleExportIconPack}
             disabled={running}
           >
             <UploadIcon className="w-6 h-6" />

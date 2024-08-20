@@ -130,6 +130,12 @@ func ReadIconPack(id string) (IconPack, error) {
 		runtime.LogErrorf(appContext, "Failed to read icon pack metadata: %s", err.Error())
 		return IconPack{}, err
 	}
+
+	if iconPack.Metadata.Id != id {
+		iconPack.Metadata.Id = id
+		writeJSON(metadataPath, iconPack.Metadata)
+	}
+
 	if err := readJSON(settingsPath, &iconPack.Settings); err != nil {
 		runtime.LogWarningf(appContext, "Failed to read icon pack settings: %s", err.Error())
 		iconPack.Settings = defaultPack.Settings

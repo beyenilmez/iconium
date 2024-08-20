@@ -66,6 +66,10 @@ export function Destination(arg1) {
   return window['go']['main']['App']['Destination'](arg1);
 }
 
+export function ExportIconPack(arg1) {
+  return window['go']['main']['App']['ExportIconPack'](arg1);
+}
+
 export function Ext(arg1) {
   return window['go']['main']['App']['Ext'](arg1);
 }
@@ -132,6 +136,10 @@ export function GetVersion() {
 
 export function IconLocation(arg1) {
   return window['go']['main']['App']['IconLocation'](arg1);
+}
+
+export function ImportIconPack() {
+  return window['go']['main']['App']['ImportIconPack']();
 }
 
 export function Name(arg1) {

@@ -1,9 +1,12 @@
 package main
 
 import (
+	"archive/zip"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -186,6 +189,128 @@ func copy_file(src string, dst string) error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func zip_folder(src string, dst string) error {
+	// Create the destination zip file
+	zipFile, err := os.Create(dst)
+	if err != nil {
+		return fmt.Errorf("failed to create zip file: %w", err)
+	}
+	defer zipFile.Close()
+
+	// Initialize the zip writer
+	archive := zip.NewWriter(zipFile)
+	defer func() {
+		if cerr := archive.Close(); cerr != nil && err == nil {
+			err = fmt.Errorf("failed to close archive: %w", cerr)
+		}
+	}()
+
+	// Walk the directory tree
+	err = filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return fmt.Errorf("error accessing path %s: %w", path, err)
+		}
+
+		// Skip directories but add them to the zip archive to preserve structure
+		if info.IsDir() {
+			return nil
+		}
+
+		// Open the file to be zipped
+		file, err := os.Open(path)
+		if err != nil {
+			return fmt.Errorf("failed to open file %s: %w", path, err)
+		}
+		defer file.Close()
+
+		// Create the file header in the archive
+		relPath, err := filepath.Rel(filepath.Dir(src), path)
+		if err != nil {
+			return fmt.Errorf("failed to get relative path: %w", err)
+		}
+
+		f, err := archive.Create(relPath)
+		if err != nil {
+			return fmt.Errorf("failed to create entry for %s in zip file: %w", relPath, err)
+		}
+
+		// Copy the file content to the archive
+		if _, err = io.Copy(f, file); err != nil {
+			return fmt.Errorf("failed to write file %s to archive: %w", relPath, err)
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return fmt.Errorf("failed to zip folder %s: %w", src, err)
+	}
+
+	return nil
+}
+
+func unzip_folder(src, dst string) error {
+	// Open the ZIP file
+	zipFile, err := os.Open(src)
+	if err != nil {
+		return fmt.Errorf("failed to open zip file: %w", err)
+	}
+	defer zipFile.Close()
+
+	// Read the ZIP file
+	stat, err := zipFile.Stat()
+	if err != nil {
+		return fmt.Errorf("failed to get zip file info: %w", err)
+	}
+
+	reader, err := zip.NewReader(zipFile, stat.Size())
+	if err != nil {
+		return fmt.Errorf("failed to create zip reader: %w", err)
+	}
+
+	// Extract each file and directory
+	for _, file := range reader.File {
+		filePath := filepath.Join(dst, file.Name)
+
+		// Ensure the path is within the destination folder
+		if !strings.HasPrefix(filePath, filepath.Clean(dst)+string(os.PathSeparator)) {
+			return fmt.Errorf("illegal file path: %s", filePath)
+		}
+
+		// If the file is a directory, create it
+		if file.FileInfo().IsDir() {
+			if err := os.MkdirAll(filePath, os.ModePerm); err != nil {
+				return fmt.Errorf("failed to create directory: %w", err)
+			}
+			continue
+		}
+
+		// Ensure parent directory exists
+		if err := os.MkdirAll(filepath.Dir(filePath), os.ModePerm); err != nil {
+			return fmt.Errorf("failed to create directory for file: %w", err)
+		}
+
+		// Extract the file
+		destFile, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
+		if err != nil {
+			return fmt.Errorf("failed to open file for writing: %w", err)
+		}
+		defer destFile.Close()
+
+		fileInArchive, err := file.Open()
+		if err != nil {
+			return fmt.Errorf("failed to open file in archive: %w", err)
+		}
+		defer fileInArchive.Close()
+
+		if _, err := io.Copy(destFile, fileInArchive); err != nil {
+			return fmt.Errorf("failed to copy file content: %w", err)
+		}
+	}
+
 	return nil
 }
 

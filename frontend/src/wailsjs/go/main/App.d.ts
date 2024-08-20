@@ -34,6 +34,8 @@ export function Description(arg1:string):Promise<string>;
 
 export function Destination(arg1:string):Promise<string>;
 
+export function ExportIconPack(arg1:string):Promise<string>;
+
 export function Ext(arg1:string):Promise<string>;
 
 export function GetBase64Png():Promise<string>;
@@ -67,6 +69,8 @@ export function GetTempPngPath(arg1:string):Promise<string>;
 export function GetVersion():Promise<string>;
 
 export function IconLocation(arg1:string):Promise<string>;
+
+export function ImportIconPack():Promise<string>;
 
 export function Name(arg1:string):Promise<string>;
 
