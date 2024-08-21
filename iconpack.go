@@ -66,7 +66,7 @@ func CreateIconPack(name string, version string, author string) (IconPack, error
 
 	var err error
 
-	if name != "" && version != "" && author != "" {
+	if name != "Unknown Pack" {
 		err = WriteIconPack(iconPack)
 		if err != nil {
 			return IconPack{}, err

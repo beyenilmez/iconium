@@ -45,6 +45,7 @@ import {
   ApplyIconPack,
   ClearDeletePngPaths,
   ClearIconPackCache,
+  ClearSelectImages,
   ClearTempPngPaths,
   CreateLastTab,
   DeleteIconPack,
@@ -479,7 +480,10 @@ function PackContent({
       return;
     }
 
-    SetIconPackMetadata(iconPackId, editedIconPack.metadata).then(() => {
+    Promise.all([
+      ClearSelectImages(),
+      SetIconPackMetadata(iconPackId, editedIconPack.metadata),
+    ]).then(() => {
       setIconPack(editedIconPack);
       loadIconPacks();
       reloadSelectedPack();
@@ -491,6 +495,7 @@ function PackContent({
     setEditingMetadata(false);
     ClearTempPngPaths();
     ClearDeletePngPaths();
+    ClearSelectImages();
   };
 
   const handleDelete = () => {
@@ -943,15 +948,15 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
   };
 
   const handleCancelEdit = () => {
-    setEditingIconPack(false);
     ClearTempPngPaths();
+    ClearSelectImages().then(() => setEditingIconPack(false));
   };
 
   const handleSaveEdit = () => {
     if (!files) return;
     SetIconPackFiles(iconPackId, files).then(() => {
-      setEditingIconPack(false);
       ClearTempPngPaths();
+      ClearSelectImages().then(() => setEditingIconPack(false));
     });
   };
 
@@ -1066,7 +1071,6 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
                             return newArray;
                           });
                         }}
-                        key={updateArray[index]}
                         editable
                         alwaysShowOriginal={false}
                       />
@@ -1287,6 +1291,7 @@ function CreatePackForm({ loadPackInfo, dialogCloseRef }: CreatePackFormProps) {
     return () => {
       // This function runs before the component unmounts
       ClearTempPngPaths();
+      ClearSelectImages();
     };
   }, []);
 

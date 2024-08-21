@@ -26,6 +26,8 @@ export function ClearDeletePngPaths():Promise<void>;
 
 export function ClearIconPackCache():Promise<void>;
 
+export function ClearSelectImages():Promise<void>;
+
 export function ClearTempPngPaths():Promise<void>;
 
 export function CreateLastTab(arg1:string):Promise<void>;
@@ -63,6 +65,8 @@ export function GetIconPack(arg1:string):Promise<main.IconPack>;
 export function GetIconPackList():Promise<Array<main.IconPack>>;
 
 export function GetLoadConfigPath():Promise<string>;
+
+export function GetSelectImage(arg1:string,arg2:string):Promise<main.SelectImage>;
 
 export function GetTempPng(arg1:string):Promise<string>;
 
@@ -105,3 +109,5 @@ export function UUID():Promise<string>;
 export function Update(arg1:string):Promise<void>;
 
 export function UpdateAsAdmin(arg1:string):Promise<void>;
+
+export function UploadSelectImage(arg1:string):Promise<main.SelectImage>;

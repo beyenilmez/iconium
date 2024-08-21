@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Skeleton } from "./ui/skeleton";
 import { CircleHelp, Images } from "lucide-react";
 import { Button } from "./ui/button";
-import { GetTempPng, GetTempPngPath } from "@/wailsjs/go/main/App";
-import { LogDebug } from "@/wailsjs/runtime/runtime";
+import {
+  GetSelectImage,
+  UploadSelectImage,
+} from "@/wailsjs/go/main/App";
+import { main } from "@/wailsjs/go/models";
 
 interface SelectImageProps {
   src?: string;
@@ -14,7 +16,7 @@ interface SelectImageProps {
   editable?: boolean;
   unkown?: boolean;
   alwaysShowOriginal?: boolean;
-  onChange?: (value: string) => void;
+  onChange?: () => void;
 }
 
 const SelectImage: React.FC<SelectImageProps> = ({
@@ -29,39 +31,27 @@ const SelectImage: React.FC<SelectImageProps> = ({
   onChange,
   ...rest
 }) => {
-  const [loading, setLoading] = useState(true);
-  const [iconPath, setIconPath] = useState(originalSrc);
-  const [imgKey, setImgKey] = useState(0);
+  const [imageProperties, setImageProperties] = useState<main.SelectImage>({
+    id: packId,
+    path: originalSrc,
+    tempPath: "",
+    isEmpty: true,
+    isOriginal: true,
+  });
 
   const handleUpload = () => {
-    GetTempPng(packId).then((path) => {
-      if (path) {
-        setIconPath(path);
-        onChange?.(path);
-      }
+    UploadSelectImage(packId).then((properties) => {
+      setImageProperties(properties);
+      onChange?.();
     });
   };
 
   useEffect(() => {
-    if (alwaysShowOriginal && !editable) {
-      setIconPath(originalSrc);
-      setLoading(true);
-    } else {
-      GetTempPngPath(packId).then((path) => {
-        LogDebug("GetTempPngPath: " + path);
-        if (path) {
-          setIconPath(path);
-        } else {
-          setIconPath(originalSrc);
-        }
-        setLoading(true);
-      });
-    }
+    GetSelectImage(packId, originalSrc).then((properties) => {
+      setImageProperties(properties);
+      onChange?.();
+    });
   }, [editable]);
-
-  useEffect(() => {
-    setImgKey(imgKey + 1);
-  }, [loading]);
 
   return (
     <Button
@@ -76,28 +66,15 @@ const SelectImage: React.FC<SelectImageProps> = ({
       <Images
         className={`group-hover:flex absolute justify-center items-center hidden bg-muted opacity-70 transition-all ${editSizeClass}`}
       />
-      {unkown ? (
-        <CircleHelp
-          className={`group-hover:opacity-10 transition-all ${sizeClass} ${
-            loading ? "" : "hidden"
-          }`}
-        />
+      {imageProperties.isEmpty ? (
+        <CircleHelp className={`group-hover:opacity-10 transition-all p-0.5 ${sizeClass}`} />
       ) : (
-        <Skeleton
-          className={`group-hover:opacity-10 transition-all ${sizeClass} ${
-            loading ? "" : "hidden"
-          }`}
+        <img
+          src={imageProperties.tempPath || imageProperties.path}
+          className={`select-none group-hover:opacity-10 transition-all ${sizeClass}`}
+          {...rest}
         />
       )}
-      <img
-        key={imgKey}
-        src={iconPath}
-        className={`select-none group-hover:opacity-10 transition-all ${sizeClass} ${
-          loading ? "hidden" : ""
-        }`}
-        onLoad={() => setLoading(false)}
-        {...rest}
-      />
     </Button>
   );
 };

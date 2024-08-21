@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
+	cmap "github.com/orcaman/concurrent-map/v2"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
@@ -35,6 +36,16 @@ var imageMagickPath string
 
 var tempPngPaths map[string]string = map[string]string{}
 var deletePngPaths map[string]([]string) = map[string]([]string){}
+
+var selectImages = cmap.New[SelectImage]()
+
+type SelectImage struct {
+	Id         string `json:"id"`
+	Path       string `json:"path"`
+	TempPath   string `json:"tempPath"`
+	IsEmpty    bool   `json:"isEmpty"`
+	IsOriginal bool   `json:"isOriginal"`
+}
 
 func path_init() error {
 	appData, err := os.UserConfigDir()
@@ -280,4 +291,49 @@ func (a *App) ClearDeletePngPaths() {
 	for k := range deletePngPaths {
 		delete(deletePngPaths, k)
 	}
+}
+
+func (a *App) GetSelectImage(id string, path string) SelectImage {
+	selectImage, ok := selectImages.Get(id)
+	if ok {
+		return selectImage
+	}
+
+	isEmpty := path == ""
+
+	if !isEmpty {
+		isEmpty = !exists(filepath.Join(appFolder, path))
+	}
+
+	selectImage = SelectImage{
+		Id:         id,
+		Path:       path,
+		TempPath:   "",
+		IsEmpty:    isEmpty,
+		IsOriginal: !isEmpty,
+	}
+
+	selectImages.Set(id, selectImage)
+
+	return selectImage
+}
+
+func (a *App) UploadSelectImage(id string) SelectImage {
+	tempPngPath := a.GetTempPng(id)
+	if tempPngPath == "" {
+		return a.GetSelectImage(id, "")
+	}
+
+	selectImage := a.GetSelectImage(id, "")
+
+	selectImage.TempPath = tempPngPath
+	selectImage.IsEmpty = false
+	selectImage.IsOriginal = false
+	selectImages.Set(id, selectImage)
+
+	return selectImage
+}
+
+func (a *App) ClearSelectImages() {
+	selectImages.Clear()
 }

@@ -50,6 +50,10 @@ export function ClearIconPackCache() {
   return window['go']['main']['App']['ClearIconPackCache']();
 }
 
+export function ClearSelectImages() {
+  return window['go']['main']['App']['ClearSelectImages']();
+}
+
 export function ClearTempPngPaths() {
   return window['go']['main']['App']['ClearTempPngPaths']();
 }
@@ -124,6 +128,10 @@ export function GetIconPackList() {
 
 export function GetLoadConfigPath() {
   return window['go']['main']['App']['GetLoadConfigPath']();
+}
+
+export function GetSelectImage(arg1, arg2) {
+  return window['go']['main']['App']['GetSelectImage'](arg1, arg2);
 }
 
 export function GetTempPng(arg1) {
@@ -208,4 +216,8 @@ export function Update(arg1) {
 
 export function UpdateAsAdmin(arg1) {
   return window['go']['main']['App']['UpdateAsAdmin'](arg1);
+}
+
+export function UploadSelectImage(arg1) {
+  return window['go']['main']['App']['UploadSelectImage'](arg1);
 }

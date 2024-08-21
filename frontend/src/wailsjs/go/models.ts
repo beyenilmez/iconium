@@ -156,6 +156,26 @@ export namespace main {
 	}
 	
 	
+	export class SelectImage {
+	    id: string;
+	    path: string;
+	    tempPath: string;
+	    isEmpty: boolean;
+	    isOriginal: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new SelectImage(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
+	        this.path = source["path"];
+	        this.tempPath = source["tempPath"];
+	        this.isEmpty = source["isEmpty"];
+	        this.isOriginal = source["isOriginal"];
+	    }
+	}
 	export class UpdateInfo {
 	    updateAvailable: boolean;
 	    currentVersion: string;
