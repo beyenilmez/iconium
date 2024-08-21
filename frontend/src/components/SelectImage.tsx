@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { CircleHelp, Images } from "lucide-react";
+import { CircleHelp, CircleX, Images, RotateCw } from "lucide-react";
 import { Button } from "./ui/button";
 import {
+  ActionSelectImage,
   GetSelectImage,
   UploadSelectImage,
 } from "@/wailsjs/go/main/App";
@@ -14,8 +15,6 @@ interface SelectImageProps {
   sizeClass?: string;
   editSizeClass?: string;
   editable?: boolean;
-  unkown?: boolean;
-  alwaysShowOriginal?: boolean;
   onChange?: () => void;
 }
 
@@ -26,8 +25,6 @@ const SelectImage: React.FC<SelectImageProps> = ({
   sizeClass = "w-12 h-12",
   editSizeClass = "w-7 h-7",
   editable = false,
-  unkown = true,
-  alwaysShowOriginal = true,
   onChange,
   ...rest
 }) => {
@@ -35,13 +32,22 @@ const SelectImage: React.FC<SelectImageProps> = ({
     id: packId,
     path: originalSrc,
     tempPath: "",
-    isEmpty: true,
-    isOriginal: true,
+    hasOriginal: true,
+    hasTemp: false,
+    isRemoved: false,
   });
 
   const handleUpload = () => {
     UploadSelectImage(packId).then((properties) => {
       setImageProperties(properties);
+      onChange?.();
+    });
+  };
+
+  const handleAction = () => {
+    ActionSelectImage(packId).then((properties) => {
+      setImageProperties(properties);
+      console.log(properties);
       onChange?.();
     });
   };
@@ -54,28 +60,48 @@ const SelectImage: React.FC<SelectImageProps> = ({
   }, [editable]);
 
   return (
-    <Button
-      onClick={handleUpload}
-      type="button"
-      variant="ghost"
-      size="icon"
-      className={`static rounded-none group shrink-0 ${sizeClass}
-        ${!editable ? "pointer-events-none" : ""} ${className}`}
-      {...rest}
-    >
-      <Images
-        className={`group-hover:flex absolute justify-center items-center hidden bg-muted opacity-70 transition-all ${editSizeClass}`}
-      />
-      {imageProperties.isEmpty ? (
-        <CircleHelp className={`group-hover:opacity-10 transition-all p-0.5 ${sizeClass}`} />
-      ) : (
-        <img
-          src={imageProperties.tempPath || imageProperties.path}
-          className={`select-none group-hover:opacity-10 transition-all ${sizeClass}`}
-          {...rest}
-        />
+    <div className={`relative inline-block shrink-0 ${sizeClass}`}>
+      {editable && ((imageProperties.hasOriginal || imageProperties.isRemoved) || imageProperties.hasTemp) && (
+        <Button
+          variant={"ghost"}
+          size={"icon"}
+          className="top-0 right-0 hover:brightness-75 z-10 absolute bg-destructive hover:bg-destructive p-0.5 rounded-full w-4 h-4 cursor-default"
+          onClick={handleAction}
+        >
+          {imageProperties.hasOriginal &&
+          (imageProperties.hasTemp || imageProperties.isRemoved) ? (
+            <RotateCw />
+          ) : (
+            <CircleX />
+          )}
+        </Button>
       )}
-    </Button>
+      <Button
+        onClick={handleUpload}
+        type="button"
+        variant="ghost"
+        size="icon"
+        className={`static rounded-none group shrink-0 w-full h-full
+        ${!editable ? "pointer-events-none" : ""} ${className}`}
+        {...rest}
+      >
+        <Images
+          className={`group-hover:flex absolute justify-center items-center hidden bg-muted opacity-70 transition-all ${editSizeClass}`}
+        />
+        {(imageProperties.hasOriginal && !imageProperties.isRemoved) ||
+        imageProperties.hasTemp ? (
+          <img
+            src={imageProperties.tempPath || imageProperties.path}
+            className={`select-none group-hover:opacity-10 transition-all ${sizeClass}`}
+            {...rest}
+          />
+        ) : (
+          <CircleHelp
+            className={`group-hover:opacity-10 transition-all p-0.5 ${sizeClass}`}
+          />
+        )}
+      </Button>
+    </div>
   );
 };
 

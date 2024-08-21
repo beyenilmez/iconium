@@ -37,17 +37,17 @@ import {
 } from "@/components/ui/dialog";
 import SelectImage from "./SelectImage";
 import {
-  AddDeletePngPath,
+  AddDeletePngRelativePath,
   AddFilesToIconPackFromDesktop,
   AddFilesToIconPackFromPath,
   AddIconPack,
-  AddTempPngPath,
   ApplyIconPack,
   ClearDeletePngPaths,
   ClearIconPackCache,
   ClearSelectImages,
   ClearTempPngPaths,
   CreateLastTab,
+  DeleteDeletePngPaths,
   DeleteIconPack,
   Description,
   Destination,
@@ -67,6 +67,7 @@ import {
   SetIconPackField,
   SetIconPackFiles,
   SetIconPackMetadata,
+  SetSelectImage,
   UUID,
 } from "@/wailsjs/go/main/App";
 import { main } from "@/wailsjs/go/models";
@@ -291,7 +292,7 @@ export default function Packs() {
             setSelectedPackId={setSelectedPackId}
             loadIconPacks={loadIconPacks}
             setEditingIconPack={setEditingIconPack}
-            reloadSelectedPack={reloadSelectedPack}
+            reloadIconPacks={handleReloadIconPacks}
           />
         ))}
     </Tabs>
@@ -385,7 +386,7 @@ interface PackContentProps {
   setSelectedPackId: (packId: string) => void;
   loadIconPacks: () => void;
   setEditingIconPack: (editingIconPack: boolean) => void;
-  reloadSelectedPack: () => void;
+  reloadIconPacks: () => void;
 }
 
 function PackContent({
@@ -393,7 +394,7 @@ function PackContent({
   setSelectedPackId,
   loadIconPacks,
   setEditingIconPack,
-  reloadSelectedPack,
+  reloadIconPacks,
 }: PackContentProps) {
   const { t } = useTranslation();
 
@@ -482,12 +483,10 @@ function PackContent({
 
     Promise.all([
       ClearSelectImages(),
+      DeleteDeletePngPaths(),
       SetIconPackMetadata(iconPackId, editedIconPack.metadata),
     ]).then(() => {
-      setIconPack(editedIconPack);
-      loadIconPacks();
-      reloadSelectedPack();
-      setEditingMetadata(false);
+      reloadIconPacks();
     });
   };
 
@@ -597,7 +596,6 @@ function PackContent({
               }
               packId={iconPackId}
               editable={editingMetadata}
-              unkown
             />
             <div className="flex flex-row gap-8">
               {fields.map((field) => (
@@ -936,7 +934,9 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
   const handleRemoveIcon = (index: number) => {
     if (!files) return;
     setFiles((prevFiles) => prevFiles?.filter((_, i) => i !== index));
-    AddDeletePngPath(iconPackId, files[index].id);
+    AddDeletePngRelativePath(
+      `packs\\${iconPackId}\\icons\\${files[index].id}.png`
+    );
   };
 
   const handleInputChange = (index: number, field: string, value: string) => {
@@ -954,9 +954,11 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
 
   const handleSaveEdit = () => {
     if (!files) return;
-    SetIconPackFiles(iconPackId, files).then(() => {
-      ClearTempPngPaths();
-      ClearSelectImages().then(() => setEditingIconPack(false));
+    DeleteDeletePngPaths().then(() => {
+      SetIconPackFiles(iconPackId, files).then(() => {
+        ClearTempPngPaths();
+        ClearSelectImages().then(() => setEditingIconPack(false));
+      });
     });
   };
 
@@ -1051,7 +1053,6 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
                     src={`packs/${iconPackId}/icons/${file.id}.png`}
                     packId={file.id}
                     key={updateArray[index]}
-                    alwaysShowOriginal={false}
                   />
                   {file.name}
                 </div>
@@ -1072,7 +1073,6 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
                           });
                         }}
                         editable
-                        alwaysShowOriginal={false}
                       />
                     </div>
                     <TextInput
@@ -1123,19 +1123,6 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
                           );
                         });
                       }
-                      GetTempPngPath(file.id).then((tempPngPath) => {
-                        if (!tempPngPath && !file.hasIcon) {
-                          IconLocation(value).then((iconLocation) => {
-                            AddTempPngPath(file.id, iconLocation).then(() => {
-                              setUpdateArray((prevUpdateArray) => {
-                                const newArray = [...prevUpdateArray];
-                                newArray[index] = prevUpdateArray[index] + 1;
-                                return newArray;
-                              });
-                            });
-                          });
-                        }
-                      });
                     }}
                     label={"Path"}
                   />

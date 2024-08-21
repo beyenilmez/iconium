@@ -314,11 +314,7 @@ func (a *App) SetIconPackFiles(packId string, files []FileInfo) {
 	}
 
 	// Delete the unused icons
-	paths := deletePngPaths[packId]
-	for _, path := range paths {
-		os.Remove(path)
-	}
-	delete(deletePngPaths, packId)
+	a.DeleteDeletePngPaths()
 
 	// Update cache
 	iconPack.Files = files

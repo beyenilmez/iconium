@@ -35,16 +35,17 @@ var installationDirectory string
 var imageMagickPath string
 
 var tempPngPaths map[string]string = map[string]string{}
-var deletePngPaths map[string]([]string) = map[string]([]string){}
+var deletePngPaths []string = []string{}
 
 var selectImages = cmap.New[SelectImage]()
 
 type SelectImage struct {
-	Id         string `json:"id"`
-	Path       string `json:"path"`
-	TempPath   string `json:"tempPath"`
-	IsEmpty    bool   `json:"isEmpty"`
-	IsOriginal bool   `json:"isOriginal"`
+	Id          string `json:"id"`
+	Path        string `json:"path"`
+	TempPath    string `json:"tempPath"`
+	HasOriginal bool   `json:"hasOriginal"`
+	HasTemp     bool   `json:"hasTemp"`
+	IsRemoved   bool   `json:"isRemoved"`
 }
 
 func path_init() error {
@@ -272,25 +273,48 @@ func (a *App) AddTempPngPath(id string, path string) {
 	tempPngPaths[id] = tempPngPath
 }
 
-func (a *App) AddDeletePngPath(packId, fileId string) {
-	paths := deletePngPaths[packId]
-	path := filepath.Join(packsFolder, packId, "icons", fileId+".png")
-	paths = append(paths, path)
-	deletePngPaths[packId] = paths
+func (a *App) RemoveTempPng(id string) {
+	err := os.Remove(tempPngPaths[id])
+	if err != nil {
+		runtime.LogErrorf(appContext, "Error removing temp png: %s", err)
+		return
+	}
+
+	delete(tempPngPaths, id)
 }
 
-func (a *App) AddDeletePngRelativePath(packId, relPath string) {
+func (a *App) AddDeletePngRelativePath(relPath string) {
 	path := filepath.Join(appFolder, relPath)
 
-	paths := deletePngPaths[packId]
-	paths = append(paths, path)
-	deletePngPaths[packId] = paths
+	deletePngPaths = append(deletePngPaths, path)
 }
 
 func (a *App) ClearDeletePngPaths() {
-	for k := range deletePngPaths {
-		delete(deletePngPaths, k)
+	deletePngPaths = []string{}
+}
+
+func (a *App) RemoveDeletePng(path string) {
+	paths := deletePngPaths
+
+	for i := 0; i < len(paths); i++ {
+		if paths[i] == path {
+			paths = append(paths[:i], paths[i+1:]...)
+			break
+		}
 	}
+
+	deletePngPaths = paths
+}
+
+func (a *App) DeleteDeletePngPaths() {
+	for _, path := range deletePngPaths {
+		err := os.Remove(path)
+		if err != nil {
+			runtime.LogErrorf(appContext, "Error removing delete png: %s", err)
+		}
+	}
+
+	deletePngPaths = []string{}
 }
 
 func (a *App) GetSelectImage(id string, path string) SelectImage {
@@ -299,18 +323,23 @@ func (a *App) GetSelectImage(id string, path string) SelectImage {
 		return selectImage
 	}
 
+	fullPath := filepath.Join(appFolder, path)
+
 	isEmpty := path == ""
 
-	if !isEmpty {
-		isEmpty = !exists(filepath.Join(appFolder, path))
+	if filepath.Ext(path) != ".png" {
+		isEmpty = true
+	} else if !isEmpty {
+		isEmpty = !exists(fullPath)
 	}
 
 	selectImage = SelectImage{
-		Id:         id,
-		Path:       path,
-		TempPath:   "",
-		IsEmpty:    isEmpty,
-		IsOriginal: !isEmpty,
+		Id:          id,
+		Path:        path,
+		TempPath:    "",
+		HasOriginal: !isEmpty,
+		HasTemp:     false,
+		IsRemoved:   false,
 	}
 
 	selectImages.Set(id, selectImage)
@@ -327,8 +356,71 @@ func (a *App) UploadSelectImage(id string) SelectImage {
 	selectImage := a.GetSelectImage(id, "")
 
 	selectImage.TempPath = tempPngPath
-	selectImage.IsEmpty = false
-	selectImage.IsOriginal = false
+	selectImage.HasTemp = true
+	selectImages.Set(id, selectImage)
+
+	return selectImage
+}
+
+func (a *App) SetSelectImage(id string, path string) {
+	selectImage := a.GetSelectImage(id, path)
+
+	if !selectImage.HasTemp {
+		a.RemoveTempPng(id)
+	}
+
+	a.AddTempPngPath(id, path)
+
+	tempPngPath := a.GetTempPng(id)
+
+	if tempPngPath != "" {
+		selectImage.TempPath, _ = filepath.Rel(appFolder, tempPngPath)
+		selectImage.HasTemp = true
+	} else {
+		selectImage.TempPath = ""
+		selectImage.HasTemp = false
+	}
+
+	selectImages.Set(id, selectImage)
+
+	runtime.LogDebugf(appContext, "Set select image: %s", path)
+}
+
+func (a *App) ActionSelectImage(id string) SelectImage {
+	selectImage := a.GetSelectImage(id, "")
+
+	if selectImage.HasOriginal {
+		if selectImage.HasTemp {
+			runtime.LogDebugf(appContext, "Removing temp png: %s", selectImage.TempPath)
+
+			a.RemoveTempPng(id)
+
+			selectImage.HasTemp = false
+			selectImage.TempPath = ""
+		} else {
+			if selectImage.IsRemoved {
+				runtime.LogDebugf(appContext, "Retrieving original png: %s", selectImage.Path)
+
+				a.RemoveDeletePng(filepath.Join(appFolder, selectImage.Path))
+
+				selectImage.IsRemoved = false
+			} else {
+				runtime.LogDebugf(appContext, "Removing original png: %s", selectImage.Path)
+
+				a.AddDeletePngRelativePath(selectImage.Path)
+
+				selectImage.IsRemoved = true
+			}
+		}
+	} else if selectImage.HasTemp {
+		runtime.LogDebugf(appContext, "Removing temp png2: %s", selectImage.TempPath)
+
+		a.RemoveTempPng(id)
+
+		selectImage.HasTemp = false
+		selectImage.TempPath = ""
+	}
+
 	selectImages.Set(id, selectImage)
 
 	return selectImage
