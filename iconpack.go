@@ -66,7 +66,7 @@ func CreateIconPack(name string, version string, author string) (IconPack, error
 
 	var err error
 
-	if name != "" {
+	if name != "" && version != "" && author != "" {
 		err = WriteIconPack(iconPack)
 		if err != nil {
 			return IconPack{}, err
@@ -109,6 +109,7 @@ func WriteIconPack(iconPack IconPack) error {
 
 func ReadIconPack(id string) (IconPack, error) {
 	packPath := path.Join(packsFolder, id)
+	iconFolderPath := path.Join(packPath, "icons")
 	metadataPath := path.Join(packPath, "metadata.json")
 	settingsPath := path.Join(packPath, "settings.json")
 	filesPath := path.Join(packPath, "files.json")
@@ -119,7 +120,7 @@ func ReadIconPack(id string) (IconPack, error) {
 
 	iconPack := IconPack{}
 
-	defaultPack, err := CreateIconPack("", "", "")
+	defaultPack, err := CreateIconPack("Unknown Pack", "v1.0.0", "")
 	if err != nil {
 		runtime.LogWarningf(appContext, "Failed to create default icon pack: %s", err.Error())
 		return IconPack{}, err
@@ -128,7 +129,7 @@ func ReadIconPack(id string) (IconPack, error) {
 	// Read metadata and files from their respective JSON files
 	if err := readJSON(metadataPath, &iconPack.Metadata); err != nil {
 		runtime.LogErrorf(appContext, "Failed to read icon pack metadata: %s", err.Error())
-		return IconPack{}, err
+		iconPack.Metadata = defaultPack.Metadata
 	}
 
 	metadataChange := false
@@ -137,7 +138,7 @@ func ReadIconPack(id string) (IconPack, error) {
 		metadataChange = true
 	}
 	iconPath := filepath.Join(packsFolder, iconPack.Metadata.Id, iconPack.Metadata.IconName+".png")
-	if !exists(iconPath) {
+	if iconPack.Metadata.IconName != "" && !exists(iconPath) {
 		iconPack.Metadata.IconName = ""
 		metadataChange = true
 	}
@@ -154,6 +155,11 @@ func ReadIconPack(id string) (IconPack, error) {
 		runtime.LogWarningf(appContext, "Failed to read icon pack files: %s", err.Error())
 		iconPack.Files = []FileInfo{}
 		writeJSON(filesPath, iconPack.Files)
+	}
+
+	// Create necessary folders
+	if err := create_folder(iconFolderPath); err != nil {
+		return IconPack{}, err
 	}
 
 	iconPackCache[id] = iconPack
