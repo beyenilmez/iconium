@@ -6,6 +6,10 @@ export function AddDeletePngPath(arg1, arg2) {
   return window['go']['main']['App']['AddDeletePngPath'](arg1, arg2);
 }
 
+export function AddDeletePngRelativePath(arg1, arg2) {
+  return window['go']['main']['App']['AddDeletePngRelativePath'](arg1, arg2);
+}
+
 export function AddFileToIconPackFromPath(arg1, arg2, arg3) {
   return window['go']['main']['App']['AddFileToIconPackFromPath'](arg1, arg2, arg3);
 }

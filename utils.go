@@ -219,6 +219,10 @@ func zip_folder(src string, dst string) error {
 			return nil
 		}
 
+		if info.Name() == "apply.json" {
+			return nil
+		}
+
 		// Open the file to be zipped
 		file, err := os.Open(path)
 		if err != nil {
@@ -273,6 +277,10 @@ func unzip_folder(src, dst string) error {
 
 	// Extract each file and directory
 	for _, file := range reader.File {
+		if filepath.Base(file.FileInfo().Name()) == "apply.json" {
+			continue
+		}
+
 		filePath := filepath.Join(dst, file.Name)
 
 		// Ensure the path is within the destination folder

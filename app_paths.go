@@ -268,6 +268,14 @@ func (a *App) AddDeletePngPath(packId, fileId string) {
 	deletePngPaths[packId] = paths
 }
 
+func (a *App) AddDeletePngRelativePath(packId, relPath string) {
+	path := filepath.Join(appFolder, relPath)
+
+	paths := deletePngPaths[packId]
+	paths = append(paths, path)
+	deletePngPaths[packId] = paths
+}
+
 func (a *App) ClearDeletePngPaths() {
 	for k := range deletePngPaths {
 		delete(deletePngPaths, k)

@@ -4,6 +4,8 @@ import {main} from '../models';
 
 export function AddDeletePngPath(arg1:string,arg2:string):Promise<void>;
 
+export function AddDeletePngRelativePath(arg1:string,arg2:string):Promise<void>;
+
 export function AddFileToIconPackFromPath(arg1:string,arg2:string,arg3:boolean):Promise<void>;
 
 export function AddFilesToIconPackFromDesktop(arg1:string):Promise<void>;
