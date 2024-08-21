@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Skeleton } from "./ui/skeleton";
-import { CircleHelp, Upload } from "lucide-react";
+import { CircleHelp, Images } from "lucide-react";
 import { Button } from "./ui/button";
 import { GetTempPng, GetTempPngPath } from "@/wailsjs/go/main/App";
 import { LogDebug } from "@/wailsjs/runtime/runtime";
@@ -69,11 +69,11 @@ const SelectImage: React.FC<SelectImageProps> = ({
       type="button"
       variant="ghost"
       size="icon"
-      className={`static rounded-none overflow-clip group shrink-0 ${sizeClass}
+      className={`static rounded-none group shrink-0 ${sizeClass}
         ${!editable ? "pointer-events-none" : ""} ${className}`}
       {...rest}
     >
-      <Upload
+      <Images
         className={`group-hover:flex absolute justify-center items-center hidden bg-muted opacity-70 transition-all ${editSizeClass}`}
       />
       {unkown ? (
