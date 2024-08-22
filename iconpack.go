@@ -408,7 +408,7 @@ func CreateFileInfo(packId string, path string) (FileInfo, error) {
 				tempName := "iconium-" + uuid.NewString()
 				iconPath := filepath.Join(tempFolder, tempName+".png")
 
-				err = ConvertToPng(link.StringData.IconLocation, iconPath)
+				err = ConvertToPng(path, iconPath)
 				if err != nil {
 					runtime.LogError(appContext, err.Error())
 				} else {
@@ -565,6 +565,25 @@ func (a *App) GetFileInfoFromPaths(id string, path []string) ([]FileInfo, error)
 		if err != nil {
 			return nil, err
 		}
+
+		tempPngPath, ok := tempPngPaths[fileInfo.Id]
+		selectImage := SelectImage{
+			Id:          fileInfo.Id,
+			Path:        "",
+			TempPath:    "",
+			HasOriginal: false,
+			HasTemp:     false,
+			IsRemoved:   false,
+		}
+		if ok {
+			relativeTempPngPath, err := filepath.Rel(appFolder, tempPngPath)
+			if err == nil {
+				selectImage.TempPath = relativeTempPngPath
+				selectImage.HasTemp = true
+				selectImages.Set(fileInfo.Id, selectImage)
+			}
+		}
+
 		fileInfos = append(fileInfos, fileInfo)
 	}
 	return fileInfos, nil

@@ -100,6 +100,7 @@ func ConvertToPng(path string, destination string) error {
 	}
 
 	iconDestination := ""
+	iconLocation := ""
 
 	if extension == ".lnk" {
 		link, err := lnk.File(path)
@@ -112,11 +113,6 @@ func ConvertToPng(path string, destination string) error {
 
 		if strings.ToLower(filepath.Ext(iconLocation)) == ".ico" {
 			err = ConvertToPng(iconLocation, destination)
-			if err == nil {
-				return nil
-			}
-		} else {
-			err = ConvertToPng(iconDestination, destination)
 			if err == nil {
 				return nil
 			}
@@ -136,6 +132,12 @@ func ConvertToPng(path string, destination string) error {
 	_, err := sendCommand(args...)
 	if err != nil {
 		if extension == ".lnk" {
+			if strings.ToLower(filepath.Ext(iconLocation)) != ".ico" {
+				err = ConvertToPng(iconLocation, destination)
+				if err == nil {
+					return nil
+				}
+			}
 			return ConvertToPng(iconDestination, destination)
 		}
 		return fmt.Errorf("error converting image: %w", err)
