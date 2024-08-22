@@ -13,6 +13,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
+	"gopkg.in/ini.v1"
 
 	lnk "github.com/parsiya/golnk"
 )
@@ -305,6 +306,13 @@ func (a *App) SetIconPackFiles(packId string, files []FileInfo) {
 				continue
 			}
 			delete(tempPngPaths, file.Id)
+
+			// Delete apply.json
+			applyFile := filepath.Join(packsFolder, packId, "apply.json")
+			err = os.Remove(applyFile)
+			if err != nil {
+				runtime.LogWarning(appContext, fmt.Sprintf("Failed to remove apply.json icon: %s", err.Error()))
+			}
 		}
 
 		iconPath := filepath.Join(packsFolder, packId, "icons", file.Id+".png")
@@ -436,14 +444,39 @@ func CreateFileInfo(packId string, path string) (FileInfo, error) {
 }
 
 func GetAppliedIcon(path string) (string, error) {
-	link, err := lnk.File(path)
+	ext := strings.ToLower(filepath.Ext(path))
 
-	if err != nil {
-		return "", fmt.Errorf("failed to open .lnk file: %s", err.Error())
-	}
+	if ext == ".lnk" {
+		link, err := lnk.File(path)
+		if err != nil {
+			return "", fmt.Errorf("failed to open .lnk file: %s", err.Error())
+		}
 
-	if link.StringData.IconLocation != "" {
-		return link.StringData.IconLocation, nil
+		if link.StringData.IconLocation != "" {
+			return link.StringData.IconLocation, nil
+		}
+	} else if is_dir(path) {
+		iniPath := filepath.Join(path, "desktop.ini")
+		if !exists(iniPath) {
+			return "", nil
+		}
+
+		iniContent, err := os.ReadFile(iniPath)
+		if err != nil {
+			return "", err
+		}
+		iniFile, err := ini.Load(iniContent)
+		if err != nil {
+			return "", err
+		}
+		section := iniFile.Section(".ShellClassInfo")
+		iconResource := section.Key("IconResource").String()
+
+		iconResource = strings.Split(iconResource, ",")[0]
+
+		runtime.LogDebugf(appContext, "Icon resource: %s", iconResource)
+
+		return iconResource, nil
 	}
 
 	return "", errors.New("icon not found")
@@ -820,13 +853,77 @@ func (fileInfo *FileInfo) MatchFile() string {
 }
 
 func SetIcon(path string, iconPath string) error {
-	switch filepath.Ext(path) {
+	ext := strings.ToLower(filepath.Ext(path))
+	if is_dir(path) {
+		ext = ".dir"
+	}
+
+	switch ext {
 	case ".lnk":
 		_, err := sendCommand("cscript.exe", setLnkIconScriptPath, filepath.Dir(path), filepath.Base(path), iconPath, "0")
 
 		if err != nil {
 			return err
 		}
+
+		runtime.LogDebug(appContext, "Applied icon: "+iconPath)
+		return nil
+	case ".dir":
+		iniPath := filepath.Join(path, "desktop.ini")
+		iniPathTxt := filepath.Join(path, uuid.NewString()+"-desktop.txt")
+
+		if exists(iniPath) {
+			iniContent, err := os.ReadFile(iniPath)
+			if err != nil {
+				return err
+			}
+			iniFile, err := ini.Load(iniContent)
+			if err != nil {
+				return err
+			}
+			section := iniFile.Section(".ShellClassInfo")
+			iconResource := section.Key("IconResource")
+
+			iconResource.SetValue(iconPath + ",0")
+
+			err = iniFile.SaveTo(iniPathTxt)
+			if err != nil {
+				return err
+			}
+
+			err = os.Rename(iniPathTxt, iniPath)
+			if err != nil {
+				return err
+			}
+
+			runtime.LogDebug(appContext, "Updated desktop.ini: "+iniPath)
+		} else {
+			// Create desktop.ini
+			file, err := os.Create(iniPathTxt)
+			if err != nil {
+				return err
+			}
+
+			_, err = file.WriteString("[.ShellClassInfo]\nIconResource=" + iconPath + ",0")
+			if err != nil {
+				return err
+			}
+
+			file.Close()
+
+			err = os.Rename(iniPathTxt, iniPath)
+			if err != nil {
+				return err
+			}
+
+			runtime.LogDebug(appContext, "Created desktop.ini: "+iniPath)
+		}
+
+		sendCommand("attrib", "-s", "-h", iniPath)
+		sendCommand("attrib", "+s", "+h", iniPath)
+
+		sendCommand("attrib", "-r", path)
+		sendCommand("attrib", "+r", path)
 
 		runtime.LogDebug(appContext, "Applied icon: "+iconPath)
 		return nil
