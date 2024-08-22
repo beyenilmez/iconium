@@ -48,7 +48,7 @@ type IconPackSettings struct {
 	Opacity      int  `json:"opacity"`
 }
 
-var allowedFileExtensions = []string{".lnk"}
+var allowedFileExtensions = []string{".lnk", ".dir"}
 
 var iconPackCache map[string]IconPack = map[string]IconPack{}
 
@@ -379,6 +379,9 @@ func CreateFileInfo(packId string, path string) (FileInfo, error) {
 	fileInfo.Name = strings.TrimSuffix(filepath.Base(path), filepath.Ext(path))
 	fileInfo.Path = ConvertToGeneralPath(path)
 	fileInfo.Extension = strings.ToLower(filepath.Ext(path))
+	if is_dir(path) {
+		fileInfo.Extension = ".dir"
+	}
 
 	runtime.LogDebugf(appContext, "Pack id: %s", packId)
 	runtime.LogDebugf(appContext, "File extension for %s: %s", path, fileInfo.Extension)
@@ -400,46 +403,29 @@ func CreateFileInfo(packId string, path string) (FileInfo, error) {
 			fileInfo.Destination = link.LinkInfo.LocalBasePathUnicode
 		}
 		fileInfo.Destination = ConvertToGeneralPath(fileInfo.Destination)
+	}
 
-		if packId != "" {
-			runtime.LogDebugf(appContext, "Attempting to copy icon: %s", link.StringData.IconLocation)
+	if packId != "" {
+		if packId == "temp" {
+			tempName := "iconium-" + uuid.NewString()
+			iconPath := filepath.Join(tempFolder, tempName+".png")
 
-			if packId == "temp" {
-				tempName := "iconium-" + uuid.NewString()
-				iconPath := filepath.Join(tempFolder, tempName+".png")
-
-				err = ConvertToPng(path, iconPath)
-				if err != nil {
-					runtime.LogError(appContext, err.Error())
-				} else {
-					fileInfo.HasIcon = true
-					tempPngPaths[fileInfo.Id] = iconPath
-				}
+			err := ConvertToPng(path, iconPath)
+			if err != nil {
+				runtime.LogError(appContext, err.Error())
 			} else {
-				iconPath := filepath.Join(packsFolder, packId, "icons", fileInfo.Id+".png")
-				err = ConvertToPng(path, iconPath)
-				if err != nil {
-					runtime.LogError(appContext, err.Error())
-				} else {
-					fileInfo.HasIcon = true
-				}
+				fileInfo.HasIcon = true
+				tempPngPaths[fileInfo.Id] = iconPath
+			}
+		} else {
+			iconPath := filepath.Join(packsFolder, packId, "icons", fileInfo.Id+".png")
+			err := ConvertToPng(path, iconPath)
+			if err != nil {
+				runtime.LogError(appContext, err.Error())
+			} else {
+				fileInfo.HasIcon = true
 			}
 		}
-
-		return fileInfo, nil
-	}
-
-	file, err := os.Open(path)
-	if err != nil {
-		return FileInfo{}, err
-	}
-	defer file.Close()
-	fileStat, err := file.Stat()
-	if err != nil {
-		return FileInfo{}, err
-	}
-	if fileStat.IsDir() {
-		fileInfo.Extension = "dir"
 	}
 
 	if !contains(allowedFileExtensions, fileInfo.Extension) {
