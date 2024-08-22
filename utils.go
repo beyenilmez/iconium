@@ -327,6 +327,14 @@ func exists(path string) bool {
 	return !os.IsNotExist(err)
 }
 
+func is_dir(path string) bool {
+	info, err := os.Stat(path)
+	if err != nil {
+		return false
+	}
+	return info.IsDir()
+}
+
 func (a *App) UUID() string {
 	return uuid.NewString()
 }

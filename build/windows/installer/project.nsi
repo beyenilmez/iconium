@@ -90,6 +90,9 @@ Section
     SetOutPath "$INSTDIR\ImageMagick-7.1.1-35-portable-Q16-x64"
     File /r "..\..\..\ImageMagick-7.1.1-35-portable-Q16-x64\*.*"
 
+    SetOutPath "$INSTDIR\ExtractIcon"
+    File /r "..\..\..\ExtractIcon\*.*"
+
     CreateShortcut "$SMPROGRAMS\${INFO_PRODUCTNAME}.lnk" "$INSTDIR\${PRODUCT_EXECUTABLE}"
     CreateShortCut "$DESKTOP\${INFO_PRODUCTNAME}.lnk" "$INSTDIR\${PRODUCT_EXECUTABLE}"
 

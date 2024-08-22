@@ -33,6 +33,7 @@ var appIconPath string
 
 var installationDirectory string
 var imageMagickPath string
+var extractIconPath string
 
 var tempPngPaths map[string]string = map[string]string{}
 var deletePngPaths []string = []string{}
@@ -130,6 +131,9 @@ func path_init() error {
 	installationDirectory = filepath.Dir(ex)
 	imageMagickPath = filepath.Join(installationDirectory, "ImageMagick-7.1.1-35-portable-Q16-x64", "magick.exe")
 	runtime.LogDebugf(appContext, "ImageMagick path: %s", imageMagickPath)
+
+	extractIconPath = filepath.Join(installationDirectory, "ExtractIcon", "extracticon.exe")
+	runtime.LogDebugf(appContext, "ExtractIcon path: %s", extractIconPath)
 
 	// Copy all files in scriptsFolderEmbedded to scriptsFolder
 	runtime.LogTrace(appContext, "Attempting to copy scripts from embedded folder to scripts folder")

@@ -380,6 +380,9 @@ func CreateFileInfo(packId string, path string) (FileInfo, error) {
 	fileInfo.Path = ConvertToGeneralPath(path)
 	fileInfo.Extension = strings.ToLower(filepath.Ext(path))
 
+	runtime.LogDebugf(appContext, "Pack id: %s", packId)
+	runtime.LogDebugf(appContext, "File extension for %s: %s", path, fileInfo.Extension)
+
 	if fileInfo.Extension == ".lnk" {
 		link, err := lnk.File(path)
 		if err != nil {
@@ -398,7 +401,7 @@ func CreateFileInfo(packId string, path string) (FileInfo, error) {
 		}
 		fileInfo.Destination = ConvertToGeneralPath(fileInfo.Destination)
 
-		if packId != "" && strings.ToLower(filepath.Ext(link.StringData.IconLocation)) == ".ico" {
+		if packId != "" {
 			runtime.LogDebugf(appContext, "Attempting to copy icon: %s", link.StringData.IconLocation)
 
 			if packId == "temp" {
@@ -414,7 +417,7 @@ func CreateFileInfo(packId string, path string) (FileInfo, error) {
 				}
 			} else {
 				iconPath := filepath.Join(packsFolder, packId, "icons", fileInfo.Id+".png")
-				err = ConvertToPng(link.StringData.IconLocation, iconPath)
+				err = ConvertToPng(path, iconPath)
 				if err != nil {
 					runtime.LogError(appContext, err.Error())
 				} else {

@@ -8,10 +8,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/google/uuid"
+	lnk "github.com/parsiya/golnk"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
-var allowedImageExtensionsPng = []string{".ico", ".png", ".jpg", ".jpeg", ".bmp", ".webp", ".svg"}
+var allowedImageExtensionsPng = []string{".ico", ".png", ".jpg", ".jpeg", ".bmp", ".webp", ".svg", ".exe", ".lnk"}
 
 var allowedImageExtensionsIco = []string{".png", ".jpg", ".jpeg"}
 
@@ -94,64 +95,50 @@ func ConvertToIco(path string, destination string, settings IconPackSettings) er
 func ConvertToPng(path string, destination string) error {
 	extension := filepath.Ext(path)
 
-	if !contains(allowedImageExtensionsPng, extension) {
+	if !is_dir(path) && !contains(allowedImageExtensionsPng, extension) {
 		return fmt.Errorf("invalid image extension: %s", extension)
 	}
 
-	tempIconFolder := filepath.Join(tempFolder, "iconium-"+uuid.NewString())
-	err := create_folder(tempIconFolder)
-	if err != nil {
-		return err
-	}
-	defer os.RemoveAll(tempIconFolder)
-	tempIconPath := filepath.Join(tempIconFolder, "icon.png")
+	iconDestination := ""
 
-	if extension != ".ico" {
-		tempIconPath = destination
+	if extension == ".lnk" {
+		link, err := lnk.File(path)
+		if err != nil {
+			return fmt.Errorf("failed to open .lnk file: %w", err)
+		}
+
+		iconLocation := link.StringData.IconLocation
+		iconDestination = link.LinkInfo.LocalBasePath
+
+		if strings.ToLower(filepath.Ext(iconLocation)) == ".ico" {
+			err = ConvertToPng(iconLocation, destination)
+			if err == nil {
+				return nil
+			}
+		} else {
+			err = ConvertToPng(iconDestination, destination)
+			if err == nil {
+				return nil
+			}
+		}
 	}
 
 	// Build magick command arguments
-	args := []string{imageMagickPath, path, "-alpha", "on", "-background", "none", tempIconPath}
+	args := []string{extractIconPath, path, destination}
 
-	if extension != ".ico" {
-		args = []string{imageMagickPath, path, "-alpha", "on", "-background", "none", "-resize", "256x256\\!", tempIconPath}
+	if extension != ".ico" && extension != ".exe" && extension != ".lnk" && !is_dir(path) {
+		args = []string{imageMagickPath, path, "-alpha", "on", "-background", "none", "-resize", "256x256\\!", destination}
 	}
+
+	runtime.LogDebugf(appContext, "ConvertToPng: %s", strings.Join(args, " "))
 
 	// Execute magick command silently
-	_, err = sendCommand(args...)
+	_, err := sendCommand(args...)
 	if err != nil {
+		if extension == ".lnk" {
+			return ConvertToPng(iconDestination, destination)
+		}
 		return fmt.Errorf("error converting image: %w", err)
-	}
-
-	if extension == ".ico" {
-		files, err := os.ReadDir(tempIconFolder)
-		if err != nil {
-			return err
-		}
-
-		largestFile := "icon.png"
-
-		// Delete the icons other than the largest one
-		if len(files) > 1 {
-			largestWidth := -1
-			for _, file := range files {
-				width, err := GetImageWidth(filepath.Join(tempIconFolder, file.Name()))
-				if err != nil {
-					return err
-				}
-
-				if width > largestWidth {
-					largestWidth = width
-					largestFile = file.Name()
-				}
-			}
-		}
-
-		// Move the largest icon to the destination
-		err = os.Rename(filepath.Join(tempIconFolder, largestFile), destination)
-		if err != nil {
-			return err
-		}
 	}
 
 	return nil

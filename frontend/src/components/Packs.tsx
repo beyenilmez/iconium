@@ -59,15 +59,12 @@ import {
   GetIconFiles,
   GetIconPack,
   GetIconPackList,
-  GetTempPngPath,
-  IconLocation,
   ImportIconPack,
   Name,
   ReadLastTab,
   SetIconPackField,
   SetIconPackFiles,
   SetIconPackMetadata,
-  SetSelectImage,
   UUID,
 } from "@/wailsjs/go/main/App";
 import { main } from "@/wailsjs/go/models";
