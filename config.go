@@ -104,10 +104,10 @@ func config_init() error {
 	}
 	err = ReadConfig(configPath)
 	if err != nil {
-		return errors.New("failed to read config file")
+		config = GetDefaultConfig()
+	} else {
+		merge_defaults()
 	}
-
-	merge_defaults()
 
 	return nil
 }
