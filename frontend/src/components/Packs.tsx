@@ -59,7 +59,6 @@ import {
   GetIconFiles,
   GetIconPack,
   GetIconPackList,
-  IconLocation,
   ImportIconPack,
   Name,
   ReadLastTab,
