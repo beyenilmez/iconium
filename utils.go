@@ -123,8 +123,8 @@ func ConvertToGeneralPath(path string) string {
 		"PROGRAMDATA",
 		"USERPROFILE",
 		"PUBLIC",
-		"WINDIR",
 		"SYSTEMROOT",
+		"WINDIR",
 		"HOMEDRIVE",
 		"SYSTEMDRIVE",
 	}
