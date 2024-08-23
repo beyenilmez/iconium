@@ -1083,14 +1083,16 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
                       className="justify-between w-full"
                     />
                   </div>
-                  <TextInput
-                    value={file.description}
-                    placeholder={"Description"}
-                    onChange={(value) => {
-                      handleInputChange(index, "description", value);
-                    }}
-                    label={"Description"}
-                  />
+                  {file.extension === ".lnk" && (
+                    <TextInput
+                      value={file.description}
+                      placeholder={"Description"}
+                      onChange={(value) => {
+                        handleInputChange(index, "description", value);
+                      }}
+                      label={"Description"}
+                    />
+                  )}
                   <PathInput
                     value={file.path}
                     placeholder={"Path"}
@@ -1113,6 +1115,7 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
                       }
                       if (file.destinationPath === "") {
                         Destination(value).then((destinationPath) => {
+                          console.log("d: "+destinationPath);
                           handleInputChange(
                             index,
                             "destinationPath",
@@ -1124,16 +1127,17 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
                     label={"Path"}
                   />
 
-                  {file.extension === ".lnk" && (
-                    <PathInput
-                      value={file.destinationPath}
-                      placeholder={"Destination Path"}
-                      onChange={(value) => {
-                        handleInputChange(index, "destinationPath", value);
-                      }}
-                      label={"Destination Path"}
-                    />
-                  )}
+                  {file.extension === ".lnk" ||
+                    (file.extension === ".url" && (
+                      <PathInput
+                        value={file.destinationPath}
+                        placeholder={"Destination Path"}
+                        onChange={(value) => {
+                          handleInputChange(index, "destinationPath", value);
+                        }}
+                        label={"Destination Path"}
+                      />
+                    ))}
                 </div>
               </AccordionContent>
             </AccordionItem>

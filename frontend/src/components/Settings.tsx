@@ -16,8 +16,9 @@ import { CheckForUpdatesSetting } from "./SettingItems/CheckForUpdatesSetting";
 import { UpdateSetting } from "./SettingItems/UpdateSetting";
 import { useEffect, useState } from "react";
 import { useStorage } from "@/contexts/storage-provider";
-import { MatchByDestinationSetting } from "./SettingItems/MatchByDestinationSetting";
+import { MatchLnkByDestinationSetting } from "./SettingItems/MatchLnkByDestinationSetting";
 import { RenameMatchedFilesSetting } from "./SettingItems/RenameMatchedFilesSetting";
+import { MatchURLByDestinationSetting } from "./SettingItems/MatchURLByDestinationSetting";
 
 export default function Settings() {
   const { t } = useTranslation();
@@ -97,7 +98,8 @@ export default function Settings() {
       </TabsContent>
       <TabsContent value="icon_pack" className="w-full h-[calc(100vh-5.5rem)] overflow-y-auto">
         <SettingsGroup className="flex flex-col items-start px-4 py-2 w-full h-full">
-          <MatchByDestinationSetting />
+          <MatchLnkByDestinationSetting />
+          <MatchURLByDestinationSetting />
           <RenameMatchedFilesSetting />
         </SettingsGroup>
       </TabsContent>

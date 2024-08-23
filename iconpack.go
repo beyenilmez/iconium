@@ -49,7 +49,7 @@ type IconPackSettings struct {
 	Opacity      int  `json:"opacity"`
 }
 
-var allowedFileExtensions = []string{".lnk", ".dir"}
+var allowedFileExtensions = []string{".lnk", ".dir", ".url"}
 
 var iconPackCache map[string]IconPack = map[string]IconPack{}
 
@@ -306,13 +306,6 @@ func (a *App) SetIconPackFiles(packId string, files []FileInfo) {
 				continue
 			}
 			delete(tempPngPaths, file.Id)
-
-			// Delete apply.json
-			applyFile := filepath.Join(packsFolder, packId, "apply.json")
-			err = os.Remove(applyFile)
-			if err != nil {
-				runtime.LogWarning(appContext, fmt.Sprintf("Failed to remove apply.json icon: %s", err.Error()))
-			}
 		}
 
 		iconPath := filepath.Join(packsFolder, packId, "icons", file.Id+".png")
@@ -323,6 +316,14 @@ func (a *App) SetIconPackFiles(packId string, files []FileInfo) {
 
 	// Delete the unused icons
 	a.DeleteDeletePngPaths()
+
+	// Delete apply.json
+	applyFile := filepath.Join(packsFolder, packId, "apply.json")
+	runtime.LogDebugf(appContext, "Attempting to remove apply.json: %s", applyFile)
+	err = os.Remove(applyFile)
+	if err != nil {
+		runtime.LogWarning(appContext, fmt.Sprintf("Failed to remove apply.json icon: %s", err.Error()))
+	}
 
 	// Update cache
 	iconPack.Files = files
@@ -411,6 +412,22 @@ func CreateFileInfo(packId string, path string) (FileInfo, error) {
 			fileInfo.Destination = link.LinkInfo.LocalBasePathUnicode
 		}
 		fileInfo.Destination = ConvertToGeneralPath(fileInfo.Destination)
+	} else if fileInfo.Extension == ".url" {
+		iniContent, err := os.ReadFile(path)
+		if err != nil {
+			return FileInfo{}, err
+		}
+
+		iniFile, err := ini.Load(iniContent)
+		if err != nil {
+			return FileInfo{}, err
+		}
+
+		section := iniFile.Section("InternetShortcut")
+
+		url := section.Key("URL").String()
+
+		fileInfo.Destination = url
 	}
 
 	if packId != "" {
@@ -455,6 +472,26 @@ func GetAppliedIcon(path string) (string, error) {
 		if link.StringData.IconLocation != "" {
 			return link.StringData.IconLocation, nil
 		}
+	} else if ext == ".url" {
+		iniPath := filepath.Join(path)
+		if !exists(iniPath) {
+			return "", nil
+		}
+		iniContent, err := os.ReadFile(iniPath)
+		if err != nil {
+			return "", err
+		}
+		iniFile, err := ini.Load(iniContent)
+		if err != nil {
+			return "", err
+		}
+		section := iniFile.Section("InternetShortcut")
+
+		if !section.HasKey("IconFile") {
+			return "", errors.New("icon not found")
+		}
+
+		return section.Key("IconFile").String(), nil
 	} else if is_dir(path) {
 		iniPath := filepath.Join(path, "desktop.ini")
 		if !exists(iniPath) {
@@ -816,7 +853,7 @@ func (fileInfo *FileInfo) MatchFile() string {
 		return path
 	}
 
-	if *config.MatchByDestination {
+	if (*config.MatchLnkByDestination && fileInfo.Extension == ".lnk") || (*config.MatchURLByDestination && fileInfo.Extension == ".url") {
 		pathDir := ConvertToFullPath(filepath.Dir(pathPattern))
 
 		files, err := os.ReadDir(pathDir)
@@ -858,8 +895,7 @@ func SetIcon(path string, iconPath string) error {
 		ext = ".dir"
 	}
 
-	switch ext {
-	case ".lnk":
+	if ext == ".lnk" || ext == ".url" {
 		_, err := sendCommand("cscript.exe", setLnkIconScriptPath, filepath.Dir(path), filepath.Base(path), iconPath, "0")
 
 		if err != nil {
@@ -868,7 +904,7 @@ func SetIcon(path string, iconPath string) error {
 
 		runtime.LogDebug(appContext, "Applied icon: "+iconPath)
 		return nil
-	case ".dir":
+	} else if ext == ".dir" {
 		iniPath := filepath.Join(path, "desktop.ini")
 		iniPathTxt := filepath.Join(path, uuid.NewString()+"-desktop.txt")
 

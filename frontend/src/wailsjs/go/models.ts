@@ -23,7 +23,8 @@ export namespace main {
 	    windowEffect?: number;
 	    checkForUpdates?: boolean;
 	    lastUpdateCheck?: number;
-	    matchByDestination?: boolean;
+	    matchLnkByDestination?: boolean;
+	    matchURLByDestination?: boolean;
 	    renameMatchedFiles?: boolean;
 	
 	    static createFrom(source: any = {}) {
@@ -54,7 +55,8 @@ export namespace main {
 	        this.windowEffect = source["windowEffect"];
 	        this.checkForUpdates = source["checkForUpdates"];
 	        this.lastUpdateCheck = source["lastUpdateCheck"];
-	        this.matchByDestination = source["matchByDestination"];
+	        this.matchLnkByDestination = source["matchLnkByDestination"];
+	        this.matchURLByDestination = source["matchURLByDestination"];
 	        this.renameMatchedFiles = source["renameMatchedFiles"];
 	    }
 	}

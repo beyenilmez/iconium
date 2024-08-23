@@ -15,6 +15,7 @@ import (
 	"github.com/google/uuid"
 	lnk "github.com/parsiya/golnk"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
+	"gopkg.in/ini.v1"
 )
 
 func writeJSON(path string, data interface{}) error {
@@ -420,18 +421,39 @@ func (a *App) Destination(path string) string {
 	if path == "" {
 		return ""
 	}
-	link, err := lnk.File(path)
-	if err != nil {
-		return ""
-	}
+
+	ext := a.Ext(path)
 
 	var destination string
 
-	if link.LinkInfo.LocalBasePath != "" {
-		destination = link.LinkInfo.LocalBasePath
-	}
-	if link.LinkInfo.LocalBasePathUnicode != "" {
-		destination = link.LinkInfo.LocalBasePathUnicode
+	if ext == ".lnk" {
+		link, err := lnk.File(path)
+		if err != nil {
+			return ""
+		}
+
+		if link.LinkInfo.LocalBasePath != "" {
+			destination = link.LinkInfo.LocalBasePath
+		}
+		if link.LinkInfo.LocalBasePathUnicode != "" {
+			destination = link.LinkInfo.LocalBasePathUnicode
+		}
+	} else if ext == ".url" {
+		iniPath := filepath.Join(path)
+		if !exists(iniPath) {
+			return ""
+		}
+		iniContent, err := os.ReadFile(iniPath)
+		if err != nil {
+			return ""
+		}
+		iniFile, err := ini.Load(iniContent)
+		if err != nil {
+			return ""
+		}
+		section := iniFile.Section("InternetShortcut")
+
+		destination = section.Key("URL").String()
 	}
 
 	runtime.LogDebugf(appContext, "Destination: %s", destination)
@@ -444,12 +466,33 @@ func (a *App) IconLocation(path string) string {
 	if path == "" {
 		return ""
 	}
-	link, err := lnk.File(path)
-	if err != nil {
-		return ""
+
+	if a.Ext(path) == ".lnk" {
+		link, err := lnk.File(path)
+		if err != nil {
+			return ""
+		}
+
+		return link.StringData.IconLocation
+	} else if a.Ext(path) == ".url" {
+		iniPath := filepath.Join(path)
+		if !exists(iniPath) {
+			return ""
+		}
+		iniContent, err := os.ReadFile(iniPath)
+		if err != nil {
+			return ""
+		}
+		iniFile, err := ini.Load(iniContent)
+		if err != nil {
+			return ""
+		}
+		section := iniFile.Section("InternetShortcut")
+
+		return section.Key("IconFile").String()
 	}
 
-	return link.StringData.IconLocation
+	return ""
 }
 
 func (a *App) CreateLastTab(path string) {

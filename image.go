@@ -10,9 +10,10 @@ import (
 
 	lnk "github.com/parsiya/golnk"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
+	"gopkg.in/ini.v1"
 )
 
-var allowedImageExtensionsPng = []string{".ico", ".png", ".jpg", ".jpeg", ".bmp", ".webp", ".svg", ".exe", ".lnk"}
+var allowedImageExtensionsPng = []string{".ico", ".png", ".jpg", ".jpeg", ".bmp", ".webp", ".svg", ".exe", ".lnk", ".url"}
 
 var allowedImageExtensionsIco = []string{".png", ".jpg", ".jpeg"}
 
@@ -117,6 +118,20 @@ func ConvertToPng(path string, destination string) error {
 				return nil
 			}
 		}
+	} else if extension == ".url" {
+		iniContent, err := os.ReadFile(path)
+		if err != nil {
+			return fmt.Errorf("failed to open .url file: %w", err)
+		}
+		iniFile, err := ini.Load(iniContent)
+		if err != nil {
+			return fmt.Errorf("failed to parse .url file: %w", err)
+		}
+
+		section := iniFile.Section("InternetShortcut")
+		iconLocation = section.Key("IconFile").String()
+
+		return ConvertToPng(iconLocation, destination)
 	}
 
 	// Build magick command arguments

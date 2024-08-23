@@ -105,7 +105,7 @@ func (a *App) GetTempPng(id string) string {
 		Filters: []runtime.FileFilter{
 			{
 				DisplayName: "Image File",
-				Pattern:     "*.png;*.jpg;*.jpeg;*.webp;*.svg;*.bmp;*.ico;*.exe;*.lnk",
+				Pattern:     "*.png;*.jpg;*.jpeg;*.webp;*.svg;*.bmp;*.ico;*.exe;*.lnk;*.url",
 			},
 		},
 	})
@@ -157,8 +157,8 @@ func (a *App) GetIconFile() string {
 		CanCreateDirectories: true,
 		Filters: []runtime.FileFilter{
 			{
-				DisplayName: "Windows Shortcut",
-				Pattern:     "*.lnk",
+				DisplayName: "Shortcut",
+				Pattern:     "*.lnk;*.url",
 			},
 		},
 	})
@@ -177,8 +177,8 @@ func (a *App) GetIconFiles() []string {
 		CanCreateDirectories: true,
 		Filters: []runtime.FileFilter{
 			{
-				DisplayName: "Windows Shortcut",
-				Pattern:     "*.lnk",
+				DisplayName: "Shortcut",
+				Pattern:     "*.lnk;*.url",
 			},
 		},
 	})
@@ -200,8 +200,8 @@ func (a *App) GetFilePath(generalPath string) string {
 		ResolvesAliases:  true,
 		Filters: []runtime.FileFilter{
 			{
-				DisplayName: "Windows Shortcut",
-				Pattern:     "*.lnk",
+				DisplayName: "Shortcut",
+				Pattern:     "*.lnk;*.url",
 			},
 		},
 	})
