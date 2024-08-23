@@ -165,6 +165,18 @@ func ConvertToFullPath(path string) string {
 		paths = []string{path1, path2}
 	}
 
+	if strings.Contains(path, `**`) {
+		newPaths := []string{}
+
+		for _, path := range paths {
+			paths := generateCombinations(path)
+
+			newPaths = append(newPaths, paths...)
+		}
+
+		paths = newPaths
+	}
+
 	for _, path := range paths {
 		matches, err := filepath.Glob(path)
 		if err != nil {
@@ -178,6 +190,43 @@ func ConvertToFullPath(path string) string {
 	}
 
 	return ""
+}
+
+func generateCombinations(path string) []string {
+	// Find the first occurrence of multiple consecutive asterisks pattern (e.g., **, ***)
+	index := strings.Index(path, "**")
+	if index == -1 {
+		return []string{filepath.Clean(path)} // No more '**' to replace, return cleaned path
+	}
+
+	// Count consecutive asterisks to determine maximum depth
+	maxDepth := 0
+	for i := index; i < len(path) && path[i] == '*'; i++ {
+		maxDepth++
+	}
+
+	runtime.LogDebugf(appContext, "Generating combinations with max depth: %d", maxDepth-1)
+
+	var results []string
+	base := path[:index]
+	suffix := path[index+maxDepth:] // Adjust suffix to skip over the asterisks
+
+	// Generate combinations based on current asterisk count (depth)
+	for i := 0; i < maxDepth; i++ {
+		// Combine path with varying depth of wildcards
+		if i == 0 {
+			// Add combination without extra depth
+			combinedPath := filepath.Clean(base + suffix)
+			results = append(results, generateCombinations(combinedPath)...)
+		} else {
+			// Add combinations with increasing depth
+			wildcards := strings.Repeat(`*\`, i)
+			combinedPath := filepath.Clean(base + wildcards + suffix)
+			results = append(results, generateCombinations(combinedPath)...)
+		}
+	}
+
+	return results
 }
 
 func copy_file(src string, dst string) error {
@@ -340,19 +389,16 @@ func (a *App) UUID() string {
 }
 
 func (a *App) Ext(path string) string {
-	path = ConvertToFullPath(path)
-	if path == "" {
-		return ""
-	}
-	return filepath.Ext(path)
+	return strings.ToLower(filepath.Ext(path))
 }
 
 func (a *App) Name(path string) string {
-	path = ConvertToFullPath(path)
-	if path == "" {
-		return ""
+	fullPath := ConvertToFullPath(path)
+	if fullPath == "" {
+		base := filepath.Base(path)
+		return strings.TrimSuffix(base, filepath.Ext(base))
 	}
-	base := filepath.Base(path)
+	base := filepath.Base(fullPath)
 	return strings.TrimSuffix(base, filepath.Ext(base))
 }
 
