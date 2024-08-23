@@ -110,7 +110,11 @@ export function SetIconPackFiles(arg1:string,arg2:Array<main.FileInfo>):Promise<
 
 export function SetIconPackMetadata(arg1:string,arg2:main.Metadata):Promise<void>;
 
+export function SetImageIfAbsent(arg1:string,arg2:string):Promise<void>;
+
 export function SetSelectImage(arg1:string,arg2:string):Promise<void>;
+
+export function SetTempImage(arg1:string,arg2:string):Promise<void>;
 
 export function UUID():Promise<string>;
 

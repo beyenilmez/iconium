@@ -218,8 +218,16 @@ export function SetIconPackMetadata(arg1, arg2) {
   return window['go']['main']['App']['SetIconPackMetadata'](arg1, arg2);
 }
 
+export function SetImageIfAbsent(arg1, arg2) {
+  return window['go']['main']['App']['SetImageIfAbsent'](arg1, arg2);
+}
+
 export function SetSelectImage(arg1, arg2) {
   return window['go']['main']['App']['SetSelectImage'](arg1, arg2);
+}
+
+export function SetTempImage(arg1, arg2) {
+  return window['go']['main']['App']['SetTempImage'](arg1, arg2);
 }
 
 export function UUID() {

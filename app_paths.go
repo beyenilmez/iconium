@@ -252,7 +252,7 @@ func (a *App) GetTempPngPath(id string) string {
 
 func (a *App) AddTempPngPath(id string, path string) {
 	if !contains(allowedImageExtensionsPng, filepath.Ext(path)) {
-		runtime.LogError(appContext, "Extension is not allowed: "+path)
+		runtime.LogError(appContext, "Extension is not allowed: "+path+" ,Full path: "+path)
 		return
 	}
 
@@ -366,6 +366,25 @@ func (a *App) UploadSelectImage(id string) SelectImage {
 	return selectImage
 }
 
+func (a *App) SetTempImage(id string, path string) error {
+	selectImage, ok := selectImages.Get(id)
+	if !ok {
+		return errors.New("select image not found")
+	}
+
+	if selectImage.HasTemp {
+		a.RemoveTempPng(id)
+	}
+
+	selectImage.TempPath, _ = filepath.Rel(appFolder, path)
+	selectImage.HasTemp = true
+	selectImages.Set(id, selectImage)
+
+	runtime.LogDebugf(appContext, "Set temp image: %s", path)
+
+	return nil
+}
+
 func (a *App) SetSelectImage(id string, path string) {
 	selectImage := a.GetSelectImage(id, path)
 
@@ -432,4 +451,37 @@ func (a *App) ActionSelectImage(id string) SelectImage {
 
 func (a *App) ClearSelectImages() {
 	selectImages.Clear()
+}
+
+func (a *App) SetImageIfAbsent(id string, path string) {
+	path = ConvertToFullPath(path)
+
+	runtime.LogInfo(appContext, "SetImageIfAbsent path: "+path)
+
+	if path == "" {
+		runtime.LogInfo(appContext, "SetImageIfAbsent: path is empty")
+		return
+	}
+
+	selectImage := a.GetSelectImage(id, path)
+	if selectImage.Id == "" {
+		runtime.LogInfo(appContext, "SetImageIfAbsent: select image is empty")
+		return
+	}
+
+	if !(selectImage.HasOriginal || selectImage.HasTemp) {
+		a.AddTempPngPath(id, path)
+		tempPngPath, ok := tempPngPaths[id]
+
+		if ok {
+			err := a.SetTempImage(id, tempPngPath)
+			if err != nil {
+				runtime.LogError(appContext, "SetImageIfAbsent: error setting temp image: "+err.Error())
+			}
+		} else {
+			runtime.LogInfo(appContext, "SetImageIfAbsent: tempPngPath is empty")
+		}
+	} else {
+		runtime.LogInfo(appContext, "SetImageIfAbsent: hasOriginal or hasTemp is true")
+	}
 }

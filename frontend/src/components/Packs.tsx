@@ -59,12 +59,14 @@ import {
   GetIconFiles,
   GetIconPack,
   GetIconPackList,
+  IconLocation,
   ImportIconPack,
   Name,
   ReadLastTab,
   SetIconPackField,
   SetIconPackFiles,
   SetIconPackMetadata,
+  SetImageIfAbsent,
   UUID,
 } from "@/wailsjs/go/main/App";
 import { main } from "@/wailsjs/go/models";
@@ -854,7 +856,12 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
 
   const [loading, setLoading] = useState(true);
   const [files, setFiles] = useState<main.FileInfo[]>();
-  const [updateArray, setUpdateArray] = useState<number[]>(Array.from({ length: 4096 }, (_, i) => i));
+  const [updateArray, setUpdateArray] = useState<number[]>(
+    Array.from({ length: 4096 }, (_, i) => i)
+  );
+  const [updateArray2, setUpdateArray2] = useState<number[]>(
+    Array.from({ length: 4096 }, (_, i) => i)
+  );
 
   const [addIconsFromDesktopRunning, setAddIconsFromDesktopRunning] =
     useState(false);
@@ -1066,6 +1073,7 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
                             return newArray;
                           });
                         }}
+                        key={updateArray2[index]}
                         editable
                       />
                     </div>
@@ -1112,7 +1120,7 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
                       }
                       if (file.destinationPath === "") {
                         Destination(value).then((destinationPath) => {
-                          console.log("d: "+destinationPath);
+                          console.log("d: " + destinationPath);
                           handleInputChange(
                             index,
                             "destinationPath",
@@ -1120,6 +1128,19 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
                           );
                         });
                       }
+
+                      SetImageIfAbsent(file.id, value).then(() => {
+                        setUpdateArray((prevUpdateArray) => {
+                          const newArray = [...prevUpdateArray];
+                          newArray[index] = prevUpdateArray[index] + 1;
+                          return newArray;
+                        });
+                        setUpdateArray2((prevUpdateArray) => {
+                          const newArray = [...prevUpdateArray];
+                          newArray[index] = prevUpdateArray[index] + 1;
+                          return newArray;
+                        });
+                      });
                     }}
                     label={"Path"}
                   />
