@@ -10,7 +10,10 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"syscall"
 
+	"github.com/go-ole/go-ole"
+	"github.com/go-ole/go-ole/oleutil"
 	"github.com/google/uuid"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"gopkg.in/ini.v1"
@@ -895,75 +898,156 @@ func SetIcon(path string, iconPath string) error {
 		ext = ".dir"
 	}
 
-	if ext == ".lnk" || ext == ".url" {
-		_, err := sendCommand("cscript.exe", setLnkIconScriptPath, filepath.Dir(path), filepath.Base(path), iconPath, "0")
+	if ext == ".lnk" {
+		err := setLnkIcon(path, iconPath)
+		if err != nil {
+			return setIconScript(path, iconPath)
+		}
+	} else if ext == ".url" {
+		err := setIconScript(path, iconPath)
+		if err != nil {
+			return setUrlIcon(path, iconPath)
+		}
+	} else if ext == ".dir" {
+		return setDirIcon(path, iconPath)
+	}
 
+	return errors.New("unsupported file type")
+}
+
+func setIconScript(path string, iconPath string) error {
+	_, err := sendCommand("cscript.exe", setLnkIconScriptPath, filepath.Dir(path), filepath.Base(path), iconPath, "0")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func setLnkIcon(linkPath string, iconPath string) error {
+	// Initialize COM
+	err := ole.CoInitialize(0)
+	if err != nil {
+		return fmt.Errorf("failed to initialize COM: %v", err)
+	}
+	defer ole.CoUninitialize()
+
+	// Create a WScript.Shell object
+	wshShell, err := oleutil.CreateObject("WScript.Shell")
+	if err != nil {
+		return fmt.Errorf("failed to create WScript.Shell object: %v", err)
+	}
+	defer wshShell.Release()
+
+	// Get the IDispatch interface
+	wshShellDisp, err := wshShell.QueryInterface(ole.IID_IDispatch)
+	if err != nil {
+		return fmt.Errorf("failed to get IDispatch interface for WScript.Shell: %v", err)
+	}
+	defer wshShellDisp.Release()
+
+	// Create a shortcut object
+	shortcut, err := oleutil.CallMethod(wshShellDisp, "CreateShortcut", linkPath)
+	if err != nil {
+		return fmt.Errorf("failed to create shortcut object: %v", err)
+	}
+	shortcutDisp := shortcut.ToIDispatch()
+	defer shortcutDisp.Release()
+
+	// Set the icon location
+	_, err = oleutil.PutProperty(shortcutDisp, "IconLocation", iconPath+",0")
+	if err != nil {
+		return fmt.Errorf("failed to set icon location: %v", err)
+	}
+
+	// Save the shortcut
+	_, err = oleutil.CallMethod(shortcutDisp, "Save")
+	if err != nil {
+		return fmt.Errorf("failed to save shortcut: %v", err)
+	}
+
+	return nil
+}
+
+func setUrlIcon(urlPath string, iconPath string) error {
+	iniContent, err := os.ReadFile(urlPath)
+	if err != nil {
+		return err
+	}
+	iniFile, err := ini.Load(iniContent)
+	if err != nil {
+		return err
+	}
+	section := iniFile.Section("InternetShortcut")
+	section.Key("IconFile").SetValue(iconPath)
+	section.Key("IconIndex").SetValue("0")
+	err = iniFile.SaveTo(urlPath)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func setDirIcon(dirPath string, iconPath string) error {
+	iniPath := filepath.Join(dirPath, "desktop.ini")
+	iniPathTxt := filepath.Join(dirPath, uuid.NewString()+"-desktop.txt")
+
+	if exists(iniPath) {
+		iniContent, err := os.ReadFile(iniPath)
+		if err != nil {
+			return err
+		}
+		iniFile, err := ini.Load(iniContent)
+		if err != nil {
+			return err
+		}
+		section := iniFile.Section(".ShellClassInfo")
+		iconResource := section.Key("IconResource")
+		iconResource.SetValue(iconPath + ",0")
+
+		err = iniFile.SaveTo(iniPathTxt)
 		if err != nil {
 			return err
 		}
 
-		runtime.LogDebug(appContext, "Applied icon: "+iconPath)
-		return nil
-	} else if ext == ".dir" {
-		iniPath := filepath.Join(path, "desktop.ini")
-		iniPathTxt := filepath.Join(path, uuid.NewString()+"-desktop.txt")
-
-		if exists(iniPath) {
-			iniContent, err := os.ReadFile(iniPath)
-			if err != nil {
-				return err
-			}
-			iniFile, err := ini.Load(iniContent)
-			if err != nil {
-				return err
-			}
-			section := iniFile.Section(".ShellClassInfo")
-			iconResource := section.Key("IconResource")
-
-			iconResource.SetValue(iconPath + ",0")
-
-			err = iniFile.SaveTo(iniPathTxt)
-			if err != nil {
-				return err
-			}
-
-			err = os.Rename(iniPathTxt, iniPath)
-			if err != nil {
-				return err
-			}
-
-			runtime.LogDebug(appContext, "Updated desktop.ini: "+iniPath)
-		} else {
-			// Create desktop.ini
-			file, err := os.Create(iniPathTxt)
-			if err != nil {
-				return err
-			}
-
-			_, err = file.WriteString("[.ShellClassInfo]\nIconResource=" + iconPath + ",0")
-			if err != nil {
-				return err
-			}
-
-			file.Close()
-
-			err = os.Rename(iniPathTxt, iniPath)
-			if err != nil {
-				return err
-			}
-
-			runtime.LogDebug(appContext, "Created desktop.ini: "+iniPath)
+		err = os.Rename(iniPathTxt, iniPath)
+		if err != nil {
+			return err
+		}
+	} else {
+		// Create desktop.ini
+		file, err := os.Create(iniPathTxt)
+		if err != nil {
+			return err
 		}
 
-		sendCommand("attrib", "-s", "-h", iniPath)
-		sendCommand("attrib", "+s", "+h", iniPath)
+		_, err = file.WriteString("[.ShellClassInfo]\nIconResource=" + iconPath + ",0")
+		if err != nil {
+			return err
+		}
 
-		sendCommand("attrib", "-r", path)
-		sendCommand("attrib", "+r", path)
+		file.Close()
 
-		runtime.LogDebug(appContext, "Applied icon: "+iconPath)
-		return nil
+		err = os.Rename(iniPathTxt, iniPath)
+		if err != nil {
+			return err
+		}
 	}
 
-	return errors.New("unsupported file type")
+	// Set attributes
+	if err := setFileAttributes(iniPath, syscall.FILE_ATTRIBUTE_HIDDEN|syscall.FILE_ATTRIBUTE_SYSTEM); err != nil {
+		return err
+	}
+	if err := setFileAttributes(dirPath, syscall.FILE_ATTRIBUTE_READONLY); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func setFileAttributes(path string, attributes uint32) error {
+	pathUTF16, err := syscall.UTF16PtrFromString(path)
+	if err != nil {
+		return err
+	}
+	return syscall.SetFileAttributes(pathUTF16, attributes)
 }
