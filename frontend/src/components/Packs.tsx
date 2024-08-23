@@ -854,7 +854,7 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
 
   const [loading, setLoading] = useState(true);
   const [files, setFiles] = useState<main.FileInfo[]>();
-  const [updateArray, setUpdateArray] = useState<number[]>([]);
+  const [updateArray, setUpdateArray] = useState<number[]>(Array.from({ length: 4096 }, (_, i) => i));
 
   const [addIconsFromDesktopRunning, setAddIconsFromDesktopRunning] =
     useState(false);
@@ -864,9 +864,6 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
   useEffect(() => {
     GetIconPack(iconPackId).then((pack) => {
       setFiles(pack.files);
-      for (let i = 0; i < pack.files.length; i++) {
-        setUpdateArray((prev) => [...prev, i]);
-      }
       setLoading(false);
     });
   }, []);
