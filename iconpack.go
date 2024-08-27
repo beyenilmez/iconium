@@ -18,6 +18,7 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"gopkg.in/ini.v1"
 
+	cmap "github.com/orcaman/concurrent-map/v2"
 	lnk "github.com/parsiya/golnk"
 )
 
@@ -56,7 +57,7 @@ type IconPackSettings struct {
 
 var allowedFileExtensions = []string{".lnk", ".dir", ".url"}
 
-var iconPackCache map[string]IconPack = map[string]IconPack{}
+var iconPackCache = cmap.New[IconPack]()
 
 func CreateIconPack(name string, version string, author string, license string, description string) (IconPack, error) {
 	var iconPack IconPack
@@ -110,7 +111,7 @@ func WriteIconPack(iconPack IconPack) error {
 		return err
 	}
 
-	iconPackCache[iconPack.Metadata.Id] = iconPack
+	iconPackCache.Set(iconPack.Metadata.Id, iconPack)
 
 	return nil
 }
@@ -170,13 +171,13 @@ func ReadIconPack(id string) (IconPack, error) {
 		return IconPack{}, err
 	}
 
-	iconPackCache[id] = iconPack
+	iconPackCache.Set(id, iconPack)
 
 	return iconPack, nil
 }
 
 func (a *App) GetIconPack(id string) (IconPack, error) {
-	if iconPack, ok := iconPackCache[id]; ok {
+	if iconPack, ok := iconPackCache.Get(id); ok {
 		return iconPack, nil
 	}
 
@@ -258,7 +259,7 @@ func (a *App) SetIconPackMetadata(packId string, metadata Metadata) {
 		return
 	}
 
-	tempPackPngPath, ok := tempPngPaths[packId]
+	tempPackPngPath, ok := tempPngPaths.Get(packId)
 
 	if ok {
 		runtime.LogDebugf(appContext, "Copying temp pack png: %s", tempPackPngPath)
@@ -278,7 +279,7 @@ func (a *App) SetIconPackMetadata(packId string, metadata Metadata) {
 			runtime.LogError(appContext, fmt.Sprintf("Failed to remove temp pack png: %s", err.Error()))
 			return
 		}
-		delete(tempPngPaths, packId)
+		tempPngPaths.Remove(packId)
 
 		os.Remove(path.Join(packsFolder, iconPack.Metadata.Id, iconPack.Metadata.IconName+".png"))
 	}
@@ -297,7 +298,7 @@ func (a *App) SetIconPackFiles(packId string, files []FileInfo) {
 	}
 
 	for i, file := range files {
-		tempPngPath, ok := tempPngPaths[file.Id]
+		tempPngPath, ok := tempPngPaths.Get(file.Id)
 		if ok {
 			runtime.LogDebugf(appContext, "Attempting to copy temp png: %s", tempPngPath)
 
@@ -314,7 +315,7 @@ func (a *App) SetIconPackFiles(packId string, files []FileInfo) {
 				runtime.LogError(appContext, fmt.Sprintf("Failed to remove temp png: %s", err.Error()))
 				continue
 			}
-			delete(tempPngPaths, file.Id)
+			tempPngPaths.Remove(file.Id)
 		}
 
 		iconPath := filepath.Join(packsFolder, packId, "icons", file.Id+".png")
@@ -341,9 +342,7 @@ func (a *App) SetIconPackFiles(packId string, files []FileInfo) {
 
 func CacheIconPacks() error {
 	// Clear cache
-	for k := range iconPackCache {
-		delete(iconPackCache, k)
-	}
+	iconPackCache.Clear()
 
 	files, err := os.ReadDir(packsFolder)
 	if err != nil {
@@ -359,7 +358,7 @@ func CacheIconPacks() error {
 				continue
 			}
 
-			iconPackCache[iconPack.Metadata.Id] = iconPack
+			iconPackCache.Set(iconPack.Metadata.Id, iconPack)
 		}
 	}
 
@@ -367,20 +366,18 @@ func CacheIconPacks() error {
 }
 
 func (a *App) ClearIconPackCache() {
-	for k := range iconPackCache {
-		delete(iconPackCache, k)
-	}
+	iconPackCache.Clear()
 }
 
 func (a *App) GetIconPackList() []IconPack {
-	if len(iconPackCache) == 0 {
+	if iconPackCache.IsEmpty() {
 		CacheIconPacks()
 	}
 
-	iconPacks := make([]IconPack, 0, len(iconPackCache))
+	iconPacks := make([]IconPack, 0, iconPackCache.Count())
 
-	for _, iconPack := range iconPackCache {
-		iconPacks = append(iconPacks, iconPack)
+	for i := range iconPackCache.IterBuffered() {
+		iconPacks = append(iconPacks, i.Val)
 	}
 
 	// Sort icon packs by name
@@ -439,7 +436,18 @@ func CreateFileInfo(packId string, path string) (FileInfo, error) {
 		fileInfo.Destination = url
 	}
 
-	if packId != "" {
+	hasAppliedIcon := true
+
+	if fileInfo.Extension == ".dir" {
+		appliedIconPath, err := GetAppliedIcon(path)
+		if err != nil {
+			runtime.LogError(appContext, err.Error())
+		}
+
+		hasAppliedIcon = appliedIconPath != ""
+	}
+
+	if packId != "" && hasAppliedIcon {
 		if packId == "temp" {
 			tempName := "iconium-" + uuid.NewString()
 			iconPath := filepath.Join(tempFolder, tempName+".png")
@@ -449,7 +457,7 @@ func CreateFileInfo(packId string, path string) (FileInfo, error) {
 				runtime.LogError(appContext, err.Error())
 			} else {
 				fileInfo.HasIcon = true
-				tempPngPaths[fileInfo.Id] = iconPath
+				tempPngPaths.Set(fileInfo.Id, iconPath)
 			}
 		} else {
 			iconPath := filepath.Join(packsFolder, packId, "icons", fileInfo.Id+".png")
@@ -534,7 +542,7 @@ func (a *App) AddIconPack(name string, version string, author string, license st
 		return err
 	}
 
-	tempPackPngPath, ok := tempPngPaths["temp"]
+	tempPackPngPath, ok := tempPngPaths.Get("temp")
 
 	if ok {
 		runtime.LogDebug(appContext, "Adding pack png for "+iconPack.Metadata.Id)
@@ -552,7 +560,7 @@ func (a *App) AddIconPack(name string, version string, author string, license st
 		if err != nil {
 			return err
 		}
-		delete(tempPngPaths, "temp")
+		tempPngPaths.Remove("temp")
 
 		a.SetIconPack(iconPack)
 	}
@@ -580,7 +588,7 @@ func (a *App) DeleteIconPack(id string, deleteGeneratedIcons bool) error {
 		}
 	}
 
-	delete(iconPackCache, id)
+	iconPackCache.Remove(id)
 
 	return nil
 }
@@ -599,7 +607,7 @@ func (a *App) AddFileToIconPackFromPath(id string, path string, save bool) {
 	}
 	cachedPack.Files = append(cachedPack.Files, fileInfo)
 
-	iconPackCache[id] = cachedPack
+	iconPackCache.Set(id, cachedPack)
 
 	if save {
 		a.SetIconPack(cachedPack)
@@ -615,7 +623,12 @@ func (a *App) AddFilesToIconPackFromPath(id string, path []string, save bool) {
 	}
 
 	if save {
-		a.SetIconPack(iconPackCache[id])
+		iconPack, ok := iconPackCache.Get(id)
+		if !ok {
+			return
+		}
+
+		a.SetIconPack(iconPack)
 	}
 }
 
@@ -631,7 +644,7 @@ func (a *App) GetFileInfoFromPaths(id string, path []string) ([]FileInfo, error)
 			return nil, err
 		}
 
-		tempPngPath, ok := tempPngPaths[fileInfo.Id]
+		tempPngPath, ok := tempPngPaths.Get(fileInfo.Id)
 		selectImage := SelectImage{
 			Id:          fileInfo.Id,
 			Path:        "",
@@ -703,8 +716,13 @@ func (a *App) AddFilesToIconPackFromFolder(id string, path string, save bool) {
 
 	if save {
 		runtime.LogInfo(a.ctx, fmt.Sprintf("Saving icon pack %s", id))
+		iconPack, ok := iconPackCache.Get(id)
+		if !ok {
+			runtime.LogErrorf(a.ctx, "Failed to read icon pack: %v", err)
+			return
+		}
 
-		err = a.SetIconPack(iconPackCache[id])
+		err = a.SetIconPack(iconPack)
 		if err != nil {
 			runtime.LogError(a.ctx, err.Error())
 		}

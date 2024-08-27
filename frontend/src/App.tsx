@@ -9,7 +9,6 @@ import { Toaster } from "./components/ui/sonner";
 import { toast } from "sonner";
 import {
   OpenFileInExplorer,
-  SendNotification,
   SendWindowsNotification,
 } from "@/wailsjs/go/main/App";
 import React from "react";

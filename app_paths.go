@@ -35,7 +35,7 @@ var installationDirectory string
 var imageMagickPath string
 var extractIconPath string
 
-var tempPngPaths map[string]string = map[string]string{}
+var tempPngPaths = cmap.New[string]()
 var deletePngPaths []string = []string{}
 
 var selectImages = cmap.New[SelectImage]()
@@ -228,20 +228,21 @@ func get_desktop_paths() (string, string) {
 }
 
 func (a *App) ClearTempPngPaths() {
-	for k := range tempPngPaths {
-		err := os.Remove(tempPngPaths[k])
+	for i := range tempPngPaths.IterBuffered() {
+		err := os.Remove(i.Val)
 		if err != nil {
 			runtime.LogErrorf(appContext, "Error removing tempPngPath: %s", err)
 			continue
 		}
-		delete(tempPngPaths, k)
 	}
+
+	tempPngPaths.Clear()
 
 	runtime.LogDebug(appContext, "Cleared tempPngPaths")
 }
 
 func (a *App) GetTempPngPath(id string) string {
-	tempPath, ok := tempPngPaths[id]
+	tempPath, ok := tempPngPaths.Get(id)
 	if ok {
 		tempPath = strings.TrimPrefix(tempPath, appFolder)
 		return tempPath
@@ -256,7 +257,7 @@ func (a *App) AddTempPngPath(id string, path string) {
 		return
 	}
 
-	oldPath, ok := tempPngPaths[id]
+	oldPath, ok := tempPngPaths.Get(id)
 
 	tempPngPath := filepath.Join(tempFolder, "iconium-"+uuid.NewString()+".png")
 	err := ConvertToPng(path, tempPngPath)
@@ -274,17 +275,23 @@ func (a *App) AddTempPngPath(id string, path string) {
 		}
 	}
 
-	tempPngPaths[id] = tempPngPath
+	tempPngPaths.Set(id, tempPngPath)
 }
 
 func (a *App) RemoveTempPng(id string) {
-	err := os.Remove(tempPngPaths[id])
+	val, ok := tempPngPaths.Get(id)
+	if !ok {
+		runtime.LogWarning(appContext, "Temp png not found: "+id)
+		return
+	}
+
+	err := os.Remove(val)
 	if err != nil {
 		runtime.LogErrorf(appContext, "Error removing temp png: %s", err)
 		return
 	}
 
-	delete(tempPngPaths, id)
+	tempPngPaths.Remove(id)
 }
 
 func (a *App) AddDeletePngRelativePath(relPath string) {
@@ -471,7 +478,7 @@ func (a *App) SetImageIfAbsent(id string, path string) {
 
 	if !(selectImage.HasOriginal || selectImage.HasTemp) {
 		a.AddTempPngPath(id, path)
-		tempPngPath, ok := tempPngPaths[id]
+		tempPngPath, ok := tempPngPaths.Get(id)
 
 		if ok {
 			err := a.SetTempImage(id, tempPngPath)

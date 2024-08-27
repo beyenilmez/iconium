@@ -96,7 +96,7 @@ func (a *App) GetBase64Png() string {
 }
 
 func (a *App) GetTempPng(id string) string {
-	oldPackPngPath, ok := tempPngPaths[id]
+	oldPackPngPath, ok := tempPngPaths.Get(id)
 
 	tempPackPngPath := filepath.Join(tempFolder, "iconium-"+uuid.NewString()+".png")
 
@@ -127,7 +127,7 @@ func (a *App) GetTempPng(id string) string {
 	runtime.LogInfof(a.ctx, "Trimming path: %s (cut %s)", tempPackPngPath, appFolder)
 	trimmedPath := strings.TrimPrefix(tempPackPngPath, appFolder)
 
-	tempPngPaths[id] = tempPackPngPath
+	tempPngPaths.Set(id, tempPackPngPath)
 
 	// Remove old pack png
 	if ok {
