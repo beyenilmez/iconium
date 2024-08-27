@@ -100,6 +100,8 @@ export function SaveConfigDialog():Promise<void>;
 
 export function SendNotification(arg1:string,arg2:string,arg3:string,arg4:string):Promise<void>;
 
+export function SendWindowsNotification(arg1:string,arg2:string,arg3:string,arg4:string):Promise<void>;
+
 export function SetConfigField(arg1:string,arg2:any):Promise<void>;
 
 export function SetIconPack(arg1:main.IconPack):Promise<void>;

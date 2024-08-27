@@ -7,7 +7,11 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import { useStorage } from "./contexts/storage-provider";
 import { Toaster } from "./components/ui/sonner";
 import { toast } from "sonner";
-import { OpenFileInExplorer } from "@/wailsjs/go/main/App";
+import {
+  OpenFileInExplorer,
+  SendNotification,
+  SendWindowsNotification,
+} from "@/wailsjs/go/main/App";
 import React from "react";
 import { useConfig } from "./contexts/config-provider";
 import { LogDebug } from "@/wailsjs/runtime/runtime";
@@ -94,6 +98,15 @@ function App() {
     setValue("path1", tab);
   }, [tab]);
 
+  window.sendNotification = (
+    title: string,
+    message: string,
+    path: string,
+    variant: string
+  ) => {
+    SendWindowsNotification(t(title), t(message), path, variant);
+  };
+
   return (
     <React.Fragment>
       <div className="flex flex-col h-dvh">
@@ -101,10 +114,20 @@ function App() {
         <Tabs value={tab} className="flex flex-col w-full h-full">
           <TabsList className="shadow-bottom-xs z-30 justify-between px-3 py-7 rounded-none w-full h-12">
             <div>
-              <TabsTrigger value="packs" onClick={() => setTab("packs")} disabled={getValue("editingIconPack")} className="px-6">
+              <TabsTrigger
+                value="packs"
+                onClick={() => setTab("packs")}
+                disabled={getValue("editingIconPack")}
+                className="px-6"
+              >
                 {t("nav.my_packs")}
               </TabsTrigger>
-              <TabsTrigger value="settings" onClick={() => setTab("settings")} disabled={getValue("editingIconPack")} className="px-6">
+              <TabsTrigger
+                value="settings"
+                onClick={() => setTab("settings")}
+                disabled={getValue("editingIconPack")}
+                className="px-6"
+              >
                 {t("nav.settings")}
               </TabsTrigger>
             </div>

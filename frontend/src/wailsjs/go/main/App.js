@@ -198,6 +198,10 @@ export function SendNotification(arg1, arg2, arg3, arg4) {
   return window['go']['main']['App']['SendNotification'](arg1, arg2, arg3, arg4);
 }
 
+export function SendWindowsNotification(arg1, arg2, arg3, arg4) {
+  return window['go']['main']['App']['SendWindowsNotification'](arg1, arg2, arg3, arg4);
+}
+
 export function SetConfigField(arg1, arg2) {
   return window['go']['main']['App']['SetConfigField'](arg1, arg2);
 }

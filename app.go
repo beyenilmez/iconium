@@ -195,10 +195,14 @@ func (a *App) SendNotification(title string, message string, path string, varian
 				});`)
 		}
 	} else {
-		err := beeep.Notify(title, message, appIconPath)
-		if err != nil {
-			runtime.LogError(a.ctx, "Error sending notification: "+err.Error())
-		}
+		runtime.WindowExecJS(a.ctx, `window.sendNotification("`+title+`", "`+message+`", "`+path+`", "`+variant+`")`)
+	}
+}
+
+func (a *App) SendWindowsNotification(title string, message string, path string, variant string) {
+	err := beeep.Notify(title, message, appIconPath)
+	if err != nil {
+		runtime.LogError(a.ctx, "Error sending notification: "+err.Error())
 	}
 }
 
