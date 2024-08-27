@@ -616,7 +616,7 @@ func (a *App) AddFilesToIconPackFromPath(id string, path []string, save bool) {
 func (a *App) GetFileInfoFromPaths(id string, path []string) ([]FileInfo, error) {
 	var fileInfos []FileInfo
 	for _, p := range path {
-		if !contains(allowedFileExtensions, filepath.Ext(p)) {
+		if (!contains(allowedFileExtensions, filepath.Ext(p)) && !is_dir(p)) || !exists(p) {
 			continue
 		}
 

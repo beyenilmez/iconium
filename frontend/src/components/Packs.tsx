@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import {
   Download,
   Edit,
+  Folder,
   FolderOpen,
   Loader2,
   LucideTrash,
@@ -40,6 +41,7 @@ import {
   AddDeletePngRelativePath,
   AddFilesToIconPackFromDesktop,
   AddFilesToIconPackFromPath,
+  AddFileToIconPackFromPath,
   AddIconPack,
   ApplyIconPack,
   ClearDeletePngPaths,
@@ -57,6 +59,7 @@ import {
   GetFileInfoFromPaths,
   GetFilePath,
   GetIconFiles,
+  GetIconFolder,
   GetIconPack,
   GetIconPackList,
   ImportIconPack,
@@ -412,7 +415,12 @@ function PackContent({
   const [addIconsFromDesktopRunning, setAddIconsFromDesktopRunning] =
     useState(false);
   const [addIconsRunning, setAddIconsRunning] = useState(false);
-  const running = applyRunning || addIconsFromDesktopRunning || addIconsRunning;
+  const [addFolderRunning, setAddFolderRunning] = useState(false);
+  const running =
+    applyRunning ||
+    addIconsFromDesktopRunning ||
+    addIconsRunning ||
+    addFolderRunning;
 
   useEffect(() => {
     GetIconPack(iconPackId).then((pack) => {
@@ -549,6 +557,24 @@ function PackContent({
             })
             .finally(() => {
               setAddIconsRunning(false);
+            });
+        });
+      }
+    });
+  };
+
+  const handleAddFolder = () => {
+    GetIconFolder().then((folder) => {
+      if (folder) {
+        setAddFolderRunning(true);
+
+        AddFileToIconPackFromPath(iconPackId, folder, true).then(() => {
+          GetIconPack(iconPackId)
+            .then((pack) => {
+              setIconPack(pack);
+            })
+            .finally(() => {
+              setAddFolderRunning(false);
             });
         });
       }
@@ -740,6 +766,20 @@ function PackContent({
             )}
             {t("my_packs.card.pack_actions.add_icons")}
           </Button>
+
+          <Button
+            variant={"secondary"}
+            className="flex gap-2.5"
+            onClick={handleAddFolder}
+            disabled={running}
+          >
+            {addFolderRunning ? (
+              <Loader2 className="w-6 h-6 animate-spin" />
+            ) : (
+              <Folder className="w-6 h-6" />
+            )}
+            {t("Add Folder")}
+          </Button>
         </div>
       </div>
 
@@ -865,7 +905,9 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
   const [addIconsFromDesktopRunning, setAddIconsFromDesktopRunning] =
     useState(false);
   const [addIconsRunning, setAddIconsRunning] = useState(false);
-  const running = addIconsFromDesktopRunning || addIconsRunning;
+  const [addFolderRunning, setAddFolderRunning] = useState(false);
+  const running =
+    addIconsFromDesktopRunning || addIconsRunning || addFolderRunning;
 
   useEffect(() => {
     GetIconPack(iconPackId).then((pack) => {
@@ -901,6 +943,24 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
           })
           .finally(() => {
             setAddIconsRunning(false);
+          });
+      }
+    });
+  };
+
+  const handleAddFolder = () => {
+    GetIconFolder().then((folder) => {
+      if (folder) {
+        setAddFolderRunning(true);
+
+        GetFileInfoFromPaths("temp", [folder])
+          .then((fileInfos) => {
+            const oldFiles = files || [];
+            oldFiles.push(...fileInfos);
+            setFiles(oldFiles);
+          })
+          .finally(() => {
+            setAddFolderRunning(false);
           });
       }
     });
@@ -1009,6 +1069,19 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
               <Upload className="w-6 h-6" />
             )}
             {t("my_packs.card.pack_actions.add_icons")}
+          </Button>
+          <Button
+            variant={"secondary"}
+            className="flex gap-2.5"
+            onClick={handleAddFolder}
+            disabled={running}
+          >
+            {addFolderRunning ? (
+              <Loader2 className="w-6 h-6 animate-spin" />
+            ) : (
+              <Folder className="w-6 h-6" />
+            )}
+            {t("Add Folder")}
           </Button>
           <Button
             variant={"secondary"}
