@@ -651,7 +651,7 @@ function PackContent({
                           "my_packs.card.pack_information.information.description.label"
                         )}
                       </div>
-                      <div className="opacity-60">
+                      <div className="opacity-60 whitespace-pre-line">
                         {iconPack.metadata.description}
                       </div>
                     </div>
