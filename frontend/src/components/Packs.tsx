@@ -474,6 +474,7 @@ function PackContent({
       oldMetadata.name = metadata.name;
       oldMetadata.version = metadata.version;
       oldMetadata.author = metadata.author;
+      oldMetadata.license = metadata.license;
       oldMetadata.description = metadata.description;
 
       SetIconPackMetadata(iconPackId, oldMetadata);
@@ -506,6 +507,7 @@ function PackContent({
     "name",
     "version",
     "author",
+    "license",
   ];
 
   const handleEditIconPack = () => {
@@ -1219,17 +1221,16 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
                     label={"Path"}
                   />
 
-                  {file.extension === ".lnk" ||
-                    (file.extension === ".url" && (
-                      <PathInput
-                        value={file.destinationPath}
-                        placeholder={"Destination Path"}
-                        onChange={(value) => {
-                          handleInputChange(index, "destinationPath", value);
-                        }}
-                        label={"Destination Path"}
-                      />
-                    ))}
+                  {(file.extension === ".lnk" || file.extension === ".url") && (
+                    <PathInput
+                      value={file.destinationPath}
+                      placeholder={"Destination Path"}
+                      onChange={(value) => {
+                        handleInputChange(index, "destinationPath", value);
+                      }}
+                      label={"Destination Path"}
+                    />
+                  )}
                 </div>
               </AccordionContent>
             </AccordionItem>
@@ -1357,7 +1358,12 @@ function CreatePackForm({
         "my_packs.card.pack_information.information.author.message.author_max"
       ),
     }),
-    description: z.string().max(256, {
+    license: z.string().max(64, {
+      message: t(
+        "my_packs.card.pack_information.information.license.message.license_max"
+      ),
+    }),
+    description: z.string().max(1024, {
       message: t(
         "my_packs.card.pack_information.information.description.message.description_max"
       ),
@@ -1371,13 +1377,20 @@ function CreatePackForm({
       name: defaultValues?.name || "",
       version: defaultValues?.version || "v1.0.0",
       author: defaultValues?.author || "",
+      license: defaultValues?.license || "",
       description: defaultValues?.description || "",
     },
   });
 
   function onSubmit(data: z.infer<typeof formSchema>) {
     if (reloadIconPacks) {
-      AddIconPack(data.name, data.version, data.author, data.description).then(() => {
+      AddIconPack(
+        data.name,
+        data.version,
+        data.author,
+        data.license,
+        data.description
+      ).then(() => {
         reloadIconPacks();
         dialogCloseRef?.current?.click();
       });
@@ -1425,7 +1438,7 @@ function CreatePackForm({
           <div
             className={
               defaultValues
-                ? "flex flex-row gap-2.5 w-full"
+                ? "grid grid-cols-2 gap-2.5 w-full"
                 : "flex flex-col gap-2.5"
             }
           >
@@ -1488,6 +1501,29 @@ function CreatePackForm({
                       autoComplete="new-password"
                       placeholder={t(
                         "my_packs.card.pack_information.information.author.placeholder"
+                      )}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="license"
+              render={({ field }) => (
+                <FormItem className="flex flex-col w-full">
+                  <FormLabel className={defaultValues && "mb-3"}>
+                    {t(
+                      "my_packs.card.pack_information.information.license.label"
+                    )}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      autoComplete="new-password"
+                      placeholder={t(
+                        "my_packs.card.pack_information.information.license.placeholder"
                       )}
                       {...field}
                     />

@@ -62,12 +62,21 @@
             }
           },
 
+          "license": {
+            "label": "Lisans",
+            "placeholder": "MIT",
+
+            "message": {
+              "license_max": "Lisans, 64 karakteri geçemez"
+            }
+          },
+
           "description": {
             "label": "Açıklama",
             "placeholder": "Paket içeriği",
 
             "message": {
-              "description_max": "Açıklama, 256 karakteri geçemez"
+              "description_max": "Açıklama, 1024 karakteri geçemez"
             }
           },
 

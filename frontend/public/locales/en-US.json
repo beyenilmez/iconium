@@ -62,13 +62,22 @@
             }
           },
 
+          "license": {
+            "label": "License",
+            "placeholder": "MIT",
+
+            "message": {
+              "license_max": "License can not exceed 64 characters"
+            }
+          },
+
           "description": {
             "label": "Description",
             "placeholder": "This is my icon pack",
 
             "message": {
               "description_required": "Description is required",
-              "description_max": "Description can not exceed 256 characters"
+              "description_max": "Description can not exceed 1024 characters"
             }
           },
 

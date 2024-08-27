@@ -14,7 +14,7 @@ export function AddFilesToIconPackFromFolder(arg1:string,arg2:string,arg3:boolea
 
 export function AddFilesToIconPackFromPath(arg1:string,arg2:Array<string>,arg3:boolean):Promise<void>;
 
-export function AddIconPack(arg1:string,arg2:string,arg3:string,arg4:string):Promise<void>;
+export function AddIconPack(arg1:string,arg2:string,arg3:string,arg4:string,arg5:string):Promise<void>;
 
 export function AddTempPngPath(arg1:string,arg2:string):Promise<void>;
 

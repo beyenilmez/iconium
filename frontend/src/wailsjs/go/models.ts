@@ -107,6 +107,7 @@ export namespace main {
 	    name: string;
 	    version: string;
 	    author: string;
+	    license: string;
 	    description: string;
 	    iconName: string;
 	
@@ -120,6 +121,7 @@ export namespace main {
 	        this.name = source["name"];
 	        this.version = source["version"];
 	        this.author = source["author"];
+	        this.license = source["license"];
 	        this.description = source["description"];
 	        this.iconName = source["iconName"];
 	    }

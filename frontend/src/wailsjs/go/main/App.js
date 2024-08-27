@@ -26,8 +26,8 @@ export function AddFilesToIconPackFromPath(arg1, arg2, arg3) {
   return window['go']['main']['App']['AddFilesToIconPackFromPath'](arg1, arg2, arg3);
 }
 
-export function AddIconPack(arg1, arg2, arg3, arg4) {
-  return window['go']['main']['App']['AddIconPack'](arg1, arg2, arg3, arg4);
+export function AddIconPack(arg1, arg2, arg3, arg4, arg5) {
+  return window['go']['main']['App']['AddIconPack'](arg1, arg2, arg3, arg4, arg5);
 }
 
 export function AddTempPngPath(arg1, arg2) {
