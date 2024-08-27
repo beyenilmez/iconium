@@ -1491,7 +1491,7 @@ function CreatePackForm({
               name="author"
               render={({ field }) => (
                 <FormItem className="flex flex-col w-full">
-                  <FormLabel className={defaultValues && "mb-3"}>
+                  <FormLabel className={defaultValues && "mb-1"}>
                     {t(
                       "my_packs.card.pack_information.information.author.label"
                     )}
@@ -1514,7 +1514,7 @@ function CreatePackForm({
               name="license"
               render={({ field }) => (
                 <FormItem className="flex flex-col w-full">
-                  <FormLabel className={defaultValues && "mb-3"}>
+                  <FormLabel className={defaultValues && "mb-1"}>
                     {t(
                       "my_packs.card.pack_information.information.license.label"
                     )}
