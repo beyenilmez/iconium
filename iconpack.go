@@ -438,7 +438,7 @@ func CreateFileInfo(packId string, path string) (FileInfo, error) {
 
 	hasAppliedIcon := true
 
-	if fileInfo.Extension == ".dir" {
+	if fileInfo.Extension == ".dir" || fileInfo.Extension == ".url" {
 		appliedIconPath, err := GetAppliedIcon(path)
 		if err != nil {
 			runtime.LogError(appContext, err.Error())
