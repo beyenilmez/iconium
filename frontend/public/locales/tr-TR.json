@@ -17,15 +17,42 @@
     "settings": "Ayarlar"
   },
 
+  "file_info": {
+    "name": {
+      "label": "Ad",
+      "placeholder": "Dosya adı"
+    },
+
+    "description": {
+      "label": "Açıklama",
+      "placeholder": "Dosya açıklaması"
+    },
+
+    "path": {
+      "label": "Dosya yolu",
+      "placeholder": "Dosya yolu"
+    },
+
+    "destination": {
+      "label": "Hedef dosya yolu",
+      "placeholder": "Hedef dosya yolu"
+    },
+
+    "url": {
+      "label": "URL",
+      "placeholder": "URL"
+    }
+  },
+
   "my_packs": {
     "create_new_pack": {
-      "title": "İkon Paketi Oluştur"
+      "title": "Simge Paketi Oluştur"
     },
 
     "delete_pack": {
       "confirmation_title": "Bu paketi silmek istediğinizden emin misiniz?",
       "confirmation_description": "Bu işlem geri alınamaz.",
-      "delete_generated_icons": "Oluşturulan ikonları sil"
+      "delete_generated_icons": "Oluşturulan simgeleri sil"
     },
 
     "card": {
@@ -81,17 +108,20 @@
           },
 
           "icon": {
-            "label": "İkon"
+            "label": "Simge"
           }
         }
       },
 
       "pack_actions": {
         "label": "Paket İşlemleri",
-        "apply_icon_pack": "İkon Paketini Uygula",
-        "edit_icon_pack": "İkon Paketini Düzenle",
-        "add_icons_from_desktop": "Masaüstü İkonlarını Ekle",
-        "add_icons": "İkon Ekle"
+        "apply_icon_pack": "Uygula",
+        "export_icon_pack": "Dışa Aktar",
+        "edit_icon_pack": "Düzenle",
+        "add_icons_from_desktop": "Masaüstü Simgelerini Ekle",
+        "add_icons": "Simge Ekle",
+        "add_folder": "Klasör Simgesi Ekle",
+        "add_empty_icon": "Boş Simge Ekle"
       },
 
       "pack_settings": {
@@ -115,7 +145,7 @@
       },
 
       "icons": {
-        "label": "İkonlar"
+        "label": "Simgeler"
       }
     }
   },
@@ -130,7 +160,7 @@
     "categories": {
       "general": "Genel",
       "application": "Uygulama",
-      "icon_pack": "İkon Paketi",
+      "icon_pack": "Simge Paketi",
       "system": "Sistem",
       "advanced": "Gelişmiş",
       "update": "Güncelleme"
@@ -204,6 +234,16 @@
       "match_by_destination": {
         "label": "Kısayolları Hedeflerine Göre Eşleştir",
         "description": "Dosya yolu ile eşleştirme başarısız olursa, kısayolları hedeflerine göre eşleştir."
+      },
+
+      "match_lnk_by_destination": {
+        "label": "Windows Kısayollarını (.lnk) Hedeflerine Göre Eşleştir",
+        "description": "Dosya yolu ile eşleştirme başarısız olursa, kısayolları hedeflerine göre eşleştir."
+      },
+
+      "match_url_by_destination": {
+        "label": "URL dosyalarını URL'e Göre Eşleştir",
+        "description": "Dosya yolu ile eşleştirme başarısız olursa, dosyaları URL'lerine göre eşleştir."
       },
 
       "rename_matched_files": {

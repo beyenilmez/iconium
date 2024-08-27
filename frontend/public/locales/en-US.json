@@ -17,6 +17,33 @@
     "settings": "Settings"
   },
 
+  "file_info": {
+    "name": {
+      "label": "Name",
+      "placeholder": "File name"
+    },
+
+    "description": {
+      "label": "Description",
+      "placeholder": "File description"
+    },
+
+    "path": {
+      "label": "Path",
+      "placeholder": "File path"
+    },
+
+    "destination": {
+      "label": "Destination",
+      "placeholder": "File destination"
+    },
+
+    "url": {
+      "label": "URL",
+      "placeholder": "URL"
+    }
+  },
+
   "my_packs": {
     "create_new_pack": {
       "title": "Create Icon Pack"
@@ -89,10 +116,13 @@
 
       "pack_actions": {
         "label": "Pack Actions",
-        "apply_icon_pack": "Apply Icon Pack",
-        "edit_icon_pack": "Edit Icon Pack",
+        "apply_icon_pack": "Apply",
+        "edit_icon_pack": "Edit",
+        "export_icon_pack": "Export",
         "add_icons_from_desktop": "Add Icons from Desktop",
-        "add_icons": "Add Icons"
+        "add_icons": "Add Icons",
+        "add_folder": "Add Folder Icon",
+        "add_empty_icon": "Add Empty Icon"
       },
 
       "pack_settings": {
@@ -202,9 +232,14 @@
         "description": "Save window size, position, and state."
       },
 
-      "match_by_destination": {
-        "label": "Match Shortuts by Destination",
-        "description": "Match shortcuts by destination if matching by path is not successful."
+      "match_lnk_by_destination": {
+        "label": "Match Windows Shortuts (.lnk) by Destination",
+        "description": "Match windows shortcuts by destination if matching by path is not successful."
+      },
+
+      "match_url_by_destination": {
+        "label": "Match .url files by URL",
+        "description": "Match .url files by URL if matching by path is not successful."
       },
 
       "rename_matched_files": {

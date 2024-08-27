@@ -7,8 +7,8 @@ export function MatchLnkByDestinationSetting() {
   return (
     <SwitchConfig
       configKey="matchLnkByDestination"
-      label={t("settings.setting.match_by_destination.label")}
-      description={t("settings.setting.match_by_destination.description")}
+      label={t("settings.setting.match_lnk_by_destination.label")}
+      description={t("settings.setting.match_lnk_by_destination.description")}
     />
   );
 }

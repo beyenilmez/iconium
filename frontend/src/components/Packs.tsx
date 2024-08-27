@@ -13,6 +13,7 @@ import {
   Edit,
   Folder,
   FolderOpen,
+  Images,
   Loader2,
   LucideTrash,
   Monitor,
@@ -21,7 +22,6 @@ import {
   RefreshCw,
   SquarePlus,
   Trash,
-  Upload,
   UploadIcon,
 } from "lucide-react";
 import {
@@ -739,7 +739,7 @@ function PackContent({
             disabled={running}
           >
             <UploadIcon className="w-6 h-6" />
-            {t("Export Icon Pack")}
+            {t("my_packs.card.pack_actions.export_icon_pack")}
           </Button>
         </div>
 
@@ -766,7 +766,7 @@ function PackContent({
             {addIconsRunning ? (
               <Loader2 className="w-6 h-6 animate-spin" />
             ) : (
-              <Upload className="w-6 h-6" />
+              <Images className="w-6 h-6" />
             )}
             {t("my_packs.card.pack_actions.add_icons")}
           </Button>
@@ -782,7 +782,7 @@ function PackContent({
             ) : (
               <Folder className="w-6 h-6" />
             )}
-            {t("Add Folder")}
+            {t("my_packs.card.pack_actions.add_folder")}
           </Button>
         </div>
       </div>
@@ -1070,7 +1070,7 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
             {addIconsRunning ? (
               <Loader2 className="w-6 h-6 animate-spin" />
             ) : (
-              <Upload className="w-6 h-6" />
+              <Images className="w-6 h-6" />
             )}
             {t("my_packs.card.pack_actions.add_icons")}
           </Button>
@@ -1085,7 +1085,7 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
             ) : (
               <Folder className="w-6 h-6" />
             )}
-            {t("Add Folder")}
+            {t("my_packs.card.pack_actions.add_folder")}
           </Button>
           <Button
             variant={"secondary"}
@@ -1094,13 +1094,13 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
             disabled={running}
           >
             <SquarePlus className="w-6 h-6" />
-            {"Add empty icon"}
+            {t("my_packs.card.pack_actions.add_empty_icon")}
           </Button>
         </div>
         <div className="flex gap-2">
-          <Button onClick={handleSaveEdit}>Save</Button>
+          <Button onClick={handleSaveEdit}>{t("save")}</Button>
           <Button variant="destructive" onClick={handleCancelEdit}>
-            Cancel
+            {t("cancel")}
           </Button>
         </div>
       </div>
@@ -1138,7 +1138,11 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
                 <div className="flex flex-col gap-3 px-4 py-2 w-full h-full">
                   <div className="flex gap-4 w-full">
                     <div className="flex flex-col gap-1.5">
-                      <Label>Icon</Label>
+                      <Label>
+                        {t(
+                          "my_packs.card.pack_information.information.icon.label"
+                        )}
+                      </Label>
                       <SelectImage
                         src={`packs/${iconPackId}/icons/${file.id}.png`}
                         packId={file.id}
@@ -1156,27 +1160,27 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
                     <TextInput
                       key={file.id}
                       value={file.name}
-                      placeholder={"File Name"}
+                      placeholder={t("file_info.name.placeholder")}
                       onChange={(value) => {
                         handleInputChange(index, "name", value);
                       }}
-                      label={"Name"}
+                      label={t("file_info.name.label")}
                       className="justify-between w-full"
                     />
                   </div>
                   {file.extension === ".lnk" && (
                     <TextInput
                       value={file.description}
-                      placeholder={"Description"}
+                      placeholder={t("file_info.description.placeholder")}
                       onChange={(value) => {
                         handleInputChange(index, "description", value);
                       }}
-                      label={"Description"}
+                      label={t("file_info.description.label")}
                     />
                   )}
                   <PathInput
                     value={file.path}
-                    placeholder={"Path"}
+                    placeholder={t("file_info.path.placeholder")}
                     onChange={(value) => {
                       handleInputChange(index, "path", value);
                       Ext(value).then((ext) => {
@@ -1218,17 +1222,25 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
                         });
                       });
                     }}
-                    label={"Path"}
+                    label={t("file_info.path.label")}
                   />
 
                   {(file.extension === ".lnk" || file.extension === ".url") && (
                     <PathInput
                       value={file.destinationPath}
-                      placeholder={"Destination Path"}
+                      placeholder={t(
+                        `file_info.${
+                          file.extension === ".url" ? "url" : "destination"
+                        }.placeholder`
+                      )}
                       onChange={(value) => {
                         handleInputChange(index, "destinationPath", value);
                       }}
-                      label={"Destination Path"}
+                      label={t(
+                        `file_info.${
+                          file.extension === ".url" ? "url" : "destination"
+                        }.label`
+                      )}
                     />
                   )}
                 </div>
