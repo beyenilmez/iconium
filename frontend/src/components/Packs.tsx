@@ -419,7 +419,8 @@ function PackContent({
     applyRunning ||
     addIconsFromDesktopRunning ||
     addIconsRunning ||
-    addFolderRunning || editingMetadata;
+    addFolderRunning ||
+    editingMetadata;
 
   useEffect(() => {
     GetIconPack(iconPackId).then((pack) => {
@@ -602,7 +603,9 @@ function PackContent({
             editingMetadata ? "" : "gap-6"
           }`}
         >
-          <div className={`flex gap-6 ${editingMetadata ? "" : "items-center"}`}>
+          <div
+            className={`flex gap-6 ${editingMetadata ? "" : "items-center"}`}
+          >
             <div className="flex flex-col gap-3">
               {editingMetadata && (
                 <Label>
@@ -1398,8 +1401,8 @@ function CreatePackForm({
           control={form.control}
           name="name"
           render={({ field }) => (
-            <FormItem className="flex flex-col gap-3">
-              <FormLabel>
+            <FormItem className="flex flex-col">
+              <FormLabel className="mb-3">
                 {t("my_packs.card.pack_information.information.name.label")}
               </FormLabel>
               <FormControl>
@@ -1419,8 +1422,8 @@ function CreatePackForm({
           control={form.control}
           name="version"
           render={({ field }) => (
-            <FormItem className="flex flex-col gap-3">
-              <FormLabel>
+            <FormItem className="flex flex-col">
+              <FormLabel className="mb-3">
                 {t("my_packs.card.pack_information.information.version.label")}
               </FormLabel>
               <FormControl>
@@ -1440,8 +1443,8 @@ function CreatePackForm({
           control={form.control}
           name="author"
           render={({ field }) => (
-            <FormItem className="flex flex-col gap-3">
-              <FormLabel>
+            <FormItem className="flex flex-col">
+              <FormLabel className="mb-3">
                 {t("my_packs.card.pack_information.information.author.label")}
               </FormLabel>
               <FormControl>
