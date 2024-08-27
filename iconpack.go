@@ -33,11 +33,12 @@ type FileInfo struct {
 }
 
 type Metadata struct {
-	Id       string `json:"id"`
-	Name     string `json:"name"`
-	Version  string `json:"version"`
-	Author   string `json:"author"`
-	IconName string `json:"iconName"`
+	Id          string `json:"id"`
+	Name        string `json:"name"`
+	Version     string `json:"version"`
+	Author      string `json:"author"`
+	Description string `json:"description"`
+	IconName    string `json:"iconName"`
 }
 
 type IconPack struct {
@@ -56,12 +57,13 @@ var allowedFileExtensions = []string{".lnk", ".dir", ".url"}
 
 var iconPackCache map[string]IconPack = map[string]IconPack{}
 
-func CreateIconPack(name string, version string, author string) (IconPack, error) {
+func CreateIconPack(name string, version string, author string, description string) (IconPack, error) {
 	var iconPack IconPack
 	iconPack.Metadata.Id = uuid.NewString()
 	iconPack.Metadata.Name = name
 	iconPack.Metadata.Version = version
 	iconPack.Metadata.Author = author
+	iconPack.Metadata.Description = description
 	iconPack.Files = []FileInfo{}
 
 	iconPack.Settings.Enabled = false
@@ -124,7 +126,7 @@ func ReadIconPack(id string) (IconPack, error) {
 
 	iconPack := IconPack{}
 
-	defaultPack, err := CreateIconPack("Unknown Pack", "v1.0.0", "")
+	defaultPack, err := CreateIconPack("Unknown Pack", "v1.0.0", "", "")
 	if err != nil {
 		runtime.LogWarningf(appContext, "Failed to create default icon pack: %s", err.Error())
 		return IconPack{}, err
@@ -217,6 +219,8 @@ func (a *App) SetIconPackField(packId string, fileName string, field string, val
 			iconPack.Metadata.Version = value.(string)
 		case "author":
 			iconPack.Metadata.Author = value.(string)
+		case "description":
+			iconPack.Metadata.Description = value.(string)
 		case "iconName":
 			iconPack.Metadata.IconName = value.(string)
 		}
@@ -522,8 +526,8 @@ func GetAppliedIcon(path string) (string, error) {
 	return "", errors.New("icon not found")
 }
 
-func (a *App) AddIconPack(name string, version string, author string) error {
-	iconPack, err := CreateIconPack(name, version, author)
+func (a *App) AddIconPack(name string, version string, author string, description string) error {
+	iconPack, err := CreateIconPack(name, version, author, description)
 	if err != nil {
 		return err
 	}

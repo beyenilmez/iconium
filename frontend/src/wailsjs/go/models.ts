@@ -107,6 +107,7 @@ export namespace main {
 	    name: string;
 	    version: string;
 	    author: string;
+	    description: string;
 	    iconName: string;
 	
 	    static createFrom(source: any = {}) {
@@ -119,6 +120,7 @@ export namespace main {
 	        this.name = source["name"];
 	        this.version = source["version"];
 	        this.author = source["author"];
+	        this.description = source["description"];
 	        this.iconName = source["iconName"];
 	    }
 	}

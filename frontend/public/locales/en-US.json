@@ -62,6 +62,16 @@
             }
           },
 
+          "description": {
+            "label": "Description",
+            "placeholder": "This is my icon pack",
+
+            "message": {
+              "description_required": "Description is required",
+              "description_max": "Description can not exceed 256 characters"
+            }
+          },
+
           "icon": {
             "label": "Icon"
           }

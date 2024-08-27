@@ -62,6 +62,15 @@
             }
           },
 
+          "description": {
+            "label": "Açıklama",
+            "placeholder": "Paket içeriği",
+
+            "message": {
+              "description_max": "Açıklama, 256 karakteri geçemez"
+            }
+          },
+
           "icon": {
             "label": "İkon"
           }

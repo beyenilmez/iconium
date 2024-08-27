@@ -100,6 +100,7 @@ import {
 } from "@/components/ui/accordion";
 import { LogDebug } from "@/wailsjs/runtime/runtime";
 import { Label } from "./ui/label";
+import { Textarea } from "./ui/textarea";
 
 export default function Packs() {
   const { t } = useTranslation();
@@ -473,6 +474,7 @@ function PackContent({
       oldMetadata.name = metadata.name;
       oldMetadata.version = metadata.version;
       oldMetadata.author = metadata.author;
+      oldMetadata.description = metadata.description;
 
       SetIconPackMetadata(iconPackId, oldMetadata);
     };
@@ -599,46 +601,63 @@ function PackContent({
           {t("my_packs.card.pack_information.label")}
         </div>
         <div
-          className={`flex flex-row justify-between items-end ${
+          className={`flex flex-row justify-between items-start ${
             editingMetadata ? "" : "gap-6"
           }`}
         >
-          <div
-            className={`flex gap-6 ${editingMetadata ? "" : "items-center"}`}
-          >
-            <div className="flex flex-col gap-3">
-              {editingMetadata && (
-                <Label>
-                  {t("my_packs.card.pack_information.information.icon.label")}
-                </Label>
-              )}
-              <SelectImage
-                src={
-                  "packs\\" +
-                  iconPackId +
-                  "\\" +
-                  iconPack.metadata.iconName +
-                  ".png"
-                }
-                packId={iconPackId}
-                editable={editingMetadata}
-              />
-            </div>
+          <div className="w-full">
+            <div className={`flex gap-6 w-full`}>
+              <div className="flex flex-col gap-3">
+                {editingMetadata && (
+                  <Label>
+                    {t("my_packs.card.pack_information.information.icon.label")}
+                  </Label>
+                )}
+                <SelectImage
+                  src={
+                    "packs\\" +
+                    iconPackId +
+                    "\\" +
+                    iconPack.metadata.iconName +
+                    ".png"
+                  }
+                  packId={iconPackId}
+                  editable={editingMetadata}
+                />
+              </div>
 
-            <div className="flex flex-row gap-8">
-              {!editingMetadata &&
-                fields.map((field) => (
-                  <div key={field} className="flex flex-col gap-1">
-                    <div className="font-medium text-xs">
-                      {t(
-                        "my_packs.card.pack_information.information." +
-                          field +
-                          ".label"
-                      )}
-                    </div>
-                    <div className="opacity-60">{iconPack.metadata[field]}</div>
+              {!editingMetadata && (
+                <div className="flex flex-col gap-2">
+                  <div className="flex flex-row gap-8">
+                    {fields.map((field) => (
+                      <div key={field} className="flex flex-col gap-1">
+                        <div className="font-medium text-xs">
+                          {t(
+                            "my_packs.card.pack_information.information." +
+                              field +
+                              ".label"
+                          )}
+                        </div>
+                        <div className="opacity-60">
+                          {iconPack.metadata[field]}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                  {iconPack.metadata.description && (
+                    <div className="flex flex-col gap-1">
+                      <div className="font-medium text-xs">
+                        {t(
+                          "my_packs.card.pack_information.information.description.label"
+                        )}
+                      </div>
+                      <div className="opacity-60">
+                        {iconPack.metadata.description}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {editingMetadata && (
                 <CreatePackForm
@@ -649,44 +668,40 @@ function PackContent({
               )}
             </div>
           </div>
-          <div className="flex h-full">
-            {!editingMetadata ? (
-              <>
-                <Button variant="ghost" size="icon" onClick={handleEditStart}>
-                  <Edit className="w-6 h-6" />
-                </Button>
-                <Button variant="ghost" size="icon" onClick={openDialog}>
-                  <Trash className="w-6 h-6" />
-                </Button>
-                <AreYouSureDialog
-                  ref={dialogRef}
-                  cancelText={t("delete")}
-                  acceptText={t("cancel")}
-                  title={t("my_packs.delete_pack.confirmation_title")}
-                  description={t(
-                    "my_packs.delete_pack.confirmation_description"
-                  )}
-                  onCancel={handleDelete}
-                >
-                  <div className="flex items-center space-x-2 py-3">
-                    <Checkbox
-                      id="deleteGeneratedIcons"
-                      checked={deleteGeneratedIcons}
-                      onCheckedChange={() =>
-                        setDeleteGeneratedIcons(!deleteGeneratedIcons)
-                      }
-                    />
-                    <label
-                      htmlFor="deleteGeneratedIcons"
-                      className="font-medium text-sm leading-none select-none"
-                    >
-                      {t("my_packs.delete_pack.delete_generated_icons")}
-                    </label>
-                  </div>
-                </AreYouSureDialog>
-              </>
-            ) : null}
-          </div>
+          {!editingMetadata && (
+            <div className="flex h-full">
+              <Button variant="ghost" size="icon" onClick={handleEditStart}>
+                <Edit className="w-6 h-6" />
+              </Button>
+              <Button variant="ghost" size="icon" onClick={openDialog}>
+                <Trash className="w-6 h-6" />
+              </Button>
+              <AreYouSureDialog
+                ref={dialogRef}
+                cancelText={t("delete")}
+                acceptText={t("cancel")}
+                title={t("my_packs.delete_pack.confirmation_title")}
+                description={t("my_packs.delete_pack.confirmation_description")}
+                onCancel={handleDelete}
+              >
+                <div className="flex items-center space-x-2 py-3">
+                  <Checkbox
+                    id="deleteGeneratedIcons"
+                    checked={deleteGeneratedIcons}
+                    onCheckedChange={() =>
+                      setDeleteGeneratedIcons(!deleteGeneratedIcons)
+                    }
+                  />
+                  <label
+                    htmlFor="deleteGeneratedIcons"
+                    className="font-medium text-sm leading-none select-none"
+                  >
+                    {t("my_packs.delete_pack.delete_generated_icons")}
+                  </label>
+                </div>
+              </AreYouSureDialog>
+            </div>
+          )}
         </div>
       </div>
 
@@ -1342,6 +1357,11 @@ function CreatePackForm({
         "my_packs.card.pack_information.information.author.message.author_max"
       ),
     }),
+    description: z.string().max(256, {
+      message: t(
+        "my_packs.card.pack_information.information.description.message.description_max"
+      ),
+    }),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -1351,12 +1371,13 @@ function CreatePackForm({
       name: defaultValues?.name || "",
       version: defaultValues?.version || "v1.0.0",
       author: defaultValues?.author || "",
+      description: defaultValues?.description || "",
     },
   });
 
   function onSubmit(data: z.infer<typeof formSchema>) {
     if (reloadIconPacks) {
-      AddIconPack(data.name, data.version, data.author).then(() => {
+      AddIconPack(data.name, data.version, data.author, data.description).then(() => {
         reloadIconPacks();
         dialogCloseRef?.current?.click();
       });
@@ -1377,9 +1398,12 @@ function CreatePackForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className={
-          defaultValues ? "flex flex-row gap-2.5" : "flex flex-col gap-2.5"
-        }
+        className={`
+          ${
+            defaultValues
+              ? "flex flex-row gap-2.5 w-full"
+              : "flex flex-col gap-2.5"
+          }`}
         autoComplete="off"
       >
         {!defaultValues && (
@@ -1397,85 +1421,127 @@ function CreatePackForm({
             )}
           />
         )}
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel className="mb-3">
-                {t("my_packs.card.pack_information.information.name.label")}
-              </FormLabel>
-              <FormControl>
-                <Input
-                  autoComplete="new-password"
-                  placeholder={t(
-                    "my_packs.card.pack_information.information.name.placeholder"
-                  )}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="version"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel className="mb-3">
-                {t("my_packs.card.pack_information.information.version.label")}
-              </FormLabel>
-              <FormControl>
-                <Input
-                  autoComplete="new-password"
-                  placeholder={t(
-                    "my_packs.card.pack_information.information.version.placeholder"
-                  )}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="author"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel className="mb-3">
-                {t("my_packs.card.pack_information.information.author.label")}
-              </FormLabel>
-              <FormControl>
-                <Input
-                  autoComplete="new-password"
-                  placeholder={t(
-                    "my_packs.card.pack_information.information.author.placeholder"
-                  )}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        {!defaultValues ? (
+        <div className="w-full">
+          <div
+            className={
+              defaultValues
+                ? "flex flex-row gap-2.5 w-full"
+                : "flex flex-col gap-2.5"
+            }
+          >
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem className="flex flex-col w-full">
+                  <FormLabel className={defaultValues && "mb-3"}>
+                    {t("my_packs.card.pack_information.information.name.label")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      autoComplete="new-password"
+                      placeholder={t(
+                        "my_packs.card.pack_information.information.name.placeholder"
+                      )}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="version"
+              render={({ field }) => (
+                <FormItem className="flex flex-col w-full">
+                  <FormLabel className={defaultValues && "mb-3"}>
+                    {t(
+                      "my_packs.card.pack_information.information.version.label"
+                    )}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      autoComplete="new-password"
+                      placeholder={t(
+                        "my_packs.card.pack_information.information.version.placeholder"
+                      )}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="author"
+              render={({ field }) => (
+                <FormItem className="flex flex-col w-full">
+                  <FormLabel className={defaultValues && "mb-3"}>
+                    {t(
+                      "my_packs.card.pack_information.information.author.label"
+                    )}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      autoComplete="new-password"
+                      placeholder={t(
+                        "my_packs.card.pack_information.information.author.placeholder"
+                      )}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="flex flex-col items-end gap-4">
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem className="flex flex-col mt-2.5 w-full">
+                  <FormLabel>
+                    {t(
+                      "my_packs.card.pack_information.information.description.label"
+                    )}
+                  </FormLabel>
+                  <FormControl>
+                    <Textarea
+                      autoComplete="new-password"
+                      placeholder={t(
+                        "my_packs.card.pack_information.information.description.placeholder"
+                      )}
+                      className="max-h-64"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {defaultValues && (
+              <div className="flex gap-2">
+                <Button type="submit">{t("save")}</Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    handleCancel?.();
+                  }}
+                >
+                  {t("cancel")}
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+        {!defaultValues && (
           <Button type="submit" className="mt-3">
             {t("create")}
           </Button>
-        ) : (
-          <div className="flex gap-2 mt-8">
-            <Button type="submit">{t("save")}</Button>
-            <Button
-              variant="outline"
-              onClick={() => {
-                handleCancel?.();
-              }}
-            >
-              {t("cancel")}
-            </Button>
-          </div>
         )}
       </form>
     </Form>
