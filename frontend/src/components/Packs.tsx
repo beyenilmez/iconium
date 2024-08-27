@@ -219,7 +219,7 @@ export default function Packs() {
                   </DialogTitle>
                 </DialogHeader>
                 <CreatePackForm
-                  loadPackInfo={loadIconPacks}
+                  reloadIconPacks={handleReloadIconPacks}
                   dialogCloseRef={dialogCloseRef}
                 />
               </DialogContent>
@@ -402,7 +402,6 @@ function PackContent({
   const [loading, setLoading] = useState(true);
   const [editingMetadata, setEditingMetadata] = useState(false);
   const [iconPack, setIconPack] = useState<main.IconPack>();
-  const [editedIconPack, setEditedIconPack] = useState<main.IconPack>();
   const dialogRef = useRef<AreYouSureDialogRef>(null);
   const [deleteGeneratedIcons, setDeleteGeneratedIcons] = useState(false);
 
@@ -420,7 +419,7 @@ function PackContent({
     applyRunning ||
     addIconsFromDesktopRunning ||
     addIconsRunning ||
-    addFolderRunning;
+    addFolderRunning || editingMetadata;
 
   useEffect(() => {
     GetIconPack(iconPackId).then((pack) => {
@@ -431,25 +430,6 @@ function PackContent({
       setLoading(false);
     });
   }, []);
-
-  const handleMetadataChange = (
-    field: keyof main.IconPack["metadata"],
-    value: string
-  ) => {
-    if (editedIconPack === undefined) {
-      return;
-    }
-
-    const newIconPack = {
-      ...editedIconPack,
-      metadata: {
-        ...editedIconPack.metadata,
-        [field]: value,
-      },
-    } as main.IconPack;
-
-    setEditedIconPack(newIconPack);
-  };
 
   const handleSettingChange = (
     field: keyof main.IconPack["settings"],
@@ -478,19 +458,28 @@ function PackContent({
   };
 
   const handleEditStart = () => {
-    setEditedIconPack(iconPack);
     setEditingMetadata(true);
   };
 
-  const handleEditSave = () => {
-    if (editedIconPack === undefined) {
-      return;
-    }
+  const handleEditSave = (metadata: main.Metadata) => {
+    const updateMetadataJob = async () => {
+      if (iconPack === undefined) {
+        return;
+      }
+
+      const oldMetadata = iconPack.metadata;
+
+      oldMetadata.name = metadata.name;
+      oldMetadata.version = metadata.version;
+      oldMetadata.author = metadata.author;
+
+      SetIconPackMetadata(iconPackId, oldMetadata);
+    };
 
     Promise.all([
       ClearSelectImages(),
       DeleteDeletePngPaths(),
-      SetIconPackMetadata(iconPackId, editedIconPack.metadata),
+      updateMetadataJob(),
     ]).then(() => {
       reloadIconPacks();
     });
@@ -608,45 +597,53 @@ function PackContent({
         <div className="mb-3 pb-1 border-b font-medium text-xl">
           {t("my_packs.card.pack_information.label")}
         </div>
-        <div className="flex flex-row justify-between items-end gap-6">
-          <div className="flex items-center gap-6">
-            <SelectImage
-              src={
-                "packs\\" +
-                iconPackId +
-                "\\" +
-                iconPack.metadata.iconName +
-                ".png"
-              }
-              packId={iconPackId}
-              editable={editingMetadata}
-            />
+        <div
+          className={`flex flex-row justify-between items-end ${
+            editingMetadata ? "" : "gap-6"
+          }`}
+        >
+          <div className={`flex gap-6 ${editingMetadata ? "" : "items-center"}`}>
+            <div className="flex flex-col gap-3">
+              {editingMetadata && (
+                <Label>
+                  {t("my_packs.card.pack_information.information.icon.label")}
+                </Label>
+              )}
+              <SelectImage
+                src={
+                  "packs\\" +
+                  iconPackId +
+                  "\\" +
+                  iconPack.metadata.iconName +
+                  ".png"
+                }
+                packId={iconPackId}
+                editable={editingMetadata}
+              />
+            </div>
+
             <div className="flex flex-row gap-8">
-              {fields.map((field) => (
-                <div key={field} className="flex flex-col gap-1">
-                  <div className="font-medium text-xs">
-                    {t(
-                      "my_packs.card.pack_information.information." +
-                        field +
-                        ".label"
-                    )}
-                  </div>
-                  {editingMetadata ? (
-                    <Input
-                      value={
-                        editedIconPack?.metadata[field]
-                          ? editedIconPack.metadata[field]
-                          : ""
-                      }
-                      onChange={(e) =>
-                        handleMetadataChange(field, e.target.value)
-                      }
-                    />
-                  ) : (
+              {!editingMetadata &&
+                fields.map((field) => (
+                  <div key={field} className="flex flex-col gap-1">
+                    <div className="font-medium text-xs">
+                      {t(
+                        "my_packs.card.pack_information.information." +
+                          field +
+                          ".label"
+                      )}
+                    </div>
                     <div className="opacity-60">{iconPack.metadata[field]}</div>
-                  )}
-                </div>
-              ))}
+                  </div>
+                ))}
+
+              {editingMetadata && (
+                <CreatePackForm
+                  handleSave={handleEditSave}
+                  handleCancel={handleEditCancel}
+                  defaultValues={iconPack.metadata}
+                />
+              )}
             </div>
           </div>
           <div className="flex h-full">
@@ -685,20 +682,7 @@ function PackContent({
                   </div>
                 </AreYouSureDialog>
               </>
-            ) : (
-              <>
-                <Button variant="outline" onClick={handleEditSave}>
-                  {t("save")}
-                </Button>
-                <Button
-                  variant="outline"
-                  className="ml-2"
-                  onClick={handleEditCancel}
-                >
-                  {t("cancel")}
-                </Button>
-              </>
-            )}
+            ) : null}
           </div>
         </div>
       </div>
@@ -1308,11 +1292,20 @@ function PathInput({
 }
 
 interface CreatePackFormProps {
-  loadPackInfo: () => void;
-  dialogCloseRef: React.RefObject<HTMLButtonElement>;
+  reloadIconPacks?: () => void;
+  dialogCloseRef?: React.RefObject<HTMLButtonElement>;
+  handleSave?: (metadata: main.Metadata) => void;
+  handleCancel?: () => void;
+  defaultValues?: main.Metadata;
 }
 
-function CreatePackForm({ loadPackInfo, dialogCloseRef }: CreatePackFormProps) {
+function CreatePackForm({
+  reloadIconPacks,
+  dialogCloseRef,
+  handleSave,
+  handleCancel,
+  defaultValues,
+}: CreatePackFormProps) {
   const { t } = useTranslation();
 
   const formSchema = z.object({
@@ -1352,17 +1345,21 @@ function CreatePackForm({ loadPackInfo, dialogCloseRef }: CreatePackFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       icon: "",
-      name: "",
-      version: "v1.0.0",
-      author: "",
+      name: defaultValues?.name || "",
+      version: defaultValues?.version || "v1.0.0",
+      author: defaultValues?.author || "",
     },
   });
 
   function onSubmit(data: z.infer<typeof formSchema>) {
-    AddIconPack(data.name, data.version, data.author).then(() => {
-      loadPackInfo();
-      dialogCloseRef.current?.click();
-    });
+    if (reloadIconPacks) {
+      AddIconPack(data.name, data.version, data.author).then(() => {
+        reloadIconPacks();
+        dialogCloseRef?.current?.click();
+      });
+    } else {
+      handleSave?.(main.Metadata.createFrom(data));
+    }
   }
 
   useEffect(() => {
@@ -1377,29 +1374,32 @@ function CreatePackForm({ loadPackInfo, dialogCloseRef }: CreatePackFormProps) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-2.5"
+        className={
+          defaultValues ? "flex flex-row gap-2.5" : "flex flex-col gap-2.5"
+        }
         autoComplete="off"
       >
-        <FormField
-          control={form.control}
-          name="icon"
-          render={() => (
-            <FormItem className="flex flex-col gap-1">
-              <FormLabel>
-                {t("my_packs.card.pack_information.information.icon.label")}
-              </FormLabel>
-              <SelectImage editable />
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {!defaultValues && (
+          <FormField
+            control={form.control}
+            name="icon"
+            render={() => (
+              <FormItem className="flex flex-col items-start gap-1">
+                <FormLabel>
+                  {t("my_packs.card.pack_information.information.icon.label")}
+                </FormLabel>
+                <SelectImage editable />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="flex flex-col gap-3">
               <FormLabel>
-                {" "}
                 {t("my_packs.card.pack_information.information.name.label")}
               </FormLabel>
               <FormControl>
@@ -1419,7 +1419,7 @@ function CreatePackForm({ loadPackInfo, dialogCloseRef }: CreatePackFormProps) {
           control={form.control}
           name="version"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="flex flex-col gap-3">
               <FormLabel>
                 {t("my_packs.card.pack_information.information.version.label")}
               </FormLabel>
@@ -1440,7 +1440,7 @@ function CreatePackForm({ loadPackInfo, dialogCloseRef }: CreatePackFormProps) {
           control={form.control}
           name="author"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="flex flex-col gap-3">
               <FormLabel>
                 {t("my_packs.card.pack_information.information.author.label")}
               </FormLabel>
@@ -1457,9 +1457,23 @@ function CreatePackForm({ loadPackInfo, dialogCloseRef }: CreatePackFormProps) {
             </FormItem>
           )}
         />
-        <Button type="submit" className="mt-3">
-          {t("create")}
-        </Button>
+        {!defaultValues ? (
+          <Button type="submit" className="mt-3">
+            {t("create")}
+          </Button>
+        ) : (
+          <div className="flex gap-2 mt-8">
+            <Button type="submit">{t("save")}</Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                handleCancel?.();
+              }}
+            >
+              {t("cancel")}
+            </Button>
+          </div>
+        )}
       </form>
     </Form>
   );
