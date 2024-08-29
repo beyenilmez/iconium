@@ -63,7 +63,7 @@ const SelectImage: React.FC<SelectImageProps> = ({
 
   return (
     <div className={`relative inline-block shrink-0 ${sizeClass}`}>
-      {editable &&
+      {!loading && editable &&
         (imageProperties.hasOriginal ||
           imageProperties.isRemoved ||
           imageProperties.hasTemp) && (

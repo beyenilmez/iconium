@@ -13,7 +13,6 @@
 
   "nav": {
     "my_packs": "My Packs",
-    "edit": "Edit",
     "settings": "Settings"
   },
 
@@ -53,6 +52,10 @@
       "confirmation_title": "Are you sure you want to delete this pack?",
       "confirmation_description": "This action cannot be undone.",
       "delete_generated_icons": "Delete Generated Icons"
+    },
+
+    "edit_pack": {
+      "path_found": "Path found"
     },
 
     "card": {

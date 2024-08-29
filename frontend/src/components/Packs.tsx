@@ -1295,6 +1295,7 @@ function PathInput({
   onChange: (value: string) => void;
   label: string;
 }) {
+  const { t } = useTranslation();
   const [exists, setExists] = useState(false);
 
   const handleChoosePath = () => {
@@ -1310,7 +1311,7 @@ function PathInput({
     GeneralPathExits(value).then((exists) => {
       setExists(exists);
     });
-  }
+  };
 
   useEffect(() => {
     updateExistence();
@@ -1334,7 +1335,9 @@ function PathInput({
             <HoverCardTrigger className="top-1/2 right-2 absolute" asChild>
               <Check className={`w-5 h-5 ${"text-success"}`} />
             </HoverCardTrigger>
-            <HoverCardContent>File exists</HoverCardContent>
+            <HoverCardContent>
+              {t("my_packs.edit_pack.path_found")}
+            </HoverCardContent>
           </HoverCard>
         )}
       </div>

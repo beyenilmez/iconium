@@ -13,7 +13,6 @@
 
   "nav": {
     "my_packs": "Paketlerim",
-    "edit": "Düzenle",
     "settings": "Ayarlar"
   },
 
@@ -53,6 +52,10 @@
       "confirmation_title": "Bu paketi silmek istediğinizden emin misiniz?",
       "confirmation_description": "Bu işlem geri alınamaz.",
       "delete_generated_icons": "Oluşturulan simgeleri sil"
+    },
+
+    "edit_pack": {
+      "path_found": "Yol bulundu"
     },
 
     "card": {
