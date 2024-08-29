@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import {
+  Check,
   Download,
   Edit,
   Folder,
@@ -55,6 +56,7 @@ import {
   Destination,
   ExportIconPack,
   Ext,
+  GeneralPathExits,
   GetFileInfoFromDesktop,
   GetFileInfoFromPaths,
   GetFilePath,
@@ -101,6 +103,7 @@ import {
 import { LogDebug } from "@/wailsjs/runtime/runtime";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
 
 export default function Packs() {
   const { t } = useTranslation();
@@ -1292,6 +1295,8 @@ function PathInput({
   onChange: (value: string) => void;
   label: string;
 }) {
+  const [exists, setExists] = useState(false);
+
   const handleChoosePath = () => {
     GetFilePath(value).then((path) => {
       if (path) {
@@ -1301,19 +1306,42 @@ function PathInput({
     });
   };
 
+  const updateExistence = () => {
+    GeneralPathExits(value).then((exists) => {
+      setExists(exists);
+    });
+  }
+
+  useEffect(() => {
+    updateExistence();
+  }, [value]);
+
   return (
-    <div className="flex items-end gap-1.5 w-full">
-      <TextInput
-        value={value}
-        placeholder={placeholder}
-        onChange={onChange}
-        label={label}
-        className="w-full"
-      />
+    <div className="flex items-center gap-1.5 w-full">
+      <div className="relative w-full">
+        <TextInput
+          value={value}
+          placeholder={placeholder}
+          onChange={(value) => {
+            onChange(value);
+            updateExistence();
+          }}
+          label={label}
+          className="w-full"
+        />
+        {exists && (
+          <HoverCard>
+            <HoverCardTrigger className="top-1/2 right-2 absolute" asChild>
+              <Check className={`w-5 h-5 ${"text-success"}`} />
+            </HoverCardTrigger>
+            <HoverCardContent>File exists</HoverCardContent>
+          </HoverCard>
+        )}
+      </div>
       <Button
         variant={"secondary"}
         size={"icon"}
-        className="w-10 h-10"
+        className="mt-5 w-10 h-10"
         onClick={handleChoosePath}
       >
         <FolderOpen className="w-5 h-5" />

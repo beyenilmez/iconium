@@ -389,8 +389,17 @@ func (a *App) UUID() string {
 	return uuid.NewString()
 }
 
+func (a *App) GeneralPathExits(path string) bool {
+	return ConvertToFullPath(path) != ""
+}
+
 func (a *App) Ext(path string) string {
-	return strings.ToLower(filepath.Ext(path))
+	fullPath := ConvertToFullPath(path)
+	if fullPath == "" {
+		return strings.ToLower(filepath.Ext(path))
+	} else {
+		return strings.ToLower(filepath.Ext(fullPath))
+	}
 }
 
 func (a *App) Name(path string) string {

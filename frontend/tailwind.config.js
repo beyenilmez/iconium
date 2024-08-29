@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-const plugin = require('tailwindcss/plugin')
+const plugin = require("tailwindcss/plugin");
 
 module.exports = {
   darkMode: ["class"],
@@ -55,7 +55,11 @@ module.exports = {
         warning: {
           DEFAULT: "var(--warning)",
           foreground: "var(--warning-foreground)",
-        }
+        },
+        success: {
+          DEFAULT: "var(--success)",
+          foreground: "var(--success-foreground)",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -96,7 +100,7 @@ module.exports = {
     },
   },
   plugins: [
-    require('tailwind-scrollbar'),
+    require("tailwind-scrollbar"),
     require("tailwindcss-animate"),
     plugin(function ({ matchUtilities, theme }) {
       matchUtilities(

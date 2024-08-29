@@ -34,6 +34,9 @@
     --warning: rgba(158, 156, 0, var(--opacity));
     --warning-foreground: hsl(210, 40%, 98%);
 
+    --success: rgba(8, 144, 0, var(--opacity));
+    --success-foreground: hsl(210, 40%, 98%);
+
     --ring: hsla(215, 20.2%, 65.1%, var(--opacity));
 
     --radius: 0.5rem;
@@ -70,6 +73,9 @@
     --destructive-foreground: hsl(0, 85.7%, 97.3%);
 
     --warning: rgba(219, 195, 0, var(--opacity));
+    --warning-foreground: hsl(0, 85.7%, 97.3%);
+
+    --success: rgba(31, 193, 1, var(--opacity));
     --warning-foreground: hsl(0, 85.7%, 97.3%);
 
     --ring: hsla(217.2, 32.6%, 17.5%, var(--opacity));

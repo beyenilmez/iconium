@@ -86,6 +86,10 @@ export function Ext(arg1) {
   return window['go']['main']['App']['Ext'](arg1);
 }
 
+export function GeneralPathExits(arg1) {
+  return window['go']['main']['App']['GeneralPathExits'](arg1);
+}
+
 export function GetBase64Png() {
   return window['go']['main']['App']['GetBase64Png']();
 }

@@ -44,6 +44,8 @@ export function ExportIconPack(arg1:string):Promise<string>;
 
 export function Ext(arg1:string):Promise<string>;
 
+export function GeneralPathExits(arg1:string):Promise<boolean>;
+
 export function GetBase64Png():Promise<string>;
 
 export function GetConfig():Promise<main.Config>;
