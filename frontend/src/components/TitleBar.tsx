@@ -30,8 +30,8 @@ export default function TitleBar() {
         className="flex justify-between items-center bg-muted pl-3 w-full h-8 wails-drag"
         onDoubleClick={() => WindowToggleMaximise()}
       >
-        <h1 className="flex gap-1 mt-2.5 font-semibold select-none">
-          <img src={icon} className="w-6 h-6" />
+        <h1 className="flex items-center gap-1.5 mt-2.5 font-semibold select-none">
+          <img src={icon} className="w-5 h-5" />
           {document.title}
         </h1>
         <div className="wails-nodrag">
