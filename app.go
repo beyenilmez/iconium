@@ -83,6 +83,8 @@ func (a *App) domReady(ctx context.Context) {
 	// Get launch args
 	args = os.Args[1:]
 
+	runtime.LogInfo(appContext, "Launch args: "+strings.Join(args, " "))
+
 	// Check updates
 	if *config.CheckForUpdates {
 		updateInfo := a.CheckForUpdate()
@@ -106,6 +108,9 @@ func (a *App) domReady(ctx context.Context) {
 				a.SendNotification(args[i+1], args[i+2], args[i+3], args[i+4])
 				i += 4
 			}
+		default:
+			runtime.LogInfo(a.ctx, fmt.Sprintf("Pack path: %s", args[i]))
+			runtime.WindowExecJS(a.ctx, "window.importIconPack('"+strings.ReplaceAll(args[i], "\\", "\\\\")+"')")
 		}
 	}
 }
@@ -162,6 +167,11 @@ func (a *App) onSecondInstanceLaunch(secondInstanceData options.SecondInstanceDa
 	runtime.WindowUnminimise(a.ctx)
 	runtime.Show(a.ctx)
 	go runtime.EventsEmit(a.ctx, "launchArgs", secondInstanceArgs)
+
+	if len(secondInstanceArgs) != 1 {
+		return
+	}
+	runtime.WindowExecJS(a.ctx, "window.importIconPack('"+strings.ReplaceAll(secondInstanceArgs[0], "\\", "\\\\")+"')")
 }
 
 func onFirstRun() {

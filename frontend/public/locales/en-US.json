@@ -54,6 +54,10 @@
       "delete_generated_icons": "Delete Generated Icons"
     },
 
+    "import_pack": {
+      "confirmation_title": "Do you want to import this pack?"
+    },
+
     "edit_pack": {
       "path_found": "Path found"
     },

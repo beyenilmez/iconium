@@ -252,7 +252,7 @@ func (a *App) ExportIconPack(packId string) string {
 	return path
 }
 
-func (a *App) ImportIconPack() string {
+func (a *App) GetIconPackPath() string {
 	path, err := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
 		Title:                "Import icon pack",
 		CanCreateDirectories: true,
@@ -268,12 +268,16 @@ func (a *App) ImportIconPack() string {
 		return ""
 	}
 
+	return path
+}
+
+func (a *App) ImportIconPack(path string) string {
 	runtime.LogInfof(a.ctx, "Importing icon pack: %s", path)
 
 	extractFolder := filepath.Join(tempFolder, "iconium-"+uuid.NewString())
 	defer os.RemoveAll(extractFolder)
 
-	err = unzip_folder(path, extractFolder)
+	err := unzip_folder(path, extractFolder)
 	if err != nil {
 		runtime.LogErrorf(a.ctx, "Error importing icon pack: %s", err.Error())
 		return ""

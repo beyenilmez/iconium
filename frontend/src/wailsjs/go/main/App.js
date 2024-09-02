@@ -134,6 +134,10 @@ export function GetIconPackList() {
   return window['go']['main']['App']['GetIconPackList']();
 }
 
+export function GetIconPackPath() {
+  return window['go']['main']['App']['GetIconPackPath']();
+}
+
 export function GetLoadConfigPath() {
   return window['go']['main']['App']['GetLoadConfigPath']();
 }
@@ -158,8 +162,8 @@ export function IconLocation(arg1) {
   return window['go']['main']['App']['IconLocation'](arg1);
 }
 
-export function ImportIconPack() {
-  return window['go']['main']['App']['ImportIconPack']();
+export function ImportIconPack(arg1) {
+  return window['go']['main']['App']['ImportIconPack'](arg1);
 }
 
 export function Name(arg1) {

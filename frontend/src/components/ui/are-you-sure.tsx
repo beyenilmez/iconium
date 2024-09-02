@@ -14,8 +14,8 @@ import {
 interface AreYouSureDialogProps {
   title?: string;
   description?: string;
-  cancelText: string;
-  acceptText: string;
+  cancelText?: string;
+  acceptText?: string;
   onCancel?: () => void;
   onAccept?: () => void;
   children?: ReactNode;
@@ -26,8 +26,22 @@ export interface AreYouSureDialogRef {
   closeDialog: () => void;
 }
 
-export const AreYouSureDialog = forwardRef<AreYouSureDialogRef, AreYouSureDialogProps>(
-  ({ title, description, cancelText, acceptText, onCancel, onAccept, children }, ref) => {
+export const AreYouSureDialog = forwardRef<
+  AreYouSureDialogRef,
+  AreYouSureDialogProps
+>(
+  (
+    {
+      title = "Are you sure?",
+      description = "",
+      cancelText = "Cancel",
+      acceptText = "Accept",
+      onCancel,
+      onAccept,
+      children,
+    },
+    ref
+  ) => {
     const [isOpen, setIsOpen] = useState(false);
 
     const openDialog = () => setIsOpen(true);
@@ -48,9 +62,7 @@ export const AreYouSureDialog = forwardRef<AreYouSureDialogRef, AreYouSureDialog
             <DialogTitle>{title}</DialogTitle>
             <DialogDescription>{description}</DialogDescription>
           </DialogHeader>
-          <div className="flex items-center space-x-2">
-            {children}
-          </div>
+          <div className="flex items-center space-x-2">{children}</div>
           <DialogFooter className="sm:justify-end">
             <DialogClose asChild>
               <Button

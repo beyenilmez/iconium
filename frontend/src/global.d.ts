@@ -3,6 +3,7 @@ declare global {
       toast: (props: ToastProps) => void;
       goto: goto
       sendNotification: sendNotification
+      importIconPack: importIconPack
     }
   }
   

@@ -64,6 +64,7 @@ import {
   GetIconFolder,
   GetIconPack,
   GetIconPackList,
+  GetIconPackPath,
   ImportIconPack,
   Name,
   ReadLastTab,
@@ -121,6 +122,8 @@ export default function Packs() {
   const [reloadingIconPacks, setReloadingIconPacks] = useState(false);
 
   const dialogCloseRef = useRef(null);
+  const dialogImportRef = useRef<AreYouSureDialogRef>(null);
+  const [importPackPath, setImportPackPath] = useState("");
 
   const tabsListRef = useRef(null);
   const [hasOverflow, setHasOverflow] = useState(false);
@@ -167,7 +170,23 @@ export default function Packs() {
   };
 
   const handleImportIconPack = () => {
-    ImportIconPack().then((id) => {
+    GetIconPackPath().then((path) => {
+      if (path) {
+        setImportPackPath(path);
+        dialogImportRef.current?.openDialog();
+      } else {
+        setImportPackPath("");
+      }
+    });
+  };
+
+  window.importIconPack = (path: string) => {
+    setImportPackPath(path);
+    dialogImportRef.current?.openDialog();
+  };
+
+  const handleAcceptImportIconPack = () => {
+    ImportIconPack(importPackPath).then((id) => {
       handleReloadIconPacks().then(() => {
         setSelectedPackId(id);
       });
@@ -243,6 +262,16 @@ export default function Packs() {
             </Button>
           </div>
           <div className="flex gap-0.5">
+            <AreYouSureDialog
+              ref={dialogImportRef}
+              title={t("my_packs.import_pack.confirmation_title")}
+              cancelText={t("cancel")}
+              acceptText={t("import")}
+              onAccept={handleAcceptImportIconPack}
+              onCancel={() => {
+                setImportPackPath("");
+              }}
+            />
             <Button
               disabled={editingIconPack}
               onClick={handleImportIconPack}

@@ -54,6 +54,10 @@
       "delete_generated_icons": "Oluşturulan simgeleri sil"
     },
 
+    "import_pack": {
+      "confirmation_title": "Bu paketi yüklemek istiyor musunuz?"
+    },
+
     "edit_pack": {
       "path_found": "Yol bulundu"
     },

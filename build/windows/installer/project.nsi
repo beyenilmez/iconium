@@ -87,6 +87,9 @@ Section
     SetOutPath $INSTDIR
     !insertmacro wails.files
 
+    SetOutPath $INSTDIR
+    File "..\..\packicon.ico"
+
     SetOutPath "$INSTDIR\ImageMagick-7.1.1-35-portable-Q16-x64"
     File /r "..\..\..\ImageMagick-7.1.1-35-portable-Q16-x64\*.*"
 

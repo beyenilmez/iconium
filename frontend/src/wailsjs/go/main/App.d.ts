@@ -68,6 +68,8 @@ export function GetIconPack(arg1:string):Promise<main.IconPack>;
 
 export function GetIconPackList():Promise<Array<main.IconPack>>;
 
+export function GetIconPackPath():Promise<string>;
+
 export function GetLoadConfigPath():Promise<string>;
 
 export function GetSelectImage(arg1:string,arg2:string):Promise<main.SelectImage>;
@@ -80,7 +82,7 @@ export function GetVersion():Promise<string>;
 
 export function IconLocation(arg1:string):Promise<string>;
 
-export function ImportIconPack():Promise<string>;
+export function ImportIconPack(arg1:string):Promise<string>;
 
 export function Name(arg1:string):Promise<string>;
 
