@@ -56,11 +56,25 @@
 
     "import_pack": {
       "confirmation_title": "Do you want to import this pack?",
-      "success" : "Pack imported successfully."
+      "success": "Pack imported successfully."
     },
 
     "edit_pack": {
       "path_found": "Path found"
+    },
+
+    "buttons": {
+      "add_pack": {
+        "tooltip": "Add new pack"
+      },
+
+      "reload_packs": {
+        "tooltip": "Reload packs"
+      },
+
+      "import_pack": {
+        "tooltip": "Import pack"
+      }
     },
 
     "card": {

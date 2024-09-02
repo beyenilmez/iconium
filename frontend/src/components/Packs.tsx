@@ -191,8 +191,12 @@ export default function Packs() {
   window.importIconPack = (path: string) => {
     setImportPackPath(path);
     GetIcnmMetadata(path).then((metadata) => {
-      setTempMetadata(metadata);
-      dialogImportRef.current?.openDialog();
+      if (metadata.id === "") {
+        setImportPackPath("");
+      } else {
+        setTempMetadata(metadata);
+        dialogImportRef.current?.openDialog();
+      }
     });
   };
 
@@ -242,6 +246,7 @@ export default function Packs() {
                   className="backdrop-brightness-150 p-1 border w-6 h-6"
                   variant={"ghost"}
                   size={"icon"}
+                  tooltip={t("my_packs.buttons.add_pack.tooltip")}
                 >
                   <Plus />
                 </Button>
@@ -265,6 +270,7 @@ export default function Packs() {
               variant={"ghost"}
               size={"icon"}
               onClick={handleReloadIconPacks}
+              tooltip={t("my_packs.buttons.reload_packs.tooltip")}
             >
               <RefreshCw
                 className={
@@ -307,6 +313,7 @@ export default function Packs() {
               className="backdrop-brightness-150 p-1 border w-6 h-6"
               variant={"ghost"}
               size={"icon"}
+              tooltip={t("my_packs.buttons.import_pack.tooltip")}
             >
               <Download />
             </Button>

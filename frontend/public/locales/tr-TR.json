@@ -56,11 +56,25 @@
 
     "import_pack": {
       "confirmation_title": "Bu paketi yüklemek istiyor musunuz?",
-      "success" : "Paket başarıyla yüklendi."
+      "success": "Paket başarıyla yüklendi."
     },
 
     "edit_pack": {
       "path_found": "Yol bulundu"
+    },
+
+    "buttons": {
+      "add_pack": {
+        "tooltip": "Yeni paket ekle"
+      },
+
+      "reload_packs": {
+        "tooltip": "Paketleri yenile"
+      },
+
+      "import_pack": {
+        "tooltip": "Paket yükle"
+      }
     },
 
     "card": {
