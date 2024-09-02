@@ -18,6 +18,7 @@ import (
 var scriptsFolderEmbedded embed.FS
 
 var setLnkIconScriptPath string
+var setLnkDescScriptPath string
 
 var appFolder string
 
@@ -72,6 +73,7 @@ func path_init() error {
 	configPath = filepath.Join(appFolder, "config.json")
 	appIconPath = filepath.Join(appFolder, "appicon.png")
 	setLnkIconScriptPath = filepath.Join(scriptsFolder, "setlnkicon.vbs")
+	setLnkDescScriptPath = filepath.Join(scriptsFolder, "setlnkdesc.vbs")
 
 	runtime.LogTrace(appContext, "Attempting to create folders")
 	err = create_folder(appFolder)

@@ -26,6 +26,7 @@ export namespace main {
 	    matchLnkByDestination?: boolean;
 	    matchURLByDestination?: boolean;
 	    renameMatchedFiles?: boolean;
+	    changeDescriptionOfMathcedLnkFiles?: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new Config(source);
@@ -58,6 +59,7 @@ export namespace main {
 	        this.matchLnkByDestination = source["matchLnkByDestination"];
 	        this.matchURLByDestination = source["matchURLByDestination"];
 	        this.renameMatchedFiles = source["renameMatchedFiles"];
+	        this.changeDescriptionOfMathcedLnkFiles = source["changeDescriptionOfMathcedLnkFiles"];
 	    }
 	}
 	export class FileInfo {

@@ -935,24 +935,26 @@ function PackContent({
         </SettingsItem>
       </div>
 
-      <div className="bg-card p-4 rounded-md w-full">
-        <div className="mb-3 pb-1 border-b font-medium text-xl">
-          {t("my_packs.card.icons.label")}
+      {iconPack.files?.filter((file) => file.hasIcon).length > 0 && (
+        <div className="bg-card p-4 rounded-md w-full">
+          <div className="mb-3 pb-1 border-b font-medium text-xl">
+            {t("my_packs.card.icons.label")}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {iconPack.files?.map((file) =>
+              file.hasIcon ? (
+                <Image
+                  key={file.id}
+                  src={`packs\\${iconPackId}\\icons\\${file.id}.png`}
+                  className="w-10 h-10"
+                  cornerRadius={cornerRadius}
+                  opacity={opacity}
+                />
+              ) : null
+            )}
+          </div>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {iconPack.files?.map((file) =>
-            file.hasIcon ? (
-              <Image
-                key={file.id}
-                src={`packs\\${iconPackId}\\icons\\${file.id}.png`}
-                className="w-10 h-10"
-                cornerRadius={cornerRadius}
-                opacity={opacity}
-              />
-            ) : null
-          )}
-        </div>
-      </div>
+      )}
     </TabsContent>
   );
 }

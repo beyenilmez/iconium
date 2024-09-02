@@ -536,6 +536,23 @@ func GetAppliedIcon(path string) (string, error) {
 	return "", errors.New("icon not found")
 }
 
+func GetAppliedDescription(path string) (string, error) {
+	ext := strings.ToLower(filepath.Ext(path))
+
+	if ext == ".lnk" {
+		link, err := lnk.File(path)
+		if err != nil {
+			return "", fmt.Errorf("failed to open .lnk file: %s", err.Error())
+		}
+
+		if link.StringData.NameString != "" {
+			return link.StringData.NameString, nil
+		}
+	}
+
+	return "", errors.New("description not found")
+}
+
 func (a *App) AddIconPack(name string, version string, author string, license string, description string) error {
 	iconPack, err := CreateIconPack(name, version, author, license, description)
 	if err != nil {
@@ -833,6 +850,23 @@ func (pack *IconPack) Apply() error {
 					}
 				}
 			}
+
+			if *config.ChangeDescriptionOfMathcedLnkFiles && file.Description != "" && match != "" {
+				appliedDescriptionPath, err := GetAppliedDescription(match)
+				if err != nil {
+					runtime.LogWarningf(appContext, "Failed to get applied description for %s: %s", match, err.Error())
+				}
+
+				if appliedDescriptionPath == file.Description {
+					runtime.LogDebug(appContext, "Description already applied")
+				} else {
+					runtime.LogDebug(appContext, "Applying description")
+					err = SetDescription(match, file.Description)
+					if err != nil {
+						runtime.LogWarningf(appContext, "Failed to set description for %s: %s", match, err.Error())
+					}
+				}
+			}
 		}(file)
 	}
 
@@ -939,8 +973,31 @@ func SetIcon(path string, iconPath string) error {
 	return errors.New("unsupported file type")
 }
 
+func SetDescription(path string, desc string) error {
+	ext := strings.ToLower(filepath.Ext(path))
+
+	if ext == ".lnk" {
+		err := setLnkDesc(path, desc)
+		if err != nil {
+			return setDescScript(path, desc)
+		} else {
+			return nil
+		}
+	}
+
+	return errors.New("unsupported file type")
+}
+
 func setIconScript(path string, iconPath string) error {
 	_, err := sendCommand("cscript.exe", setLnkIconScriptPath, filepath.Dir(path), filepath.Base(path), iconPath, "0")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func setDescScript(path string, desc string) error {
+	_, err := sendCommand("cscript.exe", setLnkDescScriptPath, filepath.Dir(path), filepath.Base(path), desc)
 	if err != nil {
 		return err
 	}
@@ -979,6 +1036,51 @@ func setLnkIcon(linkPath string, iconPath string) error {
 
 	// Set the icon location
 	_, err = oleutil.PutProperty(shortcutDisp, "IconLocation", iconPath+",0")
+	if err != nil {
+		return fmt.Errorf("failed to set icon location: %v", err)
+	}
+
+	// Save the shortcut
+	_, err = oleutil.CallMethod(shortcutDisp, "Save")
+	if err != nil {
+		return fmt.Errorf("failed to save shortcut: %v", err)
+	}
+
+	return nil
+}
+
+func setLnkDesc(linkPath string, desc string) error {
+	// Initialize COM
+	err := ole.CoInitialize(0)
+	if err != nil {
+		return fmt.Errorf("failed to initialize COM: %v", err)
+	}
+	defer ole.CoUninitialize()
+
+	// Create a WScript.Shell object
+	wshShell, err := oleutil.CreateObject("WScript.Shell")
+	if err != nil {
+		return fmt.Errorf("failed to create WScript.Shell object: %v", err)
+	}
+	defer wshShell.Release()
+
+	// Get the IDispatch interface
+	wshShellDisp, err := wshShell.QueryInterface(ole.IID_IDispatch)
+	if err != nil {
+		return fmt.Errorf("failed to get IDispatch interface for WScript.Shell: %v", err)
+	}
+	defer wshShellDisp.Release()
+
+	// Create a shortcut object
+	shortcut, err := oleutil.CallMethod(wshShellDisp, "CreateShortcut", linkPath)
+	if err != nil {
+		return fmt.Errorf("failed to create shortcut object: %v", err)
+	}
+	shortcutDisp := shortcut.ToIDispatch()
+	defer shortcutDisp.Release()
+
+	// Set the icon location
+	_, err = oleutil.PutProperty(shortcutDisp, "Description", desc)
 	if err != nil {
 		return fmt.Errorf("failed to set icon location: %v", err)
 	}

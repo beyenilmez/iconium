@@ -19,6 +19,7 @@ import { useStorage } from "@/contexts/storage-provider";
 import { MatchLnkByDestinationSetting } from "./SettingItems/MatchLnkByDestinationSetting";
 import { RenameMatchedFilesSetting } from "./SettingItems/RenameMatchedFilesSetting";
 import { MatchURLByDestinationSetting } from "./SettingItems/MatchURLByDestinationSetting";
+import { ChangeDescriptionOfMathcedLnkFilesSetting } from "./SettingItems/ChangeDescriptionOfMathcedLnkFilesSetting";
 
 export default function Settings() {
   const { t } = useTranslation();
@@ -101,6 +102,7 @@ export default function Settings() {
           <MatchLnkByDestinationSetting />
           <MatchURLByDestinationSetting />
           <RenameMatchedFilesSetting />
+          <ChangeDescriptionOfMathcedLnkFilesSetting />
         </SettingsGroup>
       </TabsContent>
       <TabsContent value="system" className="w-full h-[calc(100vh-5.5rem)] overflow-y-auto">

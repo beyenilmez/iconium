@@ -273,6 +273,11 @@
         "description": "İsimler eşleşmiyorsa, eşleşen dosyaları yeniden adlandır."
       },
 
+      "change_description_of_matched_lnk_files": {
+        "label": "Eşleşen Windows Kısayol (.lnk) Dosyalarının Açıklamasını Değiştir",
+        "description": "Eşleşen kısayoların açıklamasını değiştir."
+      },
+
       "check_for_updates": {
         "label": "Başlangıçta Güncellemeleri Kontrol Et",
         "description": "Başlangıçta güncellemeleri kontrol et."

@@ -269,6 +269,11 @@
         "description": "Rename matched files if the names does not match."
       },
 
+      "change_description_of_matched_lnk_files": {
+        "label": "Change Description of Matched Windows Shortcut (.lnk) Files",
+        "description": "Change the description of matched shortucts."
+      },
+
       "check_for_updates": {
         "label": "Check For Updates On Startup",
         "description": "Check for updates on startup."
