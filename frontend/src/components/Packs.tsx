@@ -60,6 +60,7 @@ import {
   GetFileInfoFromDesktop,
   GetFileInfoFromPaths,
   GetFilePath,
+  GetIcnmMetadata,
   GetIconFiles,
   GetIconFolder,
   GetIconPack,
@@ -125,6 +126,10 @@ export default function Packs() {
   const dialogImportRef = useRef<AreYouSureDialogRef>(null);
   const [importPackPath, setImportPackPath] = useState("");
 
+  const [tempMetadata, setTempMetadata] = useState<main.Metadata>(
+    main.Metadata.createFrom({})
+  );
+
   const tabsListRef = useRef(null);
   const [hasOverflow, setHasOverflow] = useState(false);
   useEffect(() => {
@@ -173,7 +178,10 @@ export default function Packs() {
     GetIconPackPath().then((path) => {
       if (path) {
         setImportPackPath(path);
-        dialogImportRef.current?.openDialog();
+        GetIcnmMetadata(path).then((metadata) => {
+          setTempMetadata(metadata);
+          dialogImportRef.current?.openDialog();
+        });
       } else {
         setImportPackPath("");
       }
@@ -182,12 +190,16 @@ export default function Packs() {
 
   window.importIconPack = (path: string) => {
     setImportPackPath(path);
-    dialogImportRef.current?.openDialog();
+    GetIcnmMetadata(path).then((metadata) => {
+      setTempMetadata(metadata);
+      dialogImportRef.current?.openDialog();
+    });
   };
 
   const handleAcceptImportIconPack = () => {
     ImportIconPack(importPackPath).then((id) => {
       handleReloadIconPacks().then(() => {
+        ClearTempPngPaths();
         setSelectedPackId(id);
       });
     });
@@ -270,8 +282,25 @@ export default function Packs() {
               onAccept={handleAcceptImportIconPack}
               onCancel={() => {
                 setImportPackPath("");
+                ClearTempPngPaths();
               }}
-            />
+            >
+              <div className="flex gap-3 bg-muted p-3 rounded-md w-full">
+                <Image
+                  src={tempMetadata.iconName}
+                  className="w-12 h-12"
+                  unkown
+                />
+                <div className="flex flex-col text-muted-foreground">
+                  <div className="w-80 font-semibold text-ellipsis text-left overflow-hidden">
+                    {tempMetadata.name}
+                  </div>
+                  <div className="opacity-50 font-semibold text-sm">
+                    {tempMetadata.version}
+                  </div>
+                </div>
+              </div>
+            </AreYouSureDialog>
             <Button
               disabled={editingIconPack}
               onClick={handleImportIconPack}

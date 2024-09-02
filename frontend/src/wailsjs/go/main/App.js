@@ -114,6 +114,10 @@ export function GetFilePath(arg1) {
   return window['go']['main']['App']['GetFilePath'](arg1);
 }
 
+export function GetIcnmMetadata(arg1) {
+  return window['go']['main']['App']['GetIcnmMetadata'](arg1);
+}
+
 export function GetIconFile() {
   return window['go']['main']['App']['GetIconFile']();
 }

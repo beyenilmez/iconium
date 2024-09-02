@@ -58,6 +58,8 @@ export function GetFileInfoFromPaths(arg1:string,arg2:Array<string>):Promise<Arr
 
 export function GetFilePath(arg1:string):Promise<string>;
 
+export function GetIcnmMetadata(arg1:string):Promise<main.Metadata>;
+
 export function GetIconFile():Promise<string>;
 
 export function GetIconFiles():Promise<Array<string>>;

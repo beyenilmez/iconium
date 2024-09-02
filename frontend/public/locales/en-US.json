@@ -55,7 +55,8 @@
     },
 
     "import_pack": {
-      "confirmation_title": "Do you want to import this pack?"
+      "confirmation_title": "Do you want to import this pack?",
+      "success" : "Pack imported successfully."
     },
 
     "edit_pack": {

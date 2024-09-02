@@ -55,7 +55,8 @@
     },
 
     "import_pack": {
-      "confirmation_title": "Bu paketi yüklemek istiyor musunuz?"
+      "confirmation_title": "Bu paketi yüklemek istiyor musunuz?",
+      "success" : "Paket başarıyla yüklendi."
     },
 
     "edit_pack": {

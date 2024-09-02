@@ -304,9 +304,54 @@ func (a *App) ImportIconPack(path string) string {
 		return ""
 	}
 
-	a.SendNotification("settings.icon_pack.imported", "", "", "success")
+	a.SendNotification("my_packs.import_pack.success", "", "", "success")
 
 	return packId
+}
+
+func (a *App) GetIcnmMetadata(path string) Metadata {
+	extractFolder := filepath.Join(tempFolder, "iconium-"+uuid.NewString())
+
+	err := unzip_folder(path, extractFolder)
+	if err != nil {
+		runtime.LogErrorf(a.ctx, "Error importing icon pack: %s", err.Error())
+		return Metadata{}
+	}
+	defer os.RemoveAll(extractFolder)
+
+	files, err := os.ReadDir(extractFolder)
+	if err != nil {
+		runtime.LogErrorf(a.ctx, "Error importing icon pack: %s", err.Error())
+		return Metadata{}
+	}
+	if len(files) != 1 {
+		runtime.LogErrorf(a.ctx, "Error importing icon pack")
+		return Metadata{}
+	}
+
+	metadataFile := filepath.Join(extractFolder, files[0].Name(), "metadata.json")
+
+	var metadata Metadata
+	err = readJSON(metadataFile, &metadata)
+	if err != nil {
+		runtime.LogErrorf(a.ctx, "Error importing icon pack: %s", err.Error())
+		return Metadata{}
+	}
+
+	iconPath := filepath.Join(extractFolder, files[0].Name(), metadata.IconName+".png")
+	tempIconName := "iconium-" + uuid.NewString() + ".png"
+	tempIconPath := filepath.Join(tempFolder, tempIconName)
+
+	err = copy_file(iconPath, tempIconPath)
+	if err != nil {
+		runtime.LogWarningf(a.ctx, "Error copying icon: %s", err.Error())
+	}
+
+	metadata.IconName = "temp\\" + tempIconName
+
+	tempPngPaths.Set(uuid.NewString(), tempIconPath)
+
+	return metadata
 }
 
 func (a *App) OpenFileInExplorer(path string) {
