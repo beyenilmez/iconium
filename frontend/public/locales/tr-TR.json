@@ -11,6 +11,9 @@
   "create": "Oluştur",
   "delete": "Sil",
 
+  "downloading_missing_external_programs": "Eksik dosyalar indiriliyor...",
+  "downloaded_missing_external_programs": "Eksik dosyalar başarıyla indirildi.",
+
   "nav": {
     "my_packs": "Paketlerim",
     "settings": "Ayarlar"
@@ -206,6 +209,19 @@
       "theme": {
         "label": "Tema",
         "description": "Arayüz için bir tema seçin."
+      },
+
+      "color_scheme": {
+        "label": "Renk Şeması",
+        "description": "Tercih ettiğiniz renk şemasını seçin.",
+        "select_color_scheme": "Renk şeması seçin...",
+        "search_color_scheme": "Renk şeması ara...",
+        "no_color_schemes_found": "Renk şeması bulunamadı.",
+
+        "color_schemes": {
+          "default": "Varsayılan",
+          "midnightAsh": "Gece Külü"
+        }
       },
 
       "window_effect": {

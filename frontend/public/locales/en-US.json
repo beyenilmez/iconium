@@ -11,6 +11,9 @@
   "create": "Create",
   "delete": "Delete",
 
+  "downloading_missing_external_programs": "Downloading missing external programs...",
+  "downloaded_missing_external_programs": "Successfully downloaded missing external programs.",
+
   "nav": {
     "my_packs": "My Packs",
     "settings": "Settings"
@@ -207,6 +210,19 @@
       "theme": {
         "label": "Theme",
         "description": "Choose a color scheme for the interface."
+      },
+
+      "color_scheme": {
+        "label": "Color Scheme",
+        "description": "Select your preferred color scheme.",
+        "select_color_scheme": "Select color scheme...",
+        "search_color_scheme": "Search color scheme...",
+        "no_color_schemes_found": "No color schemes found.",
+
+        "color_schemes": {
+          "default": "Default",
+          "midnightAsh": "Midnight Ash"
+        }
       },
 
       "window_effect": {

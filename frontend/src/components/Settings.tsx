@@ -20,6 +20,7 @@ import { MatchLnkByDestinationSetting } from "./SettingItems/MatchLnkByDestinati
 import { RenameMatchedFilesSetting } from "./SettingItems/RenameMatchedFilesSetting";
 import { MatchURLByDestinationSetting } from "./SettingItems/MatchURLByDestinationSetting";
 import { ChangeDescriptionOfMathcedLnkFilesSetting } from "./SettingItems/ChangeDescriptionOfMathcedLnkFilesSetting";
+import { ColorSchemeSetting } from "./SettingItems/ColorSchemeSetting";
 
 export default function Settings() {
   const { t } = useTranslation();
@@ -81,15 +82,23 @@ export default function Settings() {
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="general" className="w-full h-[calc(100vh-5.5rem)] overflow-y-auto">
+      <TabsContent
+        value="general"
+        className="w-full h-[calc(100vh-5.5rem)] overflow-y-auto"
+      >
         <SettingsGroup className="flex flex-col items-start px-4 py-2 w-full h-full">
           <LocaleSetting />
+          <ColorSchemeSetting />
           <ThemeSetting />
         </SettingsGroup>
       </TabsContent>
-      <TabsContent value="app" className="w-full h-[calc(100vh-5.5rem)] overflow-y-auto">
+      <TabsContent
+        value="app"
+        className="w-full h-[calc(100vh-5.5rem)] overflow-y-auto"
+      >
         <SettingsGroup className="flex flex-col items-start px-4 py-2 w-full h-full">
           <ThemeSetting />
+          <ColorSchemeSetting />
           <WindowEffectSetting />
           <WindowOpacitySetting />
           <WindowScaleSetting />
@@ -97,7 +106,10 @@ export default function Settings() {
           <SaveWindowStatusSetting />
         </SettingsGroup>
       </TabsContent>
-      <TabsContent value="icon_pack" className="w-full h-[calc(100vh-5.5rem)] overflow-y-auto">
+      <TabsContent
+        value="icon_pack"
+        className="w-full h-[calc(100vh-5.5rem)] overflow-y-auto"
+      >
         <SettingsGroup className="flex flex-col items-start px-4 py-2 w-full h-full">
           <MatchLnkByDestinationSetting />
           <MatchURLByDestinationSetting />
@@ -105,7 +117,10 @@ export default function Settings() {
           <ChangeDescriptionOfMathcedLnkFilesSetting />
         </SettingsGroup>
       </TabsContent>
-      <TabsContent value="system" className="w-full h-[calc(100vh-5.5rem)] overflow-y-auto">
+      <TabsContent
+        value="system"
+        className="w-full h-[calc(100vh-5.5rem)] overflow-y-auto"
+      >
         Edit your system settings here.
       </TabsContent>
       <TabsContent value="advanced" className="w-full">
@@ -116,7 +131,10 @@ export default function Settings() {
           <ImportExportSetting />
         </SettingsGroup>
       </TabsContent>
-      <TabsContent value="update" className="w-full h-[calc(100vh-5.5rem)] overflow-y-auto">
+      <TabsContent
+        value="update"
+        className="w-full h-[calc(100vh-5.5rem)] overflow-y-auto"
+      >
         <SettingsGroup className="flex flex-col items-start px-4 py-2 w-full h-full">
           <CheckForUpdatesSetting />
           <UpdateSetting />

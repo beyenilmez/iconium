@@ -13,6 +13,7 @@ import (
 
 type Config struct {
 	Theme                              *string `json:"theme"`                              // system, light, dark
+	ColorScheme                        *string `json:"colorScheme"`                        // default, midnightAsh
 	UseSystemTitleBar                  *bool   `json:"useSystemTitleBar"`                  // true, false
 	EnableLogging                      *bool   `json:"enableLogging"`                      // true, false
 	EnableTrace                        *bool   `json:"enableTrace"`                        // true, false
@@ -42,6 +43,7 @@ type Config struct {
 
 func GetDefaultConfig() Config {
 	defaultTheme := "system"
+	defaultColorScheme := "default"
 	defaultUseSystemTitleBar := false
 	defaultEnableLogging := true
 	defaultEnableTrace := false
@@ -70,6 +72,7 @@ func GetDefaultConfig() Config {
 
 	return Config{
 		Theme:                              &defaultTheme,
+		ColorScheme:                        &defaultColorScheme,
 		UseSystemTitleBar:                  &defaultUseSystemTitleBar,
 		EnableLogging:                      &defaultEnableLogging,
 		EnableTrace:                        &defaultEnableTrace,

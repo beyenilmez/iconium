@@ -2,6 +2,7 @@ export namespace main {
 	
 	export class Config {
 	    theme?: string;
+	    colorScheme?: string;
 	    useSystemTitleBar?: boolean;
 	    enableLogging?: boolean;
 	    enableTrace?: boolean;
@@ -35,6 +36,7 @@ export namespace main {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.theme = source["theme"];
+	        this.colorScheme = source["colorScheme"];
 	        this.useSystemTitleBar = source["useSystemTitleBar"];
 	        this.enableLogging = source["enableLogging"];
 	        this.enableTrace = source["enableTrace"];
