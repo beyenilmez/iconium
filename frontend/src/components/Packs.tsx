@@ -108,6 +108,7 @@ import { Textarea } from "./ui/textarea";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
 import { HelpCard } from "./ui/help-card";
 import parse from "html-react-parser";
+import { useProgress } from "@/contexts/progress-provider";
 
 export default function Packs() {
   const { t } = useTranslation();
@@ -469,6 +470,7 @@ function PackContent({
   reloadIconPacks,
 }: PackContentProps) {
   const { t } = useTranslation();
+  const {progress} = useProgress();
 
   const [loading, setLoading] = useState(true);
   const [editingMetadata, setEditingMetadata] = useState(false);
@@ -491,7 +493,7 @@ function PackContent({
     addIconsFromDesktopRunning ||
     addIconsRunning ||
     addFolderRunning ||
-    editingMetadata;
+    editingMetadata || progress != 0;
 
   useEffect(() => {
     GetIconPack(iconPackId).then((pack) => {
@@ -968,6 +970,7 @@ interface PackEditProps {
 
 function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
   const { t } = useTranslation();
+  const {progress} = useProgress();
 
   const [loading, setLoading] = useState(true);
   const [files, setFiles] = useState<main.FileInfo[]>();
@@ -983,7 +986,7 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
   const [addIconsRunning, setAddIconsRunning] = useState(false);
   const [addFolderRunning, setAddFolderRunning] = useState(false);
   const running =
-    addIconsFromDesktopRunning || addIconsRunning || addFolderRunning;
+    addIconsFromDesktopRunning || addIconsRunning || addFolderRunning || progress != 0;
 
   useEffect(() => {
     GetIconPack(iconPackId).then((pack) => {

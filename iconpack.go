@@ -10,7 +10,9 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"syscall"
+	"time"
 
 	"github.com/go-ole/go-ole"
 	"github.com/go-ole/go-ole/oleutil"
@@ -628,59 +630,125 @@ func (a *App) AddFileToIconPackFromPath(id string, path string, save bool) {
 
 	if save {
 		a.SetIconPack(cachedPack)
-		return
-	}
 
-	runtime.LogError(a.ctx, "icon pack not found")
+		runtime.WindowExecJS(appContext, "window.setProgress(100)")
+		time.Sleep(200 * time.Millisecond)
+		runtime.WindowExecJS(appContext, "window.setProgress(0)")
+	}
 }
 
-func (a *App) AddFilesToIconPackFromPath(id string, path []string, save bool) {
-	for _, p := range path {
-		a.AddFileToIconPackFromPath(id, p, false)
+func (a *App) AddFilesToIconPackFromPath(id string, paths []string, save bool) {
+	var wg sync.WaitGroup
+	progress := make(chan int)
+
+	totalFiles := len(paths)
+	processedFiles := 0
+
+	// Start a goroutine to monitor and print progress
+	go func() {
+		for range progress {
+			processedFiles++
+			percentage := float64(processedFiles) / float64(totalFiles) * 100
+			runtime.WindowExecJS(appContext, fmt.Sprintf("window.setProgress(%f)", percentage))
+		}
+	}()
+
+	// Add each file to the icon pack asynchronously
+	for _, path := range paths {
+		wg.Add(1)
+		go func(p string) {
+			defer wg.Done()
+			a.AddFileToIconPackFromPath(id, p, false)
+			progress <- 1 // Send progress update
+		}(path)
 	}
 
+	// Wait for all goroutines to finish
+	wg.Wait()
+	close(progress) // Close the progress channel
+
+	// Save the icon pack if required
 	if save {
 		iconPack, ok := iconPackCache.Get(id)
 		if !ok {
 			return
 		}
-
 		a.SetIconPack(iconPack)
 	}
+
+	time.Sleep(200 * time.Millisecond)
+
+	runtime.WindowExecJS(appContext, "window.setProgress(0)")
 }
 
-func (a *App) GetFileInfoFromPaths(id string, path []string) ([]FileInfo, error) {
+func (a *App) GetFileInfoFromPaths(id string, paths []string) ([]FileInfo, error) {
 	var fileInfos []FileInfo
-	for _, p := range path {
-		if (!contains(allowedFileExtensions, filepath.Ext(p)) && !is_dir(p)) || !exists(p) {
-			continue
-		}
+	var fileInfosMutex sync.Mutex
+	var wg sync.WaitGroup
+	progress := make(chan int)
 
-		fileInfo, err := CreateFileInfo(id, p)
-		if err != nil {
-			return nil, err
-		}
+	totalFiles := len(paths)
+	processedFiles := 0
 
-		tempPngPath, ok := tempPngPaths.Get(fileInfo.Id)
-		selectImage := SelectImage{
-			Id:          fileInfo.Id,
-			Path:        "",
-			TempPath:    "",
-			HasOriginal: false,
-			HasTemp:     false,
-			IsRemoved:   false,
+	// Start a goroutine to monitor and print progress
+	go func() {
+		for range progress {
+			processedFiles++
+			percentage := float64(processedFiles) / float64(totalFiles) * 100
+			runtime.WindowExecJS(appContext, fmt.Sprintf("window.setProgress(%f)", percentage))
 		}
-		if ok {
-			relativeTempPngPath, err := filepath.Rel(appFolder, tempPngPath)
-			if err == nil {
-				selectImage.TempPath = relativeTempPngPath
-				selectImage.HasTemp = true
-				selectImages.Set(fileInfo.Id, selectImage)
+	}()
+
+	// Process each path asynchronously
+	for _, path := range paths {
+		wg.Add(1)
+		go func(p string) {
+			defer wg.Done()
+			if (!contains(allowedFileExtensions, filepath.Ext(p)) && !is_dir(p)) || !exists(p) {
+				progress <- 1 // Send progress update even if file is skipped
+				return
 			}
-		}
 
-		fileInfos = append(fileInfos, fileInfo)
+			fileInfo, err := CreateFileInfo(id, p)
+			if err != nil {
+				fmt.Printf("Error creating file info for path %s: %v\n", p, err)
+				return
+			}
+
+			tempPngPath, ok := tempPngPaths.Get(fileInfo.Id)
+			selectImage := SelectImage{
+				Id:          fileInfo.Id,
+				Path:        "",
+				TempPath:    "",
+				HasOriginal: false,
+				HasTemp:     false,
+				IsRemoved:   false,
+			}
+			if ok {
+				relativeTempPngPath, err := filepath.Rel(appFolder, tempPngPath)
+				if err == nil {
+					selectImage.TempPath = relativeTempPngPath
+					selectImage.HasTemp = true
+					selectImages.Set(fileInfo.Id, selectImage)
+				}
+			}
+
+			fileInfosMutex.Lock()
+			fileInfos = append(fileInfos, fileInfo)
+			fileInfosMutex.Unlock()
+
+			progress <- 1 // Send progress update after processing the file
+		}(path)
 	}
+
+	// Wait for all goroutines to finish
+	wg.Wait()
+	close(progress) // Close the progress channel
+
+	time.Sleep(200 * time.Millisecond)
+
+	runtime.WindowExecJS(appContext, "window.setProgress(0)")
+
 	return fileInfos, nil
 }
 
@@ -727,6 +795,7 @@ func (a *App) AddFilesToIconPackFromFolder(id string, path string, save bool) {
 			defer wg.Done()
 			a.AddFileToIconPackFromPath(id, path+"\\"+file.Name(), false)
 		}(file)
+
 	}
 
 	wg.Wait()
@@ -749,8 +818,35 @@ func (a *App) AddFilesToIconPackFromFolder(id string, path string, save bool) {
 func (a *App) AddFilesToIconPackFromDesktop(id string) {
 	desktop, public := get_desktop_paths()
 
-	a.AddFilesToIconPackFromFolder(id, desktop, false)
-	a.AddFilesToIconPackFromFolder(id, public, true)
+	desktopEntries, err := os.ReadDir(desktop)
+	if err != nil {
+		runtime.LogError(appContext, err.Error())
+		return
+	}
+	publicEntries, err := os.ReadDir(public)
+	if err != nil {
+		runtime.LogError(appContext, err.Error())
+		return
+	}
+
+	paths := []string{}
+
+	for _, desktopEntry := range desktopEntries {
+		path := filepath.Join(desktop, desktopEntry.Name())
+
+		if contains(allowedFileExtensions, strings.ToLower(filepath.Ext(desktopEntry.Name()))) || is_dir(path) {
+			paths = append(paths, path)
+		}
+	}
+	for _, publicEntry := range publicEntries {
+		path := filepath.Join(public, publicEntry.Name())
+
+		if contains(allowedFileExtensions, strings.ToLower(filepath.Ext(publicEntry.Name()))) || is_dir(path) {
+			paths = append(paths, path)
+		}
+	}
+
+	a.AddFilesToIconPackFromPath(id, paths, true)
 }
 
 func (a *App) ApplyIconPack(id string) {
@@ -786,6 +882,8 @@ func (pack *IconPack) Apply() error {
 	}
 
 	var wg sync.WaitGroup
+	var completed int64 // Counter for completed files
+	totalFiles := int64(len(pack.Files))
 
 	for i := range pack.Files {
 		wg.Add(1)
@@ -867,6 +965,12 @@ func (pack *IconPack) Apply() error {
 					}
 				}
 			}
+
+			// Increment the completed counter
+			atomic.AddInt64(&completed, 1)
+			percentage := (float64(atomic.LoadInt64(&completed)) / float64(totalFiles)) * 100
+
+			runtime.WindowExecJS(appContext, fmt.Sprintf(`window.setProgress(%f)`, percentage))
 		}(file)
 	}
 
@@ -880,6 +984,11 @@ func (pack *IconPack) Apply() error {
 		runtime.LogError(appContext, err.Error())
 		return err
 	}
+
+	// Wait for progress bar to finish
+	time.Sleep(200 * time.Millisecond)
+
+	runtime.WindowExecJS(appContext, `window.setProgress(0)`)
 
 	return nil
 }
