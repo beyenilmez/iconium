@@ -699,12 +699,12 @@ func (a *App) GetFileInfoFromDesktop(id string) ([]FileInfo, error) {
 	paths := []string{}
 
 	for _, dirEntry := range dirEntries {
-		if contains(allowedFileExtensions, filepath.Ext(dirEntry.Name())) {
+		if contains(allowedFileExtensions, filepath.Ext(dirEntry.Name())) || is_dir(filepath.Join(desktop, dirEntry.Name())) {
 			paths = append(paths, filepath.Join(desktop, dirEntry.Name()))
 		}
 	}
 	for _, dirEntry := range dirEntries2 {
-		if contains(allowedFileExtensions, filepath.Ext(dirEntry.Name())) {
+		if contains(allowedFileExtensions, filepath.Ext(dirEntry.Name())) || is_dir(filepath.Join(public, dirEntry.Name())) {
 			paths = append(paths, filepath.Join(public, dirEntry.Name()))
 		}
 	}

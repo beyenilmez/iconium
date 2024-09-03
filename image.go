@@ -136,8 +136,9 @@ func ConvertToPng(path string, destination string) error {
 
 	// Build magick command arguments
 	args := []string{extractIconPath, path, destination}
+	useImagick := extension != ".ico" && extension != ".exe" && extension != ".lnk" && !is_dir(path)
 
-	if extension != ".ico" && extension != ".exe" && extension != ".lnk" && !is_dir(path) {
+	if useImagick {
 		args = []string{imageMagickPath, path, "-alpha", "on", "-background", "none", "-resize", "256x256\\!", destination}
 	}
 
@@ -145,6 +146,7 @@ func ConvertToPng(path string, destination string) error {
 
 	// Execute magick command silently
 	_, err := sendCommand(args...)
+
 	if err != nil {
 		if extension == ".lnk" {
 			if strings.ToLower(filepath.Ext(iconLocation)) != ".ico" {
@@ -156,6 +158,24 @@ func ConvertToPng(path string, destination string) error {
 			return ConvertToPng(iconDestination, destination)
 		}
 		return fmt.Errorf("error converting image: %w", err)
+	} else {
+		if !useImagick {
+			width, err := GetImageWidth(destination)
+			if err != nil {
+				return err
+			}
+
+			if width != 256 {
+				resizeArgs := []string{imageMagickPath, destination, "-resize", "256x256", destination}
+				runtime.LogDebugf(appContext, "ConvertToPng: %s", strings.Join(resizeArgs, " "))
+
+				// Execute magick command silently
+				_, err := sendCommand(resizeArgs...)
+				if err != nil {
+					return fmt.Errorf("error resizing image: %w", err)
+				}
+			}
+		}
 	}
 
 	return nil
