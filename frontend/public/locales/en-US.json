@@ -19,27 +19,33 @@
   "file_info": {
     "name": {
       "label": "Name",
-      "placeholder": "File name"
+      "placeholder": "File name",
+      "help": "This is the new name that will be applied to shortcuts that do not already have this name."
     },
 
     "description": {
       "label": "Description",
-      "placeholder": "File description"
+      "placeholder": "File description",
+      "help": "This is the description that will be set for the shortcut."
     },
 
     "path": {
       "label": "Path",
-      "placeholder": "File path"
+      "placeholder": "File path",
+      "help": "This is the path where the icon will be applied.",
+      "rules": "<ul>     <li>- You can use environment variables like <code>${APPDATA}</code>.</li>     <li>- Use <code>${DESKTOP}</code> for both user and public desktop paths.</li>     <li>- Wildcards like <code>*</code> and <code>?</code> are supported.</li>     <li>- Character sets like <code>[abc]</code> are supported, allowing you to match any one of the characters listed (e.g., <code>a</code>, <code>b</code>, or <code>c</code>).</li>     <li>- Use multiple <code>*</code> for recursive folder searches: <code>**</code> for 1 or fewer levels, <code>***</code> for 2 or fewer levels, and so on.</li>     </ul>"
     },
 
     "destination": {
       "label": "Destination",
-      "placeholder": "File destination"
+      "placeholder": "File destination",
+      "help": "This is the path that will be matched with destination paths of shortcuts in the source folder if the file is not found in the original path."
     },
 
     "url": {
       "label": "URL",
-      "placeholder": "URL"
+      "placeholder": "URL",
+      "help": "This is the URL that will be matched with URLs of files in the source folder if the file is not found in the original path."
     }
   },
 

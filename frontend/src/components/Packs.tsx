@@ -106,6 +106,8 @@ import { LogDebug } from "@/wailsjs/runtime/runtime";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
+import { HelpCard } from "./ui/help-card";
+import parse from "html-react-parser";
 
 export default function Packs() {
   const { t } = useTranslation();
@@ -1231,6 +1233,7 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
                       key={file.id}
                       value={file.name}
                       placeholder={t("file_info.name.placeholder")}
+                      helpText={t("file_info.name.help")}
                       onChange={(value) => {
                         handleInputChange(index, "name", value);
                       }}
@@ -1242,6 +1245,7 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
                     <TextInput
                       value={file.description}
                       placeholder={t("file_info.description.placeholder")}
+                      helpText={t("file_info.description.help")}
                       onChange={(value) => {
                         handleInputChange(index, "description", value);
                       }}
@@ -1251,6 +1255,9 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
                   <PathInput
                     value={file.path}
                     placeholder={t("file_info.path.placeholder")}
+                    helpText={
+                      t("file_info.path.help") + t("file_info.path.rules")
+                    }
                     onChange={(value) => {
                       handleInputChange(index, "path", value);
                       Ext(value).then((ext) => {
@@ -1303,6 +1310,12 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
                           file.extension === ".url" ? "url" : "destination"
                         }.placeholder`
                       )}
+                      helpText={
+                        file.extension === ".lnk"
+                          ? t("file_info.destination.help") +
+                            t("file_info.path.rules")
+                          : t("file_info.url.help")
+                      }
                       onChange={(value) => {
                         handleInputChange(index, "destinationPath", value);
                       }}
@@ -1329,16 +1342,21 @@ function TextInput({
   onChange,
   label,
   className = "",
+  helpText,
 }: {
   value: string;
   placeholder?: string;
   onChange: (value: string) => void;
   label: string;
   className?: string;
+  helpText?: string;
 }) {
   return (
     <div className={`flex flex-col gap-1.5 ${className}`}>
-      <Label className="ml-1">{label}</Label>
+      <div className="flex items-center gap-1.5">
+        <Label className="ml-1">{label}</Label>
+        {helpText && <HelpCard content={parse(helpText)} className="w-3 h-3" />}
+      </div>
       <Input
         className="w-full h-10 focus-visible:ring-offset-1"
         value={value}
@@ -1356,11 +1374,13 @@ function PathInput({
   placeholder,
   onChange,
   label,
+  helpText,
 }: {
   value: string;
   placeholder?: string;
   onChange: (value: string) => void;
   label: string;
+  helpText?: string;
 }) {
   const { t } = useTranslation();
   const [exists, setExists] = useState(false);
@@ -1396,6 +1416,7 @@ function PathInput({
           }}
           label={label}
           className="w-full"
+          helpText={helpText!}
         />
         {exists && (
           <HoverCard>

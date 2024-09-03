@@ -19,27 +19,33 @@
   "file_info": {
     "name": {
       "label": "Ad",
-      "placeholder": "Dosya adı"
+      "placeholder": "Dosya adı",
+      "help": "Bu, zaten bu ada sahip olmayan kısayollara verilecek yeni isimdir."
     },
 
     "description": {
       "label": "Açıklama",
-      "placeholder": "Dosya açıklaması"
+      "placeholder": "Dosya açıklaması",
+      "help": "Bu, kısayola verilecek açıklamadır."
     },
 
     "path": {
       "label": "Dosya yolu",
-      "placeholder": "Dosya yolu"
+      "placeholder": "Dosya yolu",
+      "help": "Bu, simgenin uygulanacağı dosyanın yoludur.",
+      "rules": "<ul>     <li>- <code>${APPDATA}</code> gibi ortam değişkenlerini kullanabilirsiniz.</li>     <li>- Kullanıcı ve ortak masaüstü yolları için <code>${DESKTOP}</code> kullanın.</li>     <li>- <code>*</code> ve <code>?</code> gibi joker karakterleri desteklenir.</li>     <li>- <code>[abc]</code> gibi karakter kümeleri desteklenir, böylece listelenen karakterlerden herhangi birini eşleştirebilirsiniz (örneğin, <code>a</code>, <code>b</code> veya <code>c</code>).</li>     <li>- Yinelemeli klasör arama için birden fazla <code>*</code> kullanın: <code>**</code> 1 veya daha az seviye, <code>***</code> 2 veya daha az seviye gibi.</li>     </ul>"
     },
 
     "destination": {
       "label": "Hedef dosya yolu",
-      "placeholder": "Hedef dosya yolu"
+      "placeholder": "Hedef dosya yolu",
+      "help": "Bu, dosyanın orijinal yolda bulunmaması durumunda, kaynak klasöründeki kısayolların hedef yollarıyla eşleştirilecek yoldur."
     },
 
     "url": {
       "label": "URL",
-      "placeholder": "URL"
+      "placeholder": "URL",
+      "help": "Bu, dosyanın orijinal yolda bulunmaması durumunda, kaynak klasöründeki dosyaların URL'leriyle eşleştirilecek URL'dir."
     }
   },
 
