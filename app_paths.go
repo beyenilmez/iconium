@@ -4,10 +4,13 @@ import (
 	"embed"
 	"errors"
 	"io/fs"
+	"net/http"
 	"os"
 	"os/user"
 	"path/filepath"
+	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/google/uuid"
 	cmap "github.com/orcaman/concurrent-map/v2"
@@ -33,6 +36,8 @@ var externalFolder string
 var configPath string
 var appIconPath string
 
+var imageMagickFolder string
+var extractIconFolder string
 var imageMagickPath string
 var extractIconPath string
 
@@ -130,10 +135,12 @@ func path_init() error {
 
 	runtime.LogTrace(appContext, "Creating appicon complete")
 
-	imageMagickPath = filepath.Join(externalFolder, "ImageMagick-7.1.1-35-portable-Q16-x64", "magick.exe")
+	imageMagickFolder = filepath.Join(externalFolder, "ImageMagick-7.1.1-35-portable-Q16-x64")
+	imageMagickPath = filepath.Join(imageMagickFolder, "magick.exe")
 	runtime.LogDebugf(appContext, "ImageMagick path: %s", imageMagickPath)
 
-	extractIconPath = filepath.Join(externalFolder, "ExtractIcon", "extracticon.exe")
+	extractIconFolder = filepath.Join(externalFolder, "ExtractIcon")
+	extractIconPath = filepath.Join(extractIconFolder, "extracticon.exe")
 	runtime.LogDebugf(appContext, "ExtractIcon path: %s", extractIconPath)
 
 	// Copy all files in scriptsFolderEmbedded to scriptsFolder
@@ -226,6 +233,95 @@ func get_desktop_paths() (string, string) {
 	public := filepath.Join(publicDir, "Desktop")
 
 	return desktop, public
+}
+
+func restore_missing_external_programs() {
+	// URL and filename mapping
+	filesToDownload := map[string]string{
+		"https://raw.githubusercontent.com/beyenilmez/iconium/functionality/build/ImageMagick-7.1.1-35-portable-Q16-x64/magick.exe":  imageMagickFolder + "/magick.exe",
+		"https://raw.githubusercontent.com/beyenilmez/iconium/functionality/build/ImageMagick-7.1.1-35-portable-Q16-x64/colors.xml":  imageMagickFolder + "/colors.xml",
+		"https://raw.githubusercontent.com/beyenilmez/iconium/functionality/build/ImageMagick-7.1.1-35-portable-Q16-x64/LICENSE.txt": imageMagickFolder + "/LICENSE.txt",
+		"https://raw.githubusercontent.com/beyenilmez/iconium/functionality/build/ExtractIcon/extracticon.exe":                       extractIconFolder + "/extracticon.exe",
+		"https://raw.githubusercontent.com/beyenilmez/iconium/functionality/build/ExtractIcon/LICENSE":                               extractIconFolder + "/LICENSE",
+	}
+
+	// Filter out files that already exist
+	for url := range filesToDownload {
+		if exists(filesToDownload[url]) {
+			delete(filesToDownload, url)
+		}
+	}
+
+	var wg sync.WaitGroup
+	progress := make(chan int64) // Channel for progress percentage
+	errors := make(chan error, len(filesToDownload))
+	done := make(chan struct{})
+
+	// Calculate total size of files to download
+	totalSize := int64(0)
+	for url := range filesToDownload {
+		resp, err := http.Head(url)
+		if err != nil {
+			runtime.LogError(appContext, err.Error())
+			return
+		}
+		contentLength := resp.Header.Get("Content-Length")
+		size, _ := strconv.ParseInt(contentLength, 10, 64)
+		totalSize += size
+	}
+
+	runtime.LogInfo(appContext, "Total size of files to download: "+strconv.FormatInt(totalSize, 10))
+
+	if totalSize == 0 {
+		runtime.LogInfo(appContext, "No files to download")
+		return
+	}
+
+	// Create folders if they don't exist
+	if err := create_folder(imageMagickFolder); err != nil {
+		runtime.LogError(appContext, err.Error())
+		return
+	}
+	if err := create_folder(extractIconFolder); err != nil {
+		runtime.LogError(appContext, err.Error())
+		return
+	}
+
+	runtime.LogInfo(appContext, "Downloading missing external programs...")
+
+	// Start downloading files
+	for url, dest := range filesToDownload {
+		wg.Add(1)
+		go downloadFile(url, dest, progress, errors, &wg)
+	}
+
+	// Start a goroutine to track progress
+	go func() {
+		var downloadedSize int64
+		for {
+			select {
+			case size := <-progress:
+				downloadedSize += size
+				percentage := float64(downloadedSize) / float64(totalSize) * 100
+				runtime.LogDebugf(appContext, "Progress: %.2f%%\n", percentage)
+				if downloadedSize == totalSize {
+					close(progress)
+					done <- struct{}{}
+					return
+				}
+			case err := <-errors:
+				if err != nil {
+					runtime.LogError(appContext, err.Error())
+				}
+			}
+		}
+	}()
+
+	// Wait for all downloads to complete
+	wg.Wait()
+	<-done
+
+	runtime.LogInfo(appContext, "Download complete")
 }
 
 func (a *App) ClearTempPngPaths() {

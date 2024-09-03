@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/google/uuid"
 	lnk "github.com/parsiya/golnk"
@@ -52,6 +53,45 @@ func create_folder(folder string) error {
 	runtime.LogDebug(appContext, "Created folder: "+folder)
 
 	return nil
+}
+
+func downloadFile(url, dest string, progress chan<- int64, errors chan<- error, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	// Create file
+	out, err := os.Create(dest)
+	if err != nil {
+		errors <- err
+		return
+	}
+	defer out.Close()
+
+	// Fetch file size
+	resp, err := http.Get(url)
+	if err != nil {
+		errors <- err
+		return
+	}
+	defer resp.Body.Close()
+
+	buf := make([]byte, 1024*8)
+	for {
+		n, err := resp.Body.Read(buf)
+		if n > 0 {
+			_, writeErr := out.Write(buf[:n])
+			if writeErr != nil {
+				errors <- writeErr
+				return
+			}
+			progress <- int64(n) // Report the number of bytes read
+		}
+		if err != nil {
+			if err != io.EOF {
+				errors <- err
+			}
+			break
+		}
+	}
 }
 
 func GenerateBase64Png(bytes []byte) string {

@@ -94,6 +94,9 @@ func (a *App) domReady(ctx context.Context) {
 		}
 	}
 
+	// Install external programs
+	restore_missing_external_programs()
+
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "--goto":
