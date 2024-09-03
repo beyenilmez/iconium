@@ -239,11 +239,11 @@ func get_desktop_paths() (string, string) {
 func restore_missing_external_programs() {
 	// URL and filename mapping
 	filesToDownload := map[string]string{
-		"https://raw.githubusercontent.com/beyenilmez/iconium/functionality/build/ImageMagick-7.1.1-35-portable-Q16-x64/magick.exe":  imageMagickFolder + "/magick.exe",
-		"https://raw.githubusercontent.com/beyenilmez/iconium/functionality/build/ImageMagick-7.1.1-35-portable-Q16-x64/colors.xml":  imageMagickFolder + "/colors.xml",
-		"https://raw.githubusercontent.com/beyenilmez/iconium/functionality/build/ImageMagick-7.1.1-35-portable-Q16-x64/LICENSE.txt": imageMagickFolder + "/LICENSE.txt",
-		"https://raw.githubusercontent.com/beyenilmez/iconium/functionality/build/ExtractIcon/extracticon.exe":                       extractIconFolder + "/extracticon.exe",
-		"https://raw.githubusercontent.com/beyenilmez/iconium/functionality/build/ExtractIcon/LICENSE":                               extractIconFolder + "/LICENSE",
+		"https://raw.githubusercontent.com/beyenilmez/iconium/main/build/ImageMagick-7.1.1-35-portable-Q16-x64/magick.exe":  imageMagickFolder + "/magick.exe",
+		"https://raw.githubusercontent.com/beyenilmez/iconium/main/build/ImageMagick-7.1.1-35-portable-Q16-x64/colors.xml":  imageMagickFolder + "/colors.xml",
+		"https://raw.githubusercontent.com/beyenilmez/iconium/main/build/ImageMagick-7.1.1-35-portable-Q16-x64/LICENSE.txt": imageMagickFolder + "/LICENSE.txt",
+		"https://raw.githubusercontent.com/beyenilmez/iconium/main/build/ExtractIcon/extracticon.exe":                       extractIconFolder + "/extracticon.exe",
+		"https://raw.githubusercontent.com/beyenilmez/iconium/main/build/ExtractIcon/LICENSE":                               extractIconFolder + "/LICENSE",
 	}
 
 	// Filter out files that already exist
