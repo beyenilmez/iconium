@@ -3,6 +3,7 @@ import { RestartProvider } from "./restart-provider.tsx";
 import { ThemeProvider } from "./theme-provider.tsx";
 import { StorageProvider } from "./storage-provider.tsx";
 import { ConfigProvider } from "./config-provider.tsx";
+import { ProgressProvider } from "./progress-provider.tsx";
 
 interface ProvidersProps {
   children: ReactNode;
@@ -13,7 +14,9 @@ const Providers = ({ children }: ProvidersProps) => {
     <ConfigProvider>
       <RestartProvider>
         <ThemeProvider>
-          <StorageProvider>{children}</StorageProvider>
+          <ProgressProvider>
+            <StorageProvider>{children}</StorageProvider>
+          </ProgressProvider>
         </ThemeProvider>
       </RestartProvider>
     </ConfigProvider>

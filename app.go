@@ -21,10 +21,12 @@ type App struct {
 }
 
 var appContext context.Context
+var app *App
 
 // NewApp creates a new App application struct
 func NewApp() *App {
-	return &App{}
+	app = &App{}
+	return app
 }
 
 // startup is called at application startup

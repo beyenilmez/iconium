@@ -3,6 +3,7 @@ package main
 import (
 	"embed"
 	"errors"
+	"fmt"
 	"io/fs"
 	"net/http"
 	"os"
@@ -277,6 +278,8 @@ func restore_missing_external_programs() {
 		return
 	}
 
+	app.SendNotification("downloading_missing_external_programs", "", "", "info")
+
 	// Create folders if they don't exist
 	if err := create_folder(imageMagickFolder); err != nil {
 		runtime.LogError(appContext, err.Error())
@@ -295,6 +298,8 @@ func restore_missing_external_programs() {
 		go downloadFile(url, dest, progress, errors, &wg)
 	}
 
+	sucessfull := true
+
 	// Start a goroutine to track progress
 	go func() {
 		var downloadedSize int64
@@ -304,6 +309,7 @@ func restore_missing_external_programs() {
 				downloadedSize += size
 				percentage := float64(downloadedSize) / float64(totalSize) * 100
 				runtime.LogDebugf(appContext, "Progress: %.2f%%\n", percentage)
+				runtime.WindowExecJS(appContext, fmt.Sprintf(`window.setProgress(%f)`, percentage))
 				if downloadedSize == totalSize {
 					close(progress)
 					done <- struct{}{}
@@ -312,6 +318,7 @@ func restore_missing_external_programs() {
 			case err := <-errors:
 				if err != nil {
 					runtime.LogError(appContext, err.Error())
+					sucessfull = false
 				}
 			}
 		}
@@ -320,6 +327,12 @@ func restore_missing_external_programs() {
 	// Wait for all downloads to complete
 	wg.Wait()
 	<-done
+
+	if sucessfull {
+		app.SendNotification("downloaded_missing_external_programs", "", "", "success")
+	}
+
+	runtime.WindowExecJS(appContext, `window.setProgress(0)`)
 
 	runtime.LogInfo(appContext, "Download complete")
 }

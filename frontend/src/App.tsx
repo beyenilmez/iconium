@@ -15,12 +15,16 @@ import React from "react";
 import { useConfig } from "./contexts/config-provider";
 import { LogDebug } from "@/wailsjs/runtime/runtime";
 import Packs from "./components/Packs";
+import { Progress } from "./components/ui/progress";
+import { useProgress } from "./contexts/progress-provider";
 
 function App() {
   const { config, initialConfig } = useConfig();
   const { t } = useTranslation();
   const { setValue, getValue } = useStorage();
   const [tab, setTab] = useState("packs");
+
+  const { progress, setProgress } = useProgress();
 
   useLayoutEffect(() => {
     if (
@@ -106,32 +110,41 @@ function App() {
     SendWindowsNotification(t(title), t(message), path, variant);
   };
 
+  window.setProgress = (value: number) => {
+    setProgress(value);
+  };
+
   return (
     <React.Fragment>
       <div className="flex flex-col h-dvh">
         <TitleBar />
         <Tabs value={tab} className="flex flex-col w-full h-full">
-          <TabsList className="shadow-bottom-xs z-30 justify-between px-3 py-7 rounded-none w-full h-12">
-            <div>
-              <TabsTrigger
-                value="packs"
-                onClick={() => setTab("packs")}
-                disabled={getValue("editingIconPack")}
-                className="px-6"
-              >
-                {t("nav.my_packs")}
-              </TabsTrigger>
-              <TabsTrigger
-                value="settings"
-                onClick={() => setTab("settings")}
-                disabled={getValue("editingIconPack")}
-                className="px-6"
-              >
-                {t("nav.settings")}
-              </TabsTrigger>
+          <div>
+            <TabsList className="justify-between px-3 py-7 rounded-none w-full h-12">
+              <div>
+                <TabsTrigger
+                  value="packs"
+                  onClick={() => setTab("packs")}
+                  disabled={getValue("editingIconPack")}
+                  className="px-6"
+                >
+                  {t("nav.my_packs")}
+                </TabsTrigger>
+                <TabsTrigger
+                  value="settings"
+                  onClick={() => setTab("settings")}
+                  disabled={getValue("editingIconPack")}
+                  className="px-6"
+                >
+                  {t("nav.settings")}
+                </TabsTrigger>
+              </div>
+              <ModeToggle />
+            </TabsList>
+            <div className="h-0">
+              <Progress className="z-30 h-[1px]" value={progress} />
             </div>
-            <ModeToggle />
-          </TabsList>
+          </div>
 
           <TabsContent value="packs" className="w-ful h-full">
             <Packs />
