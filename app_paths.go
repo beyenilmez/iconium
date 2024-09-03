@@ -29,10 +29,10 @@ var activeIconFolder string
 var tempFolder string
 var maskFolder string
 var scriptsFolder string
+var externalFolder string
 var configPath string
 var appIconPath string
 
-var installationDirectory string
 var imageMagickPath string
 var extractIconPath string
 
@@ -69,6 +69,7 @@ func path_init() error {
 	tempFolder = filepath.Join(appFolder, "temp")
 	maskFolder = filepath.Join(appFolder, "masks")
 	scriptsFolder = filepath.Join(appFolder, "scripts")
+	externalFolder = filepath.Join(appFolder, "external")
 
 	configPath = filepath.Join(appFolder, "config.json")
 	appIconPath = filepath.Join(appFolder, "appicon.png")
@@ -109,6 +110,10 @@ func path_init() error {
 	if err != nil {
 		return err
 	}
+	err = create_folder(externalFolder)
+	if err != nil {
+		return err
+	}
 
 	runtime.LogTrace(appContext, "Creating folders complete")
 
@@ -125,16 +130,10 @@ func path_init() error {
 
 	runtime.LogTrace(appContext, "Creating appicon complete")
 
-	ex, err := os.Executable()
-	if err != nil {
-		return err
-	}
-
-	installationDirectory = filepath.Dir(ex)
-	imageMagickPath = filepath.Join(installationDirectory, "ImageMagick-7.1.1-35-portable-Q16-x64", "magick.exe")
+	imageMagickPath = filepath.Join(externalFolder, "ImageMagick-7.1.1-35-portable-Q16-x64", "magick.exe")
 	runtime.LogDebugf(appContext, "ImageMagick path: %s", imageMagickPath)
 
-	extractIconPath = filepath.Join(installationDirectory, "ExtractIcon", "extracticon.exe")
+	extractIconPath = filepath.Join(externalFolder, "ExtractIcon", "extracticon.exe")
 	runtime.LogDebugf(appContext, "ExtractIcon path: %s", extractIconPath)
 
 	// Copy all files in scriptsFolderEmbedded to scriptsFolder
