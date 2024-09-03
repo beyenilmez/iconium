@@ -63,7 +63,8 @@ const SelectImage: React.FC<SelectImageProps> = ({
 
   return (
     <div className={`relative inline-block shrink-0 ${sizeClass}`}>
-      {!loading && editable &&
+      {!loading &&
+        editable &&
         (imageProperties.hasOriginal ||
           imageProperties.isRemoved ||
           imageProperties.hasTemp) && (
@@ -74,10 +75,11 @@ const SelectImage: React.FC<SelectImageProps> = ({
             onClick={handleAction}
           >
             {imageProperties.hasOriginal &&
-            (imageProperties.hasTemp || imageProperties.isRemoved) ? (
-              <RotateCw />
+            (imageProperties.hasTemp || imageProperties.isRemoved) &&
+            !(imageProperties.hasTemp && imageProperties.isRemoved) ? (
+              <RotateCw className="dark:stroke-foreground stroke-background" />
             ) : (
-              <CircleX />
+              <CircleX className="dark:stroke-foreground stroke-background" />
             )}
           </Button>
         )}
@@ -91,7 +93,7 @@ const SelectImage: React.FC<SelectImageProps> = ({
         {...rest}
       >
         <Images
-          className={`group-hover:flex absolute justify-center items-center hidden bg-muted opacity-70 transition-all ${editSizeClass}`}
+          className={`group-hover:flex absolute justify-center items-center hidden opacity-70 transition-all ${editSizeClass}`}
         />
         {(imageProperties.hasOriginal && !imageProperties.isRemoved) ||
         imageProperties.hasTemp ? (
