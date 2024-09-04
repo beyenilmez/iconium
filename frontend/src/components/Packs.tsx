@@ -443,7 +443,7 @@ function PackTrigger({
           </div>
         )}
       </div>
-      {!editingIconPack && (
+      {false && !editingIconPack && (
         <Switch
           checked={enabledState}
           onCheckedChange={handleEnable}
@@ -470,7 +470,7 @@ function PackContent({
   reloadIconPacks,
 }: PackContentProps) {
   const { t } = useTranslation();
-  const {progress} = useProgress();
+  const { progress } = useProgress();
 
   const [loading, setLoading] = useState(true);
   const [editingMetadata, setEditingMetadata] = useState(false);
@@ -493,7 +493,8 @@ function PackContent({
     addIconsFromDesktopRunning ||
     addIconsRunning ||
     addFolderRunning ||
-    editingMetadata || progress != 0;
+    editingMetadata ||
+    progress != 0;
 
   useEffect(() => {
     GetIconPack(iconPackId).then((pack) => {
@@ -863,20 +864,22 @@ function PackContent({
         <div className="mb-3 pb-1 border-b font-medium text-xl">
           {t("my_packs.card.pack_settings.label")}
         </div>
-        <SettingsItem className="border-none" loading={loading}>
-          <SettingLabel>
-            {t("my_packs.card.pack_settings.setting.enabled.label")}
-          </SettingLabel>
-          <SettingContent>
-            <Switch
-              checked={enabled}
-              onCheckedChange={(enabled) => {
-                setEnabled(enabled as boolean);
-                handleSettingChange("enabled", enabled);
-              }}
-            />
-          </SettingContent>
-        </SettingsItem>
+        {false && (
+          <SettingsItem className="border-none" loading={loading}>
+            <SettingLabel>
+              {t("my_packs.card.pack_settings.setting.enabled.label")}
+            </SettingLabel>
+            <SettingContent>
+              <Switch
+                checked={enabled}
+                onCheckedChange={(enabled) => {
+                  setEnabled(enabled as boolean);
+                  handleSettingChange("enabled", enabled);
+                }}
+              />
+            </SettingContent>
+          </SettingsItem>
+        )}
 
         <SettingsItem className="border-none" loading={loading}>
           <div>
@@ -970,7 +973,7 @@ interface PackEditProps {
 
 function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
   const { t } = useTranslation();
-  const {progress} = useProgress();
+  const { progress } = useProgress();
 
   const [loading, setLoading] = useState(true);
   const [files, setFiles] = useState<main.FileInfo[]>();
@@ -986,7 +989,10 @@ function PackEdit({ iconPackId, setEditingIconPack }: PackEditProps) {
   const [addIconsRunning, setAddIconsRunning] = useState(false);
   const [addFolderRunning, setAddFolderRunning] = useState(false);
   const running =
-    addIconsFromDesktopRunning || addIconsRunning || addFolderRunning || progress != 0;
+    addIconsFromDesktopRunning ||
+    addIconsRunning ||
+    addFolderRunning ||
+    progress != 0;
 
   useEffect(() => {
     GetIconPack(iconPackId).then((pack) => {
