@@ -17,20 +17,15 @@ var allowedImageExtensionsPng = []string{".ico", ".png", ".jpg", ".jpeg", ".bmp"
 
 var allowedImageExtensionsIco = []string{".png", ".jpg", ".jpeg"}
 
-func GetMaskPath(radius, opacity int) (string, error) {
+func GetMaskPath(radius int) (string, error) {
 	if radius <= 0 {
 		radius = 1
 	} else if radius > 100 {
 		radius = 100
 	}
-	if opacity < 0 {
-		opacity = 0
-	} else if opacity > 100 {
-		opacity = 100
-	}
 
 	// Create a rounded rectangle mask
-	maskPath := filepath.Join(maskFolder, fmt.Sprintf("mask_r%d_o%d.png", radius, opacity))
+	maskPath := filepath.Join(maskFolder, fmt.Sprintf("mask_r%d.png", radius))
 
 	// Check if the mask already exists
 	if _, err := os.Stat(maskPath); err == nil {
@@ -39,14 +34,15 @@ func GetMaskPath(radius, opacity int) (string, error) {
 
 	// Round the corner radius to the closest integer
 	roundedRadius := int(math.Round(float64(radius) * 2.56))
-	opacityPercent := fmt.Sprintf("%.2f", float64(opacity)/100.0)
 
 	maskArgs := []string{
 		imageMagickPath,
-		"-size", "256x256",
-		"xc:none",
-		"-draw", fmt.Sprintf("fill rgba(0,0,0,%s) roundrectangle 0,0,255,255,%d,%d", opacityPercent, roundedRadius, roundedRadius),
-		maskPath,
+		"-size", fmt.Sprintf("%dx%d", 256, 256), // Set the size of the canvas
+		"xc:none",        // Create a blank canvas with transparency
+		"-fill", "white", // Set the fill color to white for the mask
+		"-draw", fmt.Sprintf("roundrectangle 0,0 %d,%d %d,%d", 255, 255, roundedRadius, roundedRadius), // Draw a rounded rectangle with the specified corner radius
+		"-alpha", "off", // Turn off alpha
+		maskPath, // Save the mask to the destination file
 	}
 
 	// Execute ImageMagick command to create mask
@@ -67,9 +63,7 @@ func ConvertToIco(path string, destination string, settings IconPackSettings) er
 		return fmt.Errorf("invalid image extension: %s", extension)
 	}
 
-	_, err := GetMaskPath(settings.CornerRadius, settings.Opacity)
-
-	cornerRadius := int(2.55 * float64(settings.CornerRadius))
+	maskPath, err := GetMaskPath(settings.CornerRadius)
 
 	if err != nil {
 		return err
@@ -78,27 +72,11 @@ func ConvertToIco(path string, destination string, settings IconPackSettings) er
 	args := []string{
 		imageMagickPath,
 		path,
-		"(",
-		"+clone",
-		"-alpha", "extract",
-		"-draw", fmt.Sprintf("fill black polygon 0,0 0,%d %d,0 fill white circle %d,%d %d,0", cornerRadius, cornerRadius, cornerRadius, cornerRadius, cornerRadius),
-		"(",
-		"+clone",
-		"-flip",
-		")",
-		"-compose", "Multiply",
-		"-composite",
-		"-define", "icon:auto-resize=16,24,32,48,64,72,96,128,256",
-		"(",
-		"+clone",
-		"-flop",
-		")",
-		"-compose", "Multiply",
-		"-composite",
-		")",
+		maskPath,
 		"-alpha", "off",
 		"-compose", "CopyOpacity",
 		"-composite",
+		"-define", "icon:auto-resize=16,24,32,48,64,72,96,128,256",
 		"-channel", "A", // target the alpha channel
 		"-evaluate", "Multiply", fmt.Sprintf("%.2f", (float64(settings.Opacity) / 100.0)), // apply the opacity adjustment
 		"-channel", "RGBA", // reset channel targeting
