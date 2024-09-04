@@ -142,7 +142,10 @@ function App() {
               <ModeToggle />
             </TabsList>
             <div className="h-0">
-              <Progress className="z-30 h-[1px]" value={progress} />
+              <Progress
+                className="z-30 bg-transparent h-[1px]"
+                value={progress}
+              />
             </div>
           </div>
 
