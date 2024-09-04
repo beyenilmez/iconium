@@ -329,9 +329,89 @@
     ); /* Subtle green for success */
     --success-foreground: hsl(0, 0%, 98%);
     --ring: hsla(120, 10%, 25%, var(--opacity)); /* Muted ring color */
-    --radius: 0.5rem;
-    --opacity: 1;
   }
+
+  .goldenEmber {
+    --background: hsla(
+      30,
+      25%,
+      95%,
+      var(--opacity)
+    ); /* Very soft, warm beige */
+    --foreground: hsl(30, 20%, 20%); /* Darker, warm brown */
+    --muted: hsla(30, 20%, 85%, var(--opacity)); /* Muted soft amber */
+    --muted-foreground: hsl(30, 18%, 40%);
+    --popover: hsla(
+      30,
+      25%,
+      95%,
+      var(--opacity)
+    ); /* Consistent with background */
+    --popover-foreground: hsl(30, 20%, 20%);
+    --card: hsla(30, 25%, 95%, var(--opacity));
+    --card-foreground: hsl(30, 20%, 20%);
+    --border: hsla(
+      30,
+      20%,
+      80%,
+      var(--opacity)
+    ); /* Subtle amber-tinted border */
+    --input: hsla(30, 20%, 80%, var(--opacity));
+    --primary: hsla(35, 50%, 50%, var(--opacity)); /* Soft, warm amber */
+    --primary-foreground: hsl(0, 0%, 98%);
+    --secondary: hsla(25, 35%, 60%, var(--opacity)); /* Muted, earthy tan */
+    --secondary-foreground: hsl(30, 20%, 25%);
+    --accent: hsla(35, 45%, 40%, var(--opacity)); /* Richer amber accent */
+    --accent-foreground: hsl(0, 0%, 98%);
+    --destructive: hsla(
+      0,
+      50%,
+      55%,
+      var(--opacity)
+    ); /* Subdued red for destructive actions */
+    --destructive-foreground: hsl(0, 0%, 98%);
+    --warning: hsla(
+      45,
+      90%,
+      60%,
+      var(--opacity)
+    ); /* Soft, warm yellow for warnings */
+    --warning-foreground: hsl(30, 20%, 20%);
+    --success: hsla(
+      120,
+      30%,
+      45%,
+      var(--opacity)
+    ); /* Soft, muted green for success */
+    --success-foreground: hsl(0, 0%, 98%);
+    --ring: hsla(30, 20%, 80%, var(--opacity)); /* Subtle amber-tinted ring */
+  }
+  .dark.goldenEmber {
+    --background: hsla(30, 20%, 12%, var(--opacity)); /* Muted, darker warm brown */
+    --foreground: hsl(30, 10%, 80%); /* Softer, less intense beige for text */
+    --muted: hsla(30, 20%, 20%, var(--opacity)); /* Muted, darker amber */
+    --muted-foreground: hsl(30, 15%, 65%);
+    --popover: hsla(30, 20%, 12%, var(--opacity)); /* Slightly darker background */
+    --popover-foreground: hsl(30, 10%, 80%);
+    --card: hsla(30, 20%, 12%, var(--opacity)); /* Muted card background */
+    --card-foreground: hsl(30, 10%, 80%);
+    --border: hsla(30, 20%, 22%, var(--opacity)); /* Soft, dark amber-tinted border */
+    --input: hsla(30, 20%, 22%, var(--opacity));
+    --primary: hsla(35, 40%, 45%, var(--opacity)); /* Subdued amber for dark mode */
+    --primary-foreground: hsl(0, 0%, 95%); /* Softer contrast for text */
+    --secondary: hsla(25, 30%, 30%, var(--opacity)); /* Muted, earthy tan */
+    --secondary-foreground: hsl(30, 10%, 80%);
+    --accent: hsla(35, 35%, 40%, var(--opacity)); /* Subtle amber accent */
+    --accent-foreground: hsl(0, 0%, 95%);
+    --destructive: hsla(0, 45%, 50%, var(--opacity)); /* Subdued red */
+    --destructive-foreground: hsl(0, 0%, 98%);
+    --warning: hsla(45, 85%, 50%, var(--opacity)); /* Softer yellow for warnings */
+    --warning-foreground: hsl(30, 10%, 80%);
+    --success: hsla(120, 25%, 40%, var(--opacity)); /* Softer green for success */
+    --success-foreground: hsl(0, 0%, 95%);
+    --ring: hsla(30, 20%, 22%, var(--opacity)); /* Darker amber ring */
+}
+
 }
 
 @layer base {

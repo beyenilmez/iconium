@@ -2,7 +2,12 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useConfig } from "./config-provider";
 import colorSchemes from "@/colorSchemes.json";
 
-export type ColorScheme = "default" | "midnightAsh" | "dawnMist" | "forestDawn"; // Add other color schemes here
+export type ColorScheme =
+  | "default"
+  | "midnightAsh"
+  | "dawnMist"
+  | "forestDawn"
+  | "goldenEmber"; // Add other color schemes here
 
 type ColorSchemeProviderProps = {
   children: React.ReactNode;
@@ -21,7 +26,8 @@ const initialState: ColorSchemeProviderState = {
   updateColorScheme: () => {}, // Initial empty function
 };
 
-const ColorSchemeContext = createContext<ColorSchemeProviderState>(initialState);
+const ColorSchemeContext =
+  createContext<ColorSchemeProviderState>(initialState);
 
 export function ColorSchemeProvider({
   children,
