@@ -440,13 +440,15 @@ func CreateFileInfo(packId string, path string) (FileInfo, error) {
 
 	hasAppliedIcon := true
 
-	if fileInfo.Extension == ".dir" || fileInfo.Extension == ".url" {
-		appliedIconPath, err := GetAppliedIcon(path)
-		if err != nil {
-			runtime.LogError(appContext, err.Error())
-		}
+	appliedIconPath, err := GetAppliedIcon(path)
+	if err != nil {
+		runtime.LogError(appContext, err.Error())
+	}
 
-		hasAppliedIcon = appliedIconPath != ""
+	hasAppliedIcon = appliedIconPath != ""
+
+	if appliedIconPath != "" && strings.ToLower(filepath.Ext(appliedIconPath)) == ".ico" {
+		hasAppliedIcon = exists(appliedIconPath)
 	}
 
 	if packId != "" && hasAppliedIcon {
