@@ -1065,14 +1065,22 @@ func SetIcon(path string, iconPath string) error {
 		ext = ".dir"
 	}
 
+	runtime.LogDebug(appContext, fmt.Sprintf("Setting icon for %s to %s", path, iconPath))
+
 	if ext == ".lnk" {
 		err := setLnkIcon(path, iconPath)
 		if err != nil {
+			runtime.LogWarningf(appContext, "Failed to set icon for %s: %s", path, err.Error())
+		}
+		appliedIconPath, _ := GetAppliedIcon(path)
+		if err != nil || appliedIconPath != iconPath {
+			runtime.LogDebug(appContext, "Setting icon script for "+path)
 			return setIconScript(path, iconPath)
 		}
 	} else if ext == ".url" {
 		err := setIconScript(path, iconPath)
-		if err != nil {
+		appliedIconPath, _ := GetAppliedIcon(path)
+		if err != nil || appliedIconPath != iconPath {
 			return setUrlIcon(path, iconPath)
 		}
 	} else if ext == ".dir" {
