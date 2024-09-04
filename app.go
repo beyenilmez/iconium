@@ -37,7 +37,7 @@ func (a *App) startup(ctx context.Context) {
 	runtime.LogInfo(appContext, "Starting application")
 
 	// Set window position
-	if *config.WindowStartPositionX != -100000 && *config.WindowStartPositionY != -100000 {
+	if *config.WindowStartPositionX >= 0 && *config.WindowStartPositionY >= 0 {
 		runtime.LogInfo(appContext, "Setting window position")
 		runtime.WindowSetPosition(appContext, *config.WindowStartPositionX, *config.WindowStartPositionY)
 	}
@@ -136,6 +136,12 @@ func (a *App) beforeClose(ctx context.Context) (prevent bool) {
 		}
 
 		windowPositionX, windowPositionY := runtime.WindowGetPosition(a.ctx)
+		if windowPositionX < 0 {
+			windowPositionX = 0
+		}
+		if windowPositionY < 0 {
+			windowPositionY = 0
+		}
 		config.WindowStartPositionX, config.WindowStartPositionY = &windowPositionX, &windowPositionY
 		runtime.LogInfo(a.ctx, fmt.Sprintf("Setting window position to %d,%d", windowPositionX, windowPositionY))
 
