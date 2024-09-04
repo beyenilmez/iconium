@@ -70,6 +70,7 @@ func (a *App) startup(ctx context.Context) {
 func (a *App) domReady(ctx context.Context) {
 	// Show window
 	runtime.WindowShow(appContext)
+	runtime.Show(appContext)
 
 	// Get version from wails.json
 	var wailsDeccodedJSON map[string]interface{}
