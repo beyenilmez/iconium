@@ -134,27 +134,61 @@
   }
 
   .dawnMist {
-    --background: hsla(210, 15%, 95%, var(--opacity));  /* Light gray with more contrast */
-    --foreground: hsl(220, 25%, 12%);                   /* Darker foreground for better contrast */
-    --muted: hsla(210, 18%, 85%, var(--opacity));       /* Muted color with higher contrast */
+    --background: hsla(
+      210,
+      15%,
+      95%,
+      var(--opacity)
+    ); /* Light gray with more contrast */
+    --foreground: hsl(
+      220,
+      25%,
+      12%
+    ); /* Darker foreground for better contrast */
+    --muted: hsla(
+      210,
+      18%,
+      85%,
+      var(--opacity)
+    ); /* Muted color with higher contrast */
     --muted-foreground: hsl(220, 22%, 30%);
     --popover: hsla(210, 15%, 95%, var(--opacity));
     --popover-foreground: hsl(220, 25%, 12%);
     --card: hsla(210, 15%, 95%, var(--opacity));
     --card-foreground: hsl(220, 25%, 12%);
-    --border: hsla(220, 25%, 80%, var(--opacity));      /* Stronger borders for more distinct elements */
+    --border: hsla(
+      220,
+      25%,
+      80%,
+      var(--opacity)
+    ); /* Stronger borders for more distinct elements */
     --input: hsla(220, 25%, 80%, var(--opacity));
-    --primary: hsla(210, 40%, 35%, var(--opacity));     /* Darker primary color for emphasis */
+    --primary: hsla(
+      210,
+      40%,
+      35%,
+      var(--opacity)
+    ); /* Darker primary color for emphasis */
     --primary-foreground: hsl(0, 0%, 98%);
-    --secondary: hsla(210, 35%, 75%, var(--opacity));   /* More saturated secondary color */
+    --secondary: hsla(
+      210,
+      35%,
+      75%,
+      var(--opacity)
+    ); /* More saturated secondary color */
     --secondary-foreground: hsl(210, 40%, 35%);
-    --accent: hsla(210, 50%, 45%, var(--opacity));      /* Brighter accent color */
+    --accent: hsla(210, 50%, 45%, var(--opacity)); /* Brighter accent color */
     --accent-foreground: hsl(0, 0%, 98%);
     --destructive: hsla(0, 60%, 50%, var(--opacity));
     --destructive-foreground: hsl(0, 0%, 98%);
     --warning: hsla(45, 100%, 55%, var(--opacity));
     --warning-foreground: hsl(220, 25%, 12%);
-    --success: hsla(120, 50%, 45%, var(--opacity));     /* More vivid success color */
+    --success: hsla(
+      120,
+      50%,
+      45%,
+      var(--opacity)
+    ); /* More vivid success color */
     --success-foreground: hsl(0, 0%, 98%);
     --ring: hsla(220, 25%, 80%, var(--opacity));
   }
@@ -182,6 +216,121 @@
     --success: hsla(120, 40%, 45%, var(--opacity));
     --success-foreground: hsl(210, 20%, 90%);
     --ring: hsla(210, 30%, 25%, var(--opacity));
+  }
+
+  .forestDawn {
+    --background: hsla(
+      120,
+      10%,
+      97%,
+      var(--opacity)
+    ); /* Very soft, almost neutral green */
+    --foreground: hsl(120, 15%, 20%); /* Subtle dark earthy green */
+    --muted: hsla(120, 10%, 90%, var(--opacity)); /* Soft muted neutral tone */
+    --muted-foreground: hsl(120, 12%, 35%);
+    --popover: hsla(
+      120,
+      10%,
+      97%,
+      var(--opacity)
+    ); /* Consistent with background */
+    --popover-foreground: hsl(120, 15%, 20%);
+    --card: hsla(120, 10%, 97%, var(--opacity));
+    --card-foreground: hsl(120, 15%, 20%);
+    --border: hsla(120, 10%, 85%, var(--opacity)); /* Soft neutral border */
+    --input: hsla(120, 10%, 85%, var(--opacity));
+    --primary: hsla(
+      120,
+      25%,
+      40%,
+      var(--opacity)
+    ); /* Subtle green for primary elements */
+    --primary-foreground: hsl(0, 0%, 98%);
+    --secondary: hsla(40, 20%, 55%, var(--opacity)); /* Muted, soft brown */
+    --secondary-foreground: hsl(120, 25%, 20%);
+    --accent: hsla(90, 25%, 35%, var(--opacity)); /* Gentle accent green */
+    --accent-foreground: hsl(0, 0%, 98%);
+    --destructive: hsla(
+      0,
+      50%,
+      50%,
+      var(--opacity)
+    ); /* Softer red for destructive actions */
+    --destructive-foreground: hsl(0, 0%, 98%);
+    --warning: hsla(
+      45,
+      90%,
+      55%,
+      var(--opacity)
+    ); /* Gentle yellow for warnings */
+    --warning-foreground: hsl(120, 15%, 20%);
+    --success: hsla(120, 30%, 40%, var(--opacity)); /* Soft green for success */
+    --success-foreground: hsl(0, 0%, 98%);
+    --ring: hsla(120, 10%, 85%, var(--opacity));
+    --radius: 0.5rem;
+    --opacity: 1;
+  }
+  .dark.forestDawn {
+    --background: hsla(
+      120,
+      10%,
+      15%,
+      var(--opacity)
+    ); /* Dark, muted green-gray */
+    --foreground: hsl(120, 10%, 80%); /* Soft, light gray for text */
+    --muted: hsla(
+      120,
+      10%,
+      25%,
+      var(--opacity)
+    ); /* Muted, dark neutral green */
+    --muted-foreground: hsl(120, 15%, 65%);
+    --popover: hsla(
+      120,
+      10%,
+      15%,
+      var(--opacity)
+    ); /* Consistent with the background */
+    --popover-foreground: hsl(120, 10%, 80%);
+    --card: hsla(120, 10%, 15%, var(--opacity));
+    --card-foreground: hsl(120, 10%, 80%);
+    --border: hsla(120, 10%, 25%, var(--opacity)); /* Muted dark border */
+    --input: hsla(120, 10%, 25%, var(--opacity));
+    --primary: hsla(
+      120,
+      20%,
+      45%,
+      var(--opacity)
+    ); /* Muted green for primary elements */
+    --primary-foreground: hsl(0, 0%, 98%);
+    --secondary: hsla(40, 20%, 35%, var(--opacity)); /* Muted, soft brown */
+    --secondary-foreground: hsl(120, 10%, 80%);
+    --accent: hsla(
+      90,
+      20%,
+      40%,
+      var(--opacity)
+    ); /* Darker, subtle green for accents */
+    --accent-foreground: hsl(0, 0%, 98%);
+    --destructive: hsla(
+      0,
+      50%,
+      40%,
+      var(--opacity)
+    ); /* Softer red for destructive actions */
+    --destructive-foreground: hsl(0, 0%, 98%);
+    --warning: hsla(45, 90%, 45%, var(--opacity)); /* Soft yellow warning */
+    --warning-foreground: hsl(120, 10%, 80%);
+    --success: hsla(
+      120,
+      25%,
+      40%,
+      var(--opacity)
+    ); /* Subtle green for success */
+    --success-foreground: hsl(0, 0%, 98%);
+    --ring: hsla(120, 10%, 25%, var(--opacity)); /* Muted ring color */
+    --radius: 0.5rem;
+    --opacity: 1;
   }
 }
 

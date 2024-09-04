@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useConfig } from "./config-provider";
+import colorSchemes from "@/colorSchemes.json";
 
-export type ColorScheme = "default" | "midnightAsh" | "dawnMist"; // Add other color schemes here
+export type ColorScheme = "default" | "midnightAsh" | "dawnMist" | "forestDawn"; // Add other color schemes here
 
 type ColorSchemeProviderProps = {
   children: React.ReactNode;
@@ -38,7 +39,10 @@ export function ColorSchemeProvider({
 
   useEffect(() => {
     const root = document.documentElement;
-    root.classList.remove("default", "midnightAsh", "dawnMist"); // Remove existing color scheme classes
+    for (let i = 0; i < colorSchemes.colorSchemes.length; i++) {
+      root.classList.remove(colorSchemes.colorSchemes[i].code);
+    }
+
     root.classList.add(colorScheme);
   }, [colorScheme]);
 

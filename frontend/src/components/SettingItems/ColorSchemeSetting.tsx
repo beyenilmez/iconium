@@ -31,7 +31,9 @@ export function ColorSchemeSetting() {
           mandatory
           elements={colorSchemes.colorSchemes.map((colorScheme) => ({
             value: colorScheme.code,
-            label: t("settings.setting.color_scheme.color_schemes."+colorScheme.code),
+            label: t(
+              "settings.setting.color_scheme.color_schemes." + colorScheme.code
+            ),
           }))}
           placeholder={t("settings.setting.color_scheme.select_color_scheme")}
           searchPlaceholder={t(
