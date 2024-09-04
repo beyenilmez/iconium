@@ -10,7 +10,7 @@ import colorSchemes from "@/colorSchemes.json";
 import { ColorScheme, useColorScheme } from "@/contexts/color-scheme-provider";
 
 export function ColorSchemeSetting() {
-  const { colorScheme, setColorScheme } = useColorScheme();
+  const { colorScheme, setColorScheme, updateColorScheme } = useColorScheme();
   const { t } = useTranslation();
 
   const handleColorSchemeChange = (value: string) => {
@@ -43,6 +43,21 @@ export function ColorSchemeSetting() {
             "settings.setting.color_scheme.no_color_schemes_found"
           )}
           onChange={handleColorSchemeChange}
+          onMouseEnter={(value) => {
+            const root = document.documentElement;
+
+            root.classList.remove(colorScheme);
+            root.classList.add(value);
+          }}
+          onMouseLeave={(value) => {
+            const root = document.documentElement;
+
+            root.classList.remove(value);
+            root.classList.add(colorScheme);
+          }}
+          onCollapse={() => {
+            updateColorScheme();
+          }}
         />
       </SettingContent>
     </SettingsItem>
