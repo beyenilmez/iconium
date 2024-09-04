@@ -117,12 +117,14 @@ export default function Settings() {
           <ChangeDescriptionOfMathcedLnkFilesSetting />
         </SettingsGroup>
       </TabsContent>
-      <TabsContent
-        value="system"
-        className="w-full h-[calc(100vh-5.5rem)] overflow-y-auto"
-      >
-        Edit your system settings here.
-      </TabsContent>
+      {false && (
+        <TabsContent
+          value="system"
+          className="w-full h-[calc(100vh-5.5rem)] overflow-y-auto"
+        >
+          Edit your system settings here.
+        </TabsContent>
+      )}
       <TabsContent value="advanced" className="w-full">
         <SettingsGroup className="flex flex-col items-start px-4 py-2 w-full h-full">
           <EnableLoggingSetting />

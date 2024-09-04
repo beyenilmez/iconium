@@ -24,6 +24,7 @@
 ## Screenshots
 ![Screenshot 1](./assets/screenshot-1.png)
 ![Screenshot 2](./assets/screenshot-2.png)
+![Screenshot 3](./assets/screenshot-3.png)
 
 ## Features
 - Create, distribute and use icon packs
@@ -32,6 +33,8 @@
 - Supports `.lnk`, `.url`, and directories
 - Can extract icons from `.png`, `.jpg`, `.jpeg`, `.webp`, `.svg`, `.bmp`, `.ico`, `.exe`, `.lnk` and `.url` files
 - Highly customizable appearance
+- Automatic update
+- Color schemes and light/dark mode for each scheme
 
 ## Planned Features
 - Save desktop layouts to icon packs
