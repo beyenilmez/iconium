@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import {
   Check,
+  CircleAlert,
   Download,
   Edit,
   Folder,
@@ -68,7 +69,9 @@ import {
   GetIconPackPath,
   ImportIconPack,
   Name,
+  NeedsAdminPrivileges,
   ReadLastTab,
+  RestartApplication,
   SetIconPackField,
   SetIconPackFiles,
   SetIconPackMetadata,
@@ -112,7 +115,7 @@ import { useProgress } from "@/contexts/progress-provider";
 
 export default function Packs() {
   const { t } = useTranslation();
-  const { setValue } = useStorage();
+  const { getValue, setValue } = useStorage();
 
   const [editingIconPack, setEditingIconPack] = useState(false);
   useEffect(() => {
@@ -147,6 +150,10 @@ export default function Packs() {
     );
     setHasOverflow(overflow);
   }, [editingIconPack]);
+
+  useEffect(() => {
+    setSelectedPackId(getValue("packs") || "");
+  }, [getValue("packs")]);
 
   const loadIconPacks = async () => {
     const packs = await GetIconPackList();
@@ -230,7 +237,9 @@ export default function Packs() {
 
   useEffect(() => {
     ReadLastTab().then((packId) => {
-      setSelectedPackId(packId);
+      if (packId) {
+        setSelectedPackId(packId);
+      }
     });
   }, []);
 
@@ -472,6 +481,8 @@ function PackContent({
   const { t } = useTranslation();
   const { progress } = useProgress();
 
+  const [needsAdmin, setNeedsAdmin] = useState(false);
+
   const [loading, setLoading] = useState(true);
   const [editingMetadata, setEditingMetadata] = useState(false);
   const [iconPack, setIconPack] = useState<main.IconPack>();
@@ -503,6 +514,10 @@ function PackContent({
       setOpacity(pack.settings.opacity);
       setCornerRadius(pack.settings.cornerRadius);
       setLoading(false);
+    });
+
+    NeedsAdminPrivileges().then((result) => {
+      setNeedsAdmin(result);
     });
   }, []);
 
@@ -781,8 +796,26 @@ function PackContent({
       </div>
 
       <div className="bg-card p-4 rounded-md w-full">
-        <div className="mb-3 pb-1 border-b font-medium text-xl">
+        <div className="flex gap-4 mb-3 pb-1 border-b font-medium text-xl">
           {t("my_packs.card.pack_actions.label")}
+
+          {needsAdmin && (
+            <div className="flex flex-row items-center gap-1">
+              <Button
+                className="text-xs"
+                variant={"secondary"}
+                onClick={() => {
+                  RestartApplication(true, ["--goto", "packs__" + iconPackId]);
+                }}
+              >
+                {t("my_packs.card.pack_actions.restart_as_admin")}
+              </Button>
+              <div className="flex flex-row items-center gap-1.5 rounded-md text-warning text-xs">
+                <CircleAlert className="w-6 h-6" />
+                {t("my_packs.card.pack_actions.admin_warning")}
+              </div>
+            </div>
+          )}
         </div>
         <div className="flex flex-wrap gap-1.5 mb-2">
           <Button

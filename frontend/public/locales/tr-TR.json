@@ -146,6 +146,8 @@
 
       "pack_actions": {
         "label": "Paket İşlemleri",
+        "admin_warning": "Bazı simgeler yalnızca uygulama yönetici olarak çalıştırıldığında uygulanır.",
+        "restart_as_admin": "Yönetici olarak yeniden başlat",
         "apply_icon_pack": "Uygula",
         "export_icon_pack": "Dışa Aktar",
         "edit_icon_pack": "Düzenle",

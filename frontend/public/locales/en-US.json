@@ -147,6 +147,8 @@
 
       "pack_actions": {
         "label": "Pack Actions",
+        "admin_warning": "Some icons are only applied when app is runned as administrator.",
+        "restart_as_admin": "Restart as Administrator",
         "apply_icon_pack": "Apply",
         "edit_icon_pack": "Edit",
         "export_icon_pack": "Export",

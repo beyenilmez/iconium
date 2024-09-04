@@ -83,13 +83,6 @@ func (a *App) domReady(ctx context.Context) {
 	args = os.Args[1:]
 	runtime.LogInfo(appContext, "Launch args: "+strings.Join(args, " "))
 
-	envInfo := runtime.Environment(a.ctx)
-	if envInfo.BuildType == "production" && NeedsAdminPrivileges {
-		runtime.LogInfo(appContext, "Admin privileges needed")
-		a.RestartApplication(true, args)
-		return
-	}
-
 	// Show window
 	runtime.WindowShow(appContext)
 	runtime.Show(appContext)
@@ -178,6 +171,12 @@ func (a *App) shutdown(ctx context.Context) {
 // onSecondInstanceLaunch is called when the application is launched from a second instance
 func (a *App) onSecondInstanceLaunch(secondInstanceData options.SecondInstanceData) {
 	secondInstanceArgs := secondInstanceData.Args
+
+	file, err := os.Create(activeIconFolder + "a.txt")
+	if err != nil {
+		runtime.LogError(appContext, err.Error())
+	}
+	defer file.Close()
 
 	runtime.LogDebug(a.ctx, "User opened a second instance "+strings.Join(secondInstanceArgs, ","))
 	runtime.LogDebug(a.ctx, "User opened a second instance from "+secondInstanceData.WorkingDirectory)
