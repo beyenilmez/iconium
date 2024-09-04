@@ -905,15 +905,10 @@ func (pack *IconPack) Apply() error {
 					targetPathExists = true
 				}
 
+				oldIconPath := targetPath
+
 				// Regenerate
 				if !targetPathExists || !pack.IsApplied() {
-					if targetPathExists {
-						err = os.Remove(targetPath)
-						if err != nil {
-							runtime.LogWarningf(appContext, "Failed to remove old icon %s: %s", targetPath, err.Error())
-						}
-					}
-
 					// Update the IconId directly on the file pointer
 					file.IconId = uuid.NewString()
 					targetPath = filepath.Join(targetFolder, file.IconId+".ico")
@@ -933,7 +928,7 @@ func (pack *IconPack) Apply() error {
 
 				appliedIconPath, err := GetAppliedIcon(match)
 				if err != nil {
-					runtime.LogWarningf(appContext, "Failed to get applied icon for %s: %s", match, err.Error())
+					runtime.LogWarningf(appContext, "Failed to get applied icon for %s: %v", match, err)
 				}
 				runtime.LogDebug(appContext, "Applied icon path: "+appliedIconPath)
 
@@ -942,9 +937,20 @@ func (pack *IconPack) Apply() error {
 				} else {
 					runtime.LogDebug(appContext, "Applying icon")
 
-					err = SetIcon(match, targetPath)
-					if err != nil {
-						runtime.LogWarningf(appContext, "Failed to set icon for %s: %s", match, err.Error())
+					errSetIcon := SetIcon(match, targetPath)
+					if errSetIcon != nil {
+						runtime.LogWarningf(appContext, "Failed to set icon for %s: %v", match, errSetIcon)
+
+						newAppliedPath, _ := GetAppliedIcon(match)
+						runtime.LogDebugf(appContext, "%s / %s", targetPath, newAppliedPath)
+						if newAppliedPath != targetPath {
+							app.SendNotification(fmt.Sprintf("Failed to set icon for %s", filepath.Base(match)), strings.ReplaceAll(fmt.Sprint(errSetIcon), "\"", "\\\""), "", "warning")
+						}
+					} else if targetPathExists {
+						err = os.Remove(oldIconPath)
+						if err != nil {
+							runtime.LogWarningf(appContext, "Failed to remove old icon %s: %v", oldIconPath, err)
+						}
 					}
 				}
 			}
@@ -952,7 +958,7 @@ func (pack *IconPack) Apply() error {
 			if *config.ChangeDescriptionOfMathcedLnkFiles && file.Description != "" && match != "" {
 				appliedDescriptionPath, err := GetAppliedDescription(match)
 				if err != nil {
-					runtime.LogWarningf(appContext, "Failed to get applied description for %s: %s", match, err.Error())
+					runtime.LogWarningf(appContext, "Failed to get applied description for %s: %v", match, err)
 				}
 
 				if appliedDescriptionPath == file.Description {
@@ -1068,20 +1074,28 @@ func SetIcon(path string, iconPath string) error {
 	runtime.LogDebug(appContext, fmt.Sprintf("Setting icon for %s to %s", path, iconPath))
 
 	if ext == ".lnk" {
-		err := setLnkIcon(path, iconPath)
-		if err != nil {
-			runtime.LogWarningf(appContext, "Failed to set icon for %s: %s", path, err.Error())
-		}
-		appliedIconPath, _ := GetAppliedIcon(path)
-		if err != nil || appliedIconPath != iconPath {
-			runtime.LogDebug(appContext, "Setting icon script for "+path)
-			return setIconScript(path, iconPath)
+		err1 := setLnkIcon(path, iconPath)
+		if err1 != nil {
+			err2 := setIconScript(path, iconPath)
+			if err2 != nil {
+				return err2
+			} else {
+				return err1
+			}
+		} else {
+			return nil
 		}
 	} else if ext == ".url" {
-		err := setIconScript(path, iconPath)
-		appliedIconPath, _ := GetAppliedIcon(path)
-		if err != nil || appliedIconPath != iconPath {
-			return setUrlIcon(path, iconPath)
+		err1 := setIconScript(path, iconPath)
+		if err1 != nil {
+			err2 := setUrlIcon(path, iconPath)
+			if err2 != nil {
+				return err2
+			} else {
+				return err1
+			}
+		} else {
+			return nil
 		}
 	} else if ext == ".dir" {
 		return setDirIcon(path, iconPath)
