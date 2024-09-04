@@ -20,6 +20,7 @@ interface SliderConfigProps {
   step?: number;
   onChange?: (value: number) => void;
   onSave?: (value: number) => void;
+  disabled?: boolean;
 }
 
 export function SliderConfig({
@@ -32,6 +33,7 @@ export function SliderConfig({
   step = 1,
   onChange,
   onSave,
+  disabled = false,
   ...rest
 }: SliderConfigProps) {
   const { config, setConfigField } = useConfig();
@@ -59,6 +61,7 @@ export function SliderConfig({
 
   return (
     <SettingsItem
+      disabled={disabled}
       loading={isLoading}
       configKey={configKey}
       requiresRestart={requiresRestart}
