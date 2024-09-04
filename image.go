@@ -67,20 +67,41 @@ func ConvertToIco(path string, destination string, settings IconPackSettings) er
 		return fmt.Errorf("invalid image extension: %s", extension)
 	}
 
-	maskPath, err := GetMaskPath(settings.CornerRadius, settings.Opacity)
+	_, err := GetMaskPath(settings.CornerRadius, settings.Opacity)
+
+	cornerRadius := int(2.55 * float64(settings.CornerRadius))
 
 	if err != nil {
 		return err
 	}
 
-	// Build ImageMagick command arguments to apply the mask and convert to ICO
 	args := []string{
 		imageMagickPath,
 		path,
-		maskPath,
-		"-compose", "DstIn",
+		"(",
+		"+clone",
+		"-alpha", "extract",
+		"-draw", fmt.Sprintf("fill black polygon 0,0 0,%d %d,0 fill white circle %d,%d %d,0", cornerRadius, cornerRadius, cornerRadius, cornerRadius, cornerRadius),
+		"(",
+		"+clone",
+		"-flip",
+		")",
+		"-compose", "Multiply",
 		"-composite",
 		"-define", "icon:auto-resize=16,24,32,48,64,72,96,128,256",
+		"(",
+		"+clone",
+		"-flop",
+		")",
+		"-compose", "Multiply",
+		"-composite",
+		")",
+		"-alpha", "off",
+		"-compose", "CopyOpacity",
+		"-composite",
+		"-channel", "A", // target the alpha channel
+		"-evaluate", "Multiply", fmt.Sprintf("%.2f", (float64(settings.Opacity) / 100.0)), // apply the opacity adjustment
+		"-channel", "RGBA", // reset channel targeting
 		destination,
 	}
 
