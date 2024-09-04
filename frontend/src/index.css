@@ -58,9 +58,19 @@
   }
 
   .midnightAsh {
-    --background: hsla(230, 20%, 95%, var(--opacity)); /* Darker background for more noticeable contrast */
+    --background: hsla(
+      230,
+      20%,
+      95%,
+      var(--opacity)
+    ); /* Darker background for more noticeable contrast */
     --foreground: hsl(230, 25%, 15%); /* Much darker foreground */
-    --muted: hsla(230, 30%, 85%, var(--opacity)); /* Stronger muted color for better distinction */
+    --muted: hsla(
+      230,
+      30%,
+      85%,
+      var(--opacity)
+    ); /* Stronger muted color for better distinction */
     --muted-foreground: hsl(230, 25%, 30%);
     --popover: hsla(230, 20%, 95%, var(--opacity));
     --popover-foreground: hsl(230, 25%, 15%);
@@ -68,11 +78,26 @@
     --card-foreground: hsl(230, 25%, 15%);
     --border: hsla(230, 25%, 80%, var(--opacity)); /* More distinct borders */
     --input: hsla(230, 25%, 80%, var(--opacity));
-    --primary: hsla(230, 40%, 35%, var(--opacity)); /* Stronger, deeper primary color */
+    --primary: hsla(
+      230,
+      40%,
+      35%,
+      var(--opacity)
+    ); /* Stronger, deeper primary color */
     --primary-foreground: hsl(0, 0%, 98%);
-    --secondary: hsla(230, 30%, 80%, var(--opacity)); /* More vibrant secondary color */
+    --secondary: hsla(
+      230,
+      30%,
+      80%,
+      var(--opacity)
+    ); /* More vibrant secondary color */
     --secondary-foreground: hsl(230, 40%, 35%);
-    --accent: hsla(230, 50%, 45%, var(--opacity)); /* Even more noticeable accent */
+    --accent: hsla(
+      230,
+      50%,
+      45%,
+      var(--opacity)
+    ); /* Even more noticeable accent */
     --accent-foreground: hsl(0, 0%, 98%);
     --destructive: hsla(0, 60%, 50%, var(--opacity));
     --destructive-foreground: hsl(0, 0%, 98%);
@@ -106,6 +131,57 @@
     --success: hsla(120, 35%, 45%, var(--opacity));
     --success-foreground: hsl(230, 15%, 95%);
     --ring: hsla(230, 18%, 28%, var(--opacity));
+  }
+
+  .dawnMist {
+    --background: hsla(210, 15%, 95%, var(--opacity));  /* Light gray with more contrast */
+    --foreground: hsl(220, 25%, 12%);                   /* Darker foreground for better contrast */
+    --muted: hsla(210, 18%, 85%, var(--opacity));       /* Muted color with higher contrast */
+    --muted-foreground: hsl(220, 22%, 30%);
+    --popover: hsla(210, 15%, 95%, var(--opacity));
+    --popover-foreground: hsl(220, 25%, 12%);
+    --card: hsla(210, 15%, 95%, var(--opacity));
+    --card-foreground: hsl(220, 25%, 12%);
+    --border: hsla(220, 25%, 80%, var(--opacity));      /* Stronger borders for more distinct elements */
+    --input: hsla(220, 25%, 80%, var(--opacity));
+    --primary: hsla(210, 40%, 35%, var(--opacity));     /* Darker primary color for emphasis */
+    --primary-foreground: hsl(0, 0%, 98%);
+    --secondary: hsla(210, 35%, 75%, var(--opacity));   /* More saturated secondary color */
+    --secondary-foreground: hsl(210, 40%, 35%);
+    --accent: hsla(210, 50%, 45%, var(--opacity));      /* Brighter accent color */
+    --accent-foreground: hsl(0, 0%, 98%);
+    --destructive: hsla(0, 60%, 50%, var(--opacity));
+    --destructive-foreground: hsl(0, 0%, 98%);
+    --warning: hsla(45, 100%, 55%, var(--opacity));
+    --warning-foreground: hsl(220, 25%, 12%);
+    --success: hsla(120, 50%, 45%, var(--opacity));     /* More vivid success color */
+    --success-foreground: hsl(0, 0%, 98%);
+    --ring: hsla(220, 25%, 80%, var(--opacity));
+  }
+  .dark.dawnMist {
+    --background: hsla(210, 30%, 18%, var(--opacity)); /* Darker warm gray */
+    --foreground: hsl(210, 20%, 90%); /* Light gray foreground */
+    --muted: hsla(210, 30%, 25%, var(--opacity)); /* Muted dark gray */
+    --muted-foreground: hsl(210, 22%, 75%);
+    --popover: hsla(210, 30%, 18%, var(--opacity));
+    --popover-foreground: hsl(210, 20%, 90%);
+    --card: hsla(210, 30%, 18%, var(--opacity));
+    --card-foreground: hsl(210, 20%, 90%);
+    --border: hsla(210, 30%, 25%, var(--opacity));
+    --input: hsla(210, 30%, 25%, var(--opacity));
+    --primary: hsla(210, 20%, 90%, var(--opacity));
+    --primary-foreground: hsl(210, 30%, 30%);
+    --secondary: hsla(210, 30%, 25%, var(--opacity));
+    --secondary-foreground: hsl(210, 20%, 90%);
+    --accent: hsla(210, 40%, 45%, var(--opacity)); /* Warm, noticeable accent */
+    --accent-foreground: hsl(210, 20%, 90%);
+    --destructive: hsla(0, 55%, 45%, var(--opacity));
+    --destructive-foreground: hsl(0, 0%, 98%);
+    --warning: hsla(45, 100%, 55%, var(--opacity));
+    --warning-foreground: hsl(210, 20%, 90%);
+    --success: hsla(120, 40%, 45%, var(--opacity));
+    --success-foreground: hsl(210, 20%, 90%);
+    --ring: hsla(210, 30%, 25%, var(--opacity));
   }
 }
 

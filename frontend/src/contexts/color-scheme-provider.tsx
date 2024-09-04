@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useConfig } from "./config-provider";
 
-export type ColorScheme = "default" | "midnightAsh"; // Add other color schemes here
+export type ColorScheme = "default" | "midnightAsh" | "dawnMist"; // Add other color schemes here
 
 type ColorSchemeProviderProps = {
   children: React.ReactNode;
@@ -18,7 +18,8 @@ const initialState: ColorSchemeProviderState = {
   setColorScheme: async () => {},
 };
 
-const ColorSchemeContext = createContext<ColorSchemeProviderState>(initialState);
+const ColorSchemeContext =
+  createContext<ColorSchemeProviderState>(initialState);
 
 export function ColorSchemeProvider({
   children,
@@ -26,7 +27,8 @@ export function ColorSchemeProvider({
   ...props
 }: ColorSchemeProviderProps) {
   const { config, setConfigField } = useConfig();
-  const [colorScheme, setColorSchemeState] = useState<ColorScheme>(defaultColorScheme);
+  const [colorScheme, setColorSchemeState] =
+    useState<ColorScheme>(defaultColorScheme);
 
   useEffect(() => {
     if (config) {
@@ -36,7 +38,7 @@ export function ColorSchemeProvider({
 
   useEffect(() => {
     const root = document.documentElement;
-    root.classList.remove("default", "midnightAsh"); // Remove existing color scheme classes
+    root.classList.remove("default", "midnightAsh", "dawnMist"); // Remove existing color scheme classes
     root.classList.add(colorScheme);
   }, [colorScheme]);
 
