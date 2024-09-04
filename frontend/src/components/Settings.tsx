@@ -102,7 +102,7 @@ export default function Settings() {
           <WindowEffectSetting />
           <WindowOpacitySetting />
           <WindowScaleSetting />
-          <UseSystemTitleBarSetting />
+          {false && <UseSystemTitleBarSetting />}
           <SaveWindowStatusSetting />
         </SettingsGroup>
       </TabsContent>
