@@ -88,14 +88,16 @@ Section
     SetOutPath $INSTDIR
     !insertmacro wails.files
 
-    SetOutPath $INSTDIR
-    File "..\..\packicon.ico"
-
     SetOutPath "$AppData\iconium\external\ImageMagick-7.1.1-35-portable-Q16-x64"
     File /r "..\..\ImageMagick-7.1.1-35-portable-Q16-x64\*.*"
 
     SetOutPath "$AppData\iconium\external\ExtractIcon"
     File /r "..\..\ExtractIcon\*.*"
+
+    SetOutPath "$AppData\iconium\packs\default-pack"
+    File /r "..\..\default-pack\*"
+
+    SetOutPath $INSTDIR
 
     CreateShortcut "$SMPROGRAMS\${INFO_PRODUCTNAME}.lnk" "$INSTDIR\${PRODUCT_EXECUTABLE}"
     CreateShortCut "$DESKTOP\${INFO_PRODUCTNAME}.lnk" "$INSTDIR\${PRODUCT_EXECUTABLE}"
@@ -113,6 +115,7 @@ Section "uninstall"
     RMDir /r "$AppData\iconium\EBWebView" # Remove the WebView2 DataPath
     RMDir /r "$AppData\iconium\scripts" # Remove scripts
     RMDir /r "$AppData\iconium\external" # Remove external programs
+    RMDir /r "$AppData\iconium\temp" # Remove temp folder
 
     RMDir /r $INSTDIR
 
