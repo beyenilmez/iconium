@@ -68,10 +68,6 @@ func (a *App) startup(ctx context.Context) {
 
 // domReady is called after front-end resources have been loaded
 func (a *App) domReady(ctx context.Context) {
-	// Show window
-	runtime.WindowShow(appContext)
-	runtime.Show(appContext)
-
 	// Get version from wails.json
 	var wailsDeccodedJSON map[string]interface{}
 	err := json.Unmarshal(wailsJSON, &wailsDeccodedJSON)
@@ -83,15 +79,19 @@ func (a *App) domReady(ctx context.Context) {
 	// Check if admin privileges are needed
 	NeedsAdminPrivileges = checkAdminPrivileges()
 
-	if NeedsAdminPrivileges {
-		runtime.LogInfo(appContext, "Admin privileges needed")
-		a.RestartApplication(true, []string{})
-	}
-
 	// Get launch args
 	args = os.Args[1:]
-
 	runtime.LogInfo(appContext, "Launch args: "+strings.Join(args, " "))
+
+	if NeedsAdminPrivileges {
+		runtime.LogInfo(appContext, "Admin privileges needed")
+		a.RestartApplication(true, args)
+		return
+	}
+
+	// Show window
+	runtime.WindowShow(appContext)
+	runtime.Show(appContext)
 
 	// Check updates
 	if *config.CheckForUpdates {
