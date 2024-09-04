@@ -61,8 +61,8 @@ func GetDefaultConfig() Config {
 	defaultWindowStartSizeX := -100000
 	defaultWindowStartSizeY := -100000
 	defaultWindowScale := 100
-	defaultOpacity := 90
-	defaultWindowEffect := 0
+	defaultOpacity := 80
+	defaultWindowEffect := 3
 	defaultCheckForUpdates := true
 	defaultLastUpdateCheck := 0
 	defaultMatchLnkByDestination := true
