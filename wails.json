@@ -1,7 +1,8 @@
 {
   "$schema": "https://wails.io/schemas/config.v2.json",
-  "name": "desktop-manager",
-  "outputfilename": "desktop-manager",
+  "name": "iconium",
+  "outputfilename": "iconium",
+  "wailsjsdir": "./frontend/src",
   "frontend:install": "yarn",
   "frontend:build": "yarn build",
   "frontend:dev:watcher": "yarn dev",
@@ -11,7 +12,16 @@
     "email": "yenilmezbedirhan@gmail.com"
   },
   "info": {
-    "productName": "Desktop Manager",
-    "productVersion": "0.1.0"
+    "productName": "Iconium",
+    "productVersion": "0.1.0",
+    "copyright": "Copyright © 2024 Bedirhan Yenilmez",
+    "fileAssociations": [
+      {
+        "ext": "icnm",
+        "name": "ICNM",
+        "description": "Icon Pack",
+        "iconName": "packicon"
+      }
+    ]
   }
 }

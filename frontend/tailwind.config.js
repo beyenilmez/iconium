@@ -1,12 +1,14 @@
 /** @type {import('tailwindcss').Config} */
+const plugin = require("tailwindcss/plugin");
+
 module.exports = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-	],
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   theme: {
     container: {
       center: true,
@@ -17,38 +19,46 @@ module.exports = {
     },
     extend: {
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        border: "var(--border)",
+        input: "var(--input)",
+        ring: "var(--ring)",
+        background: "var(--background)",
+        foreground: "var(--foreground)",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "var(--primary)",
+          foreground: "var(--primary-foreground)",
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+          DEFAULT: "var(--secondary)",
+          foreground: "var(--secondary-foreground)",
         },
         destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
+          DEFAULT: "var(--destructive)",
+          foreground: "var(--destructive-foreground)",
         },
         muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+          DEFAULT: "var(--muted)",
+          foreground: "var(--muted-foreground)",
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+          DEFAULT: "var(--accent)",
+          foreground: "var(--accent-foreground)",
         },
         popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
+          DEFAULT: "var(--popover)",
+          foreground: "var(--popover-foreground)",
         },
         card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+          DEFAULT: "var(--card)",
+          foreground: "var(--card-foreground)",
+        },
+        warning: {
+          DEFAULT: "var(--warning)",
+          foreground: "var(--warning-foreground)",
+        },
+        success: {
+          DEFAULT: "var(--success)",
+          foreground: "var(--success-foreground)",
         },
       },
       borderRadius: {
@@ -70,7 +80,37 @@ module.exports = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
+      transitionDuration: {
+        250: "250ms",
+      },
+      boxShadow: {
+        "bottom-xs": "0px 1px 2px rgba(0,0,0,0.1)",
+        "bottom-sm": "0px 2px 4px rgba(0,0,0,0.1)",
+        "bottom-md": "0px 4px 6px rgba(0,0,0,0.1)",
+        "bottom-lg": "0px 6px 8px rgba(0,0,0,0.1)",
+        "bottom-xl": "0px 8px 10px rgba(0,0,0,0.1)",
+        "bottom-2xl": "0px 12px 16px rgba(0,0,0,0.1)",
+      },
+      textShadow: {
+        sm: "0 1px 2px var(--tw-shadow-color)",
+        DEFAULT: "0 2px 4px var(--tw-shadow-color)",
+        lg: "0 3px 16px var(--tw-shadow-color)",
+        xl: "0 4px 24px var(--tw-shadow-color)",
+      },
     },
   },
-  plugins: [require("tailwindcss-animate")],
-}
+  plugins: [
+    require("tailwind-scrollbar"),
+    require("tailwindcss-animate"),
+    plugin(function ({ matchUtilities, theme }) {
+      matchUtilities(
+        {
+          "text-shadow": (value) => ({
+            textShadow: value,
+          }),
+        },
+        { values: theme("textShadow") }
+      );
+    }),
+  ],
+};
