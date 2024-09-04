@@ -83,7 +83,8 @@ func (a *App) domReady(ctx context.Context) {
 	args = os.Args[1:]
 	runtime.LogInfo(appContext, "Launch args: "+strings.Join(args, " "))
 
-	if NeedsAdminPrivileges {
+	envInfo := runtime.Environment(a.ctx)
+	if envInfo.BuildType == "production" && NeedsAdminPrivileges {
 		runtime.LogInfo(appContext, "Admin privileges needed")
 		a.RestartApplication(true, args)
 		return
