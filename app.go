@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 
 	"github.com/gen2brain/beeep"
+	"github.com/google/uuid"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"golang.org/x/sys/windows"
@@ -82,6 +82,11 @@ func (a *App) domReady(ctx context.Context) {
 
 	// Check if admin privileges are needed
 	NeedsAdminPrivileges = checkAdminPrivileges()
+
+	if NeedsAdminPrivileges {
+		runtime.LogInfo(appContext, "Admin privileges needed")
+		a.RestartApplication(true, []string{})
+	}
 
 	// Get launch args
 	args = os.Args[1:]
@@ -296,15 +301,10 @@ func (a *App) RestartApplication(admin bool, args []string) error {
 }
 
 func checkAdminPrivileges() bool {
-	executable, err := os.Executable()
-	if err != nil {
-		return false
-	}
-
-	directory := filepath.Dir(executable)
+	systemroot := os.Getenv("systemroot")
 
 	// Try to create a temporary file in the directory
-	tempFile, err := os.CreateTemp(directory, "test")
+	tempFile, err := os.CreateTemp(systemroot, uuid.NewString())
 	if err != nil {
 		return os.IsPermission(err)
 	}
