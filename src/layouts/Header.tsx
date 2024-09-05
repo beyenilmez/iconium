@@ -1,5 +1,5 @@
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
-import icon from "@/assets/icon.png";
+import icon from "../assets/icon.png";
 
 export function Header() {
   return (
@@ -12,7 +12,11 @@ export function Header() {
           </div>
 
           <nav className="flex items-center gap-3">
-            <a href="https://github.com/beyenilmez/iconium" target="_blank">
+            <a
+              href="https://github.com/beyenilmez/iconium"
+              target="_blank"
+              rel="noreferrer"
+            >
               <GitHubLogoIcon className="w-8 h-8" />
             </a>
           </nav>

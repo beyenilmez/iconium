@@ -1,5 +1,5 @@
-import { Applayout } from "./components/layouts/AppLayout";
-import { ParticlesBackground } from "./components/particles-background";
+import { Applayout } from "./layouts/AppLayout";
+import { ParticlesBackground } from "./particles-backgrond";
 
 export default function App() {
   return (

@@ -1,6 +1,5 @@
-import screenshot1 from "@/assets/screenshot-1.png";
-import { Button } from "../ui/button";
-import { DownloadIcon } from "@radix-ui/react-icons";
+import { DownloadIcon } from "lucide-react";
+import screenshot1 from "../assets/screenshot-1.png";
 
 export function Content() {
   const handleDownload = () => {
@@ -19,18 +18,17 @@ export function Content() {
               </h1>
               <p className="text-2xl text-muted-foreground">
                 Craft your own icon packs, edit your icons, and share your
-                creations. Whether for personal or
-                professional use, Iconium gives you the power to bring your
-                icons to life.
+                creations. Whether for personal or professional use, Iconium
+                gives you the power to bring your icons to life.
               </p>
             </div>
-            <Button
-              className="gap-2 hover:shadow-xl hover:scale-[101%] rounded-xl h-16 font-semibold text-md hover:text-[#6253a0] transition-all"
+            <button
+              className="flex justify-center items-center gap-2 bg-gray-200 hover:shadow-xl rounded-xl h-16 font-semibold text-gray-800 hover:scale-[101%] text-md hover:text-[#6253a0] transition-all"
               onClick={handleDownload}
             >
               <DownloadIcon className="w-8 h-8" />
               Download for Windows
-            </Button>
+            </button>
           </div>
           <img
             src={screenshot1}
