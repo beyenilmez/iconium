@@ -18,4 +18,4 @@ jobs:
       - id: build-publish
         uses: bitovi/github-actions-react-to-github-pages@v1.2.2
         with:
-          path: build
+          path: dist
