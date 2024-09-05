@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: hsl(220, 15%, 20%);
+    --foreground: hsl(220, 12%, 96%);
+    --muted: hsl(220, 15%, 28%);
+    --muted-foreground: hsl(220, 17%, 86%);
+    --popover: hsl(220, 15%, 20%);
+    --popover-foreground: hsl(220, 12%, 96%);
+    --card: hsl(220, 15%, 20%);
+    --card-foreground: hsl(220, 12%, 96%);
+    --border: hsl(220, 15%, 28%);
+    --input: hsl(220, 15%, 28%);
+    --primary: hsl(220, 12%, 96%);
+    --primary-foreground: hsl(220, 20%, 30%);
+    --secondary: hsl(220, 15%, 28%);
+    --secondary-foreground: hsl(220, 12%, 96%);
+    --accent: hsl(220, 20%, 50%);
+    --accent-foreground: hsl(220, 12%, 96%);
+    --destructive: hsl(0, 55%, 45%);
+    --destructive-foreground: hsl(0, 0%, 98%);
+    --warning: hsl(45, 100%, 55%);
+    --warning-foreground: hsl(220, 12%, 96%);
+    --success: hsl(120, 35%, 45%);
+    --success-foreground: hsl(220, 12%, 96%);
+    --ring: hsl(220, 15%, 28%);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply text-foreground;
+  }
+
+  @keyframes moveGradient {
+    0% {
+      background-position: 40% 50%; /* Start with a balance between red and blue */
+    }
+    50% {
+      background-position: 50% 50%; /* Minimal movement */
+    }
+    100% {
+      background-position: 40% 50%; /* Return to initial position */
+    }
+  }
+
+  .animated-bg {
+    background: linear-gradient(135deg, #fc1d51 0%, #196cc4 70%);
+    background-size: 200% 200%;
+    animation: moveGradient 20s ease infinite; /* Slow, subtle movement */
+  }
+}
