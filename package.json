@@ -1,12 +1,25 @@
 {
   "name": "react-shadcn-starter",
   "private": true,
+  "homepage": ".",
   "version": "0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.0",
