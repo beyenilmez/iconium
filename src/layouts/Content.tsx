@@ -32,7 +32,7 @@ export function Content() {
           </div>
           <img
             src={screenshot1}
-            className="opacity-75 w-[50rem] hover:scale-[101%] md:block hidden transition-all"
+            className="opacity-75 w-[50rem] hover:scale-[101%] lg:block hidden transition-all"
             alt="Iconium screenshot showing user interface"
           />
         </div>
