@@ -1,0 +1,326 @@
+{
+  "save": "Save",
+  "cancel": "Cancel",
+  "yes": "Yes",
+  "no": "No",
+  "show_in_explorer": "Show in Explorer",
+  "import": "Import",
+  "export": "Export",
+  "error": "Error",
+  "show": "Show",
+  "create": "Create",
+  "delete": "Delete",
+
+  "downloading_missing_external_programs": "Downloading missing external programs...",
+  "downloaded_missing_external_programs": "Successfully downloaded missing external programs.",
+
+  "nav": {
+    "my_packs": "My Packs",
+    "settings": "Settings"
+  },
+
+  "file_info": {
+    "name": {
+      "label": "Name",
+      "placeholder": "File name",
+      "help": "This is the new name that will be applied to shortcuts that do not already have this name."
+    },
+
+    "description": {
+      "label": "Description",
+      "placeholder": "File description",
+      "help": "This is the description that will be set for the shortcut."
+    },
+
+    "path": {
+      "label": "Path",
+      "placeholder": "File path",
+      "help": "This is the path where the icon will be applied.",
+      "rules": "<ul>     <li>- You can use environment variables like <code>${APPDATA}</code>.</li>     <li>- Use <code>${DESKTOP}</code> for both user and public desktop paths.</li>     <li>- Wildcards like <code>*</code> and <code>?</code> are supported.</li>     <li>- Character sets like <code>[abc]</code> are supported, allowing you to match any one of the characters listed (e.g., <code>a</code>, <code>b</code>, or <code>c</code>).</li>     <li>- Use multiple <code>*</code> for recursive folder searches: <code>**</code> for 1 or fewer levels, <code>***</code> for 2 or fewer levels, and so on.</li>     </ul>"
+    },
+
+    "destination": {
+      "label": "Destination",
+      "placeholder": "File destination",
+      "help": "This is the path that will be matched with destination paths of shortcuts in the source folder if the file is not found in the original path."
+    },
+
+    "url": {
+      "label": "URL",
+      "placeholder": "URL",
+      "help": "This is the URL that will be matched with URLs of files in the source folder if the file is not found in the original path."
+    }
+  },
+
+  "my_packs": {
+    "create_new_pack": {
+      "title": "Create Icon Pack"
+    },
+
+    "delete_pack": {
+      "confirmation_title": "Are you sure you want to delete this pack?",
+      "confirmation_description": "This action cannot be undone.",
+      "delete_generated_icons": "Delete Generated Icons"
+    },
+
+    "import_pack": {
+      "confirmation_title": "Do you want to import this pack?",
+      "success": "Pack imported successfully."
+    },
+
+    "edit_pack": {
+      "path_found": "Path found"
+    },
+
+    "buttons": {
+      "add_pack": {
+        "tooltip": "Add new pack"
+      },
+
+      "reload_packs": {
+        "tooltip": "Reload packs"
+      },
+
+      "import_pack": {
+        "tooltip": "Import pack"
+      }
+    },
+
+    "card": {
+      "pack_information": {
+        "label": "Pack Information",
+
+        "information": {
+          "name": {
+            "label": "Name",
+            "placeholder": "My Pack",
+
+            "message": {
+              "name_required": "Name is required",
+              "name_max": "Name can not exceed 32 characters"
+            }
+          },
+
+          "version": {
+            "label": "Version",
+            "placeholder": "v1.0.0",
+
+            "message": {
+              "version_required": "Version is required",
+              "version_format": "Version must be in the format v1.0.0"
+            }
+          },
+
+          "author": {
+            "label": "Author",
+            "placeholder": "Your name",
+
+            "message": {
+              "author_max": "Author can not exceed 32 characters"
+            }
+          },
+
+          "license": {
+            "label": "License",
+            "placeholder": "MIT",
+
+            "message": {
+              "license_max": "License can not exceed 64 characters"
+            }
+          },
+
+          "description": {
+            "label": "Description",
+            "placeholder": "This is my icon pack",
+
+            "message": {
+              "description_required": "Description is required",
+              "description_max": "Description can not exceed 1024 characters"
+            }
+          },
+
+          "icon": {
+            "label": "Icon"
+          }
+        }
+      },
+
+      "pack_actions": {
+        "label": "Pack Actions",
+        "admin_warning": "Some icons are only applied when app is runned as administrator.",
+        "restart_as_admin": "Restart as Administrator",
+        "apply_icon_pack": "Apply",
+        "edit_icon_pack": "Edit",
+        "export_icon_pack": "Export",
+        "add_icons_from_desktop": "Add Icons from Desktop",
+        "add_icons": "Add Icons",
+        "add_folder": "Add Folder Icon",
+        "add_empty_icon": "Add Empty Icon"
+      },
+
+      "pack_settings": {
+        "label": "Pack Settings",
+
+        "setting": {
+          "enabled": {
+            "label": "Enabled"
+          },
+
+          "corner_radius": {
+            "label": "Corner Radius",
+            "description": "Change the corner radius of the icons in this pack."
+          },
+
+          "opacity": {
+            "label": "Opacity",
+            "description": "Change the opacity of the icons in this pack."
+          }
+        }
+      },
+
+      "icons": {
+        "label": "Icons"
+      }
+    }
+  },
+
+  "settings": {
+    "restart_the_app_for_changes_to_take_effect": "Restart the app for changes to take effect.",
+    "are_you_sure_you_want_to_import_this_config": "Are you sure you want to import this config?",
+    "the_app_will_restart_to_load_the_new_config": "The app will be restarted to load the new config.",
+    "config_saved": "Config saved",
+    "there_was_an_error_saving_the_config": "There was an error saving the config.",
+
+    "categories": {
+      "general": "General",
+      "application": "Application",
+      "icon_pack": "Icon Pack",
+      "system": "System",
+      "advanced": "Advanced",
+      "update": "Update"
+    },
+
+    "setting": {
+      "language": {
+        "label": "Language",
+        "description": "Select your preferred language.",
+        "select_language": "Select language...",
+        "search_language": "Search language...",
+        "no_languages_found": "No languages found."
+      },
+
+      "theme": {
+        "label": "Theme",
+        "description": "Choose a color scheme for the interface."
+      },
+
+      "color_scheme": {
+        "label": "Color Scheme",
+        "description": "Select your preferred color scheme.",
+        "select_color_scheme": "Select color scheme...",
+        "search_color_scheme": "Search color scheme...",
+        "no_color_schemes_found": "No color schemes found.",
+
+        "color_schemes": {
+          "default": "Default",
+          "midnightAsh": "Midnight Ash",
+          "dawnMist": "Dawn Mist",
+          "forestDawn": "Forest Dawn",
+          "goldenEmber": "Golden Ember"
+        }
+      },
+
+      "window_effect": {
+        "label": "Window Effect",
+        "description": "Select the window effect.",
+
+        "auto": "Auto",
+        "none": "None",
+        "acrylic": "Acrylic",
+        "mica": "Mica",
+        "tabbed": "Tabbed"
+      },
+
+      "window_opacity": {
+        "label": "Window Opacity",
+        "description": "Adjust the window opacity. (This setting is ignored if 'None' is selected for window effect.)"
+      },
+
+      "window_scale": {
+        "label": "Window Scale",
+        "description": "Adjust the window scale."
+      },
+
+      "use_system_title_bar": {
+        "label": "Use System Title Bar",
+        "description": "Use the default system title bar instead of a custom one."
+      },
+
+      "logging": {
+        "label": "Enable Logging",
+        "description": "Enable logging to files."
+      },
+
+      "log_levels": {
+        "label": "Log Levels",
+        "description": "Select the log levels to record."
+      },
+
+      "max_log_files": {
+        "label": "Max Log Files",
+        "description": "Set the maximum number of log files to retain."
+      },
+
+      "import_export": {
+        "label": "Import/Export Settings",
+        "description": "Import or export settings your settings from/to a JSON file."
+      },
+
+      "save_window_status": {
+        "label": "Save Window Status",
+        "description": "Save window size, position, and state."
+      },
+
+      "match_lnk_by_destination": {
+        "label": "Match Windows Shortuts (.lnk) by Destination",
+        "description": "Match windows shortcuts by destination if matching by path is not successful."
+      },
+
+      "match_url_by_destination": {
+        "label": "Match .url files by URL",
+        "description": "Match .url files by URL if matching by path is not successful."
+      },
+
+      "rename_matched_files": {
+        "label": "Rename Matched Files",
+        "description": "Rename matched files if the names does not match."
+      },
+
+      "change_description_of_matched_lnk_files": {
+        "label": "Change Description of Matched Windows Shortcut (.lnk) Files",
+        "description": "Change the description of matched shortucts."
+      },
+
+      "check_for_updates": {
+        "label": "Check For Updates On Startup",
+        "description": "Check for updates on startup."
+      },
+
+      "update": {
+        "update_available": "Update available",
+        "no_updates_available": "No updates available",
+        "last_checked": "Last checked",
+        "check_for_updates": "Check for updates",
+        "update": "Update",
+        "updating": "Updating...",
+        "failed_to_check_for_updates": "Failed to check for updates. Please try again later.",
+        "failed_to_download_update": "Failed to download update. Please try again later.",
+        "failed_to_apply_update": "Failed to apply update.",
+        "update_applied": "Update applied successfully.",
+        "restarting": "Restarting...",
+        "need_admin_privileges": "Administration privileges are needed to update the application.",
+        "update_successful": "Update was successfully applied."
+      }
+    }
+  }
+}

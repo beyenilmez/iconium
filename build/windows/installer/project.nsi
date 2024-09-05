@@ -72,7 +72,7 @@ ManifestDPIAware true
 
 Name "${INFO_PRODUCTNAME}"
 OutFile "..\..\bin\${INFO_PROJECTNAME}-${ARCH}-installer.exe" # Name of the installer's file.
-InstallDir "$PROGRAMFILES64\${INFO_COMPANYNAME}\${INFO_PRODUCTNAME}" # Default installing folder ($PROGRAMFILES is Program Files folder).
+InstallDir "$Appdata\iconium\bin" # Default installing folder ($PROGRAMFILES is Program Files folder).
 ShowInstDetails show # This will always show the installation details.
 
 Function .onInit
@@ -81,12 +81,23 @@ FunctionEnd
 
 Section
     !insertmacro wails.setShellContext
+    SetShellVarContext current
 
     !insertmacro wails.webview2runtime
 
     SetOutPath $INSTDIR
-
     !insertmacro wails.files
+
+    SetOutPath "$AppData\iconium\external\ImageMagick-7.1.1-35-portable-Q16-x64"
+    File /r "..\..\ImageMagick-7.1.1-35-portable-Q16-x64\*.*"
+
+    SetOutPath "$AppData\iconium\external\ExtractIcon"
+    File /r "..\..\ExtractIcon\*.*"
+
+    SetOutPath "$AppData\iconium\packs\default-pack"
+    File /r "..\..\default-pack\*"
+
+    SetOutPath $INSTDIR
 
     CreateShortcut "$SMPROGRAMS\${INFO_PRODUCTNAME}.lnk" "$INSTDIR\${PRODUCT_EXECUTABLE}"
     CreateShortCut "$DESKTOP\${INFO_PRODUCTNAME}.lnk" "$INSTDIR\${PRODUCT_EXECUTABLE}"
@@ -99,8 +110,12 @@ SectionEnd
 
 Section "uninstall"
     !insertmacro wails.setShellContext
+    SetShellVarContext current
 
-    RMDir /r "$AppData\${PRODUCT_EXECUTABLE}" # Remove the WebView2 DataPath
+    RMDir /r "$AppData\iconium\EBWebView" # Remove the WebView2 DataPath
+    RMDir /r "$AppData\iconium\scripts" # Remove scripts
+    RMDir /r "$AppData\iconium\external" # Remove external programs
+    RMDir /r "$AppData\iconium\temp" # Remove temp folder
 
     RMDir /r $INSTDIR
 
